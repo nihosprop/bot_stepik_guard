@@ -41,8 +41,7 @@ async def setup_redis(config: Config) -> tuple[Redis, Redis]:
         host=config.redis_host,
         port=6379,
         db=1,
-        password=config.redis_password or None,
-        max_connections=20)
+        password=config.redis_password or None)
     
     try:
         await redis_fsm.ping()
