@@ -1,22 +1,22 @@
 services:
   main:
-    image: niwibonihs/bot_stepik_guard:v1
+  # image: niwibonihs/bot_stepik_guard:v1
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: BotStepikGuard
     restart: unless-stopped
     env_file: .env
     depends_on:
-      redis_fsm:
-        condition: service_healthy
+      - "redis_fsm"
     networks:
       - stepik_guard_bot_net
     volumes:
-      - logs:/app/logs  # Монтирование томов для логов
-      - /etc/localtime:/etc/localtime:ro  # Синхронизация времени
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
+      # Монтируем локальную папку с кодом в контейнер
+      - .:/app
+    environment:
+      # Указываем, что работаем в режиме разработки
+      - ENVIRONMENT=development
 
   redis_fsm:
     image: redis:7-alpine
@@ -27,12 +27,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    volumes:
-      - redis_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf  # Конфиг Redis
-    command: redis-server /usr/local/etc/redis/redis.conf
     networks:
       - stepik_guard_bot_net
 
