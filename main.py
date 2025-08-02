@@ -67,6 +67,9 @@ async def main():
     env = Env()
     env.read_env()
     config: Config = load_config()
+    
+    await setup_logging(config=config)
+    
     stepik_client_id: str = config.stepik.client_id
     stepik_client_secret: str = config.stepik.client_secret
     stepik_courses_ids: list[int] = config.stepik.stepic_courses_ids
