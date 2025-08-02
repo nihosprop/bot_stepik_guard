@@ -40,7 +40,7 @@ class StepikAPIClient:
         try:
             async with (aiohttp.ClientSession() as session):
                 async with session.post(
-                    url, data=data, allow_redirects=True) as resp:
+                    url=url, data=data, allow_redirects=True) as resp:
                     if resp.status != 200:
                         error_message = await resp.text()
                         logger_stepik.error(
