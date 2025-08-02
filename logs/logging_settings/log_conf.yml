@@ -57,7 +57,7 @@ handlers:
 loggers:
 
   apscheduler:
-    level: INFO  # Понижаем уровень логирования для APScheduler
+    level: ${LOG_LEVEL}
     propagate: False
 
   scheduler:
