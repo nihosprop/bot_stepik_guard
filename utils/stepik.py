@@ -24,6 +24,7 @@ class StepikAPIClient:
         :return str: Токен доступа
         :raises: RuntimeError, если не удалось получить токен.
         """
+        
         cached_token = await self.redis_client.get('stepik_token')
         url = 'https://stepik.org/oauth2/token/'
         
