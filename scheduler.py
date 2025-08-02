@@ -15,8 +15,10 @@ async def start_scheduler(stepik_client: StepikAPIClient,
     scheduler = AsyncIOScheduler()
     logger_scheduler.info("🟢 Инициализация планировщика…")
     
-    scheduler.add_job(StepikTasks.check_comments,
-                      args=[stepik_client, stepik_courses_ids],
+    stepik_tasks = StepikTasks(stepik_client=stepik_client,
+                               stepik_courses_ids=stepik_courses_ids)
+    
+    scheduler.add_job(stepik_tasks.check_comments,
                       trigger='interval',
                       minutes=1,
                       max_instances=1,
