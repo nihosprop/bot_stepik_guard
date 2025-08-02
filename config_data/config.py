@@ -29,7 +29,7 @@ def load_config(path: str | None = None) -> Config:
     env = Env()
     env.read_env(path)
     redis_host = env.str("REDIS_HOST", "localhost")
-    level_log = env('LOG_LEVEL', 'INFO')
+    level_log = env.str('LOG_LEVEL', 'INFO')
     redis_password = env.str("REDIS_PASSWORD", "")
     stepik_client_id = env.str("STEPIK_CLIENT_ID", "")
     stepik_client_secret = env.str("STEPIK_CLIENT_SECRET", "")
