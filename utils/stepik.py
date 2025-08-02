@@ -52,11 +52,16 @@ class StepikAPIClient:
                     access_token = response.get('access_token')
                     if not access_token:
                         raise RuntimeError('Токен не найден в ответе API.')
-                    # Сохраняем токен в Redis с TTL
-                    await self.redis_client.set(
-                        'stepik_token', access_token, ex=3600)
-                    logger_stepik.debug(
-                        'Токен успешно получен и сохранён в Redis.')
+                    try:
+                        # Сохраняем токен в Redis с TTL
+                        await self.redis_client.set(
+                            'stepik_token', access_token, ex=35000)
+                        logger_stepik.info(
+                            'Токен успешно получен и сохранён в Redis.')
+                    except Exception as e:
+                        logger_stepik.error(f'Ошибка сохранения токена в '
+                                            f'Redis: {e}')
+                        raise
                     return access_token
         
         except aiohttp.ClientError as err:
