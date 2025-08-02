@@ -54,7 +54,7 @@ async def setup_redis(config: Config) -> tuple[Redis, Redis]:
     
     try:
         await redis_data.ping()
-        logger_main.info("Redis Cache успешно подключен.")
+        logger_main.info("Redis Data успешно подключен.")
     except Exception as err:
         logger_main.error(
             f"Ошибка подключения к Redis Cache: {err}", exc_info=True)
