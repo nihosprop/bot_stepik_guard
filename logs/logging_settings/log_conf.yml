@@ -56,6 +56,10 @@ handlers:
 
 loggers:
 
+  apscheduler:
+    level: INFO  # Понижаем уровень логирования для APScheduler
+    propagate: False
+
   scheduler:
     level: ${LOG_LEVEL}
     handlers: [ stdout, warning_file, critical_file ]
