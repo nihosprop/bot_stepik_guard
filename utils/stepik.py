@@ -28,7 +28,7 @@ class StepikAPIClient:
         url = 'https://stepik.org/oauth2/token/'
         
         if cached_token:
-            logger_stepik.debug('Используется кэшированный токен из Redis.')
+            logger_stepik.info('Используется кэшированный токен из Redis.')
             return cached_token
         
         data = {
