@@ -118,10 +118,26 @@ class StepikAPIClient:
     async def get_course_title(self, course_id: int) -> str | None:
         course_data = await self.get_course(course_id)
         return course_data.get('courses')[0].get('title')
-        
-    async def get_comments(self,
-                           course_id: int,
-                           limit: int = 100) -> Dict[str, Any]:
+    
+    async def get_section(self, course_id: int) -> List[int]:
+        sections_data = await self.make_api_request(method='GET',
+                                                    endpoint=f'courses/{course_id}')
+        sections = sections_data['courses'][0]['sections']
+        return sections
+    
+    async def get_unit(self, section_id: int) -> List[int]:
+        section_url = f'https://stepik.org/api/sections/{section_id}'
+        units_data = await self.make_api_request(
+            method='GET', endpoint=f'sections/{section_id}')
+        unit = units_data['sections'][0]['units']
+        return unit
+
+    async def get_lesson_id(self, unit_id: int) -> Optional[int]:
+        lesson_data = await self.make_api_request('GET', f'units/{unit_id}')
+        lesson_id = lesson_data['units'][0]['lesson']
+        return lesson_id
+
+    async def get_comments(self, course_id: int, limit: int = 100) -> Dict[str, Any]:
         """
         Получение списка комментариев по ID курса
         :param course_id:
