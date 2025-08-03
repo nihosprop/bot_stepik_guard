@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import re
+import html
 
 from dataclasses import dataclass
 
@@ -28,9 +29,12 @@ async def get_username(_type_update: Message | CallbackQuery | ChatFullInfo) -> 
 
 def clean_html_tags(raw_html: str) -> str:
     """Удаляет HTML-теги из строки, оставляя только текст."""
-    clean_text = re.sub(r'<[^>]+>', '', raw_html)  # Удаляет все теги вида <...>
-    clean_text = re.sub(r'\s+', ' ', clean_text)  # Заменяет множественные пробелы на один
-    return clean_text.strip()  # Обрезает пробелы по краям
+    
+    clean_text = re.sub(r'<[^>]+>', '', raw_html)
+    clean_text = html.unescape(clean_text)
+    clean_text = re.sub(r'\s+', ' ', clean_text)
+    
+    return clean_text.strip()
 
 @dataclass
 class MessageProcessor:
