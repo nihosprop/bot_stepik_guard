@@ -248,14 +248,6 @@ class AsyncStepikCommenter:
             logger_stepik.info(f'{units=}')
             return units
     
-    async def get_lesson_id(self, unit_id: int) -> Optional[int]:
-        units_url = f'https://stepik.org/api/units/{unit_id}'
-        async with self.session.get(url=units_url) as resp:
-            # logger.info(f'{(await resp.json())=}')
-            lesson_id = (await resp.json())['units'][0]['lesson']
-            logger_stepik.info(f'{lesson_id=}')
-            return lesson_id
-    
     async def get_steps(self, unit_id: int) -> List[int]:
         units_url = f'https://stepik.org/api/units/{unit_id}'
         async with self.session.get(url=units_url) as resp:
