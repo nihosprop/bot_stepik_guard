@@ -13,17 +13,32 @@ class StepikTasks:
     stepik_courses_ids: list[int] = field(default_factory=list)
     
     async def check_comments(self):
+        logger_tasks.info("🟢 Начало проверки комментариев")
         
-        comments = []
+        all_comments = []
         
         for course_id in self.stepik_courses_ids:
-            last_comments: dict[str, Any] = await (
-                self.stepik_client.get_comments(
-                    course_id=course_id, lesson_id=5))
+            logger_tasks.debug(f'Поиск в {course_id=}')
             
-            comments.append(last_comments.get("comments", []))
+            comments_data: dict[str, Any] = await (
+                self.stepik_client.get_comments(
+                    course_id=course_id, limit=20))
+            # logger_tasks.debug(f'{course_id=}:{comments_data=}:')
+            
+            course_comments = comments_data.get("comments", [])
+            
+            if course_comments:
+                all_comments.extend(course_comments)
+                
+                last_id = max(comment["id"] for comment in course_comments)
+                
+                await self.stepik_client.redis_client.set(
+                    f"last_comment:{course_id}", last_id)
+                
+            logger_tasks.info(f'Для курса:{course_id} найдено '
+                              f'{len(course_comments)} комментов')
         
-        logger_tasks.debug(f'{comments=}')
+        logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментариев")
         
         banned_words = ['плохое слово']
         users_url = 'https://stepik.org/users/'
