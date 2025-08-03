@@ -124,7 +124,7 @@ class StepikAPIClient:
         """
         last_processed_id = int(await self.redis_client.get(
             f"last_comment:{course_id}") or 0)
-        
+        logger_stepik.debug(f'{last_processed_id=}')
         params = {
             "page_size": limit,
             "course": course_id,
