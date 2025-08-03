@@ -71,7 +71,7 @@ class StepikTasks:
                 await self.stepik_client.redis_client.set(
                     name=f'{course_id}:time_last_comment',
                     value=max_comments_time.strftime('%Y-%m-%dT%H:%M:%SZ'))
-            
+        
         logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментов")
         
         banned_words = ['плохое слово']
