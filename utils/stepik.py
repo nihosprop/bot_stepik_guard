@@ -29,14 +29,14 @@ class StepikAPIClient:
         url = 'https://stepik.org/oauth2/token/'
         
         if cached_token:
-            logger_stepik.debug('Используется кэшированный токен из Redis.')
+            # logger_stepik.debug('Используется кэшированный токен из Redis.')
             return cached_token
         
         data = {
             'grant_type': 'client_credentials',
             'client_id': self.client_id,
             'client_secret': self.client_secret}
-
+        
         try:
             async with (aiohttp.ClientSession() as session):
                 async with session.post(
@@ -59,8 +59,9 @@ class StepikAPIClient:
                         logger_stepik.info(
                             'Токен успешно получен и сохранён в Redis.')
                     except Exception as e:
-                        logger_stepik.error(f'Ошибка сохранения токена в '
-                                            f'Redis: {e}')
+                        logger_stepik.error(
+                            f'Ошибка сохранения токена в '
+                            f'Redis: {e}')
                         raise
                     return access_token
         
@@ -111,38 +112,34 @@ class StepikAPIClient:
     
     async def get_comments(self,
                            course_id: int,
-                           lesson_id: int | None = None,
-                           step_id: int | None = None,
                            limit: int = 100) -> Dict[str, Any]:
         """
         Получение списка комментариев по ID курса
         :param course_id:
-        :param lesson_id:
-        :param step_id:
         :param limit:
         :return:
         """
-        last_processed_id = int(await self.redis_client.get(
-            f"last_comment:{course_id}") or 0)
+        try:
+            last_processed_id = int(
+                await self.redis_client.get(f"last_comment:{course_id}") or 0)
+        except (ValueError, TypeError):
+            last_processed_id = 0
+        
         logger_stepik.debug(f'{last_processed_id=}')
+        
         params = {
             "page_size": limit,
             "course": course_id,
             "sort": "id",
-            "order": "desc",
-            "id__gt": last_processed_id}
+            "order": "desc"}
         
         # Только если это не первый запрос
         if last_processed_id > 0:
             params["id__gt"] = last_processed_id
-        if lesson_id is not None:
-            params["lesson"] = lesson_id
-        if step_id is not None:
-            params["step"] = step_id
-
+        
         new_comments = await self.make_api_request(
             "GET", "comments", params=params)
-    
+        
         return new_comments
     
     @staticmethod
@@ -162,7 +159,7 @@ class StepikAPIClient:
                 logger_stepik.error(
                     f"Ошибка удаления: {response.status} {await response.text()}")
                 return False
-    
+
 
 class AsyncStepikCommenter:
     def __init__(self, client_id: str, client_secret: str, redis_client: Redis):
@@ -232,13 +229,12 @@ class AsyncStepikCommenter:
             logger_stepik.error(
                 f'Неожиданная ошибка при запросе токена: {err}', exc_info=True)
             raise RuntimeError(f'Неожиданная ошибка: {err}')
-        
+    
     async def get_sections(self, course_id: int) -> List[int]:
         courses_url = f'https://stepik.org/api/courses/{course_id}'
         async with self.session.get(
             url=courses_url,
             headers={'Authorization': f'Bearer {self.token}'}) as resp:
-            
             sections = (await resp.json())['courses'][0]['sections']
             logger_stepik.info(f'{sections=}')
             return sections
