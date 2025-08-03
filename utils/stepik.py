@@ -129,12 +129,16 @@ class StepikAPIClient:
             "page_size": limit,
             "course": course_id,
             "sort": "id",
-            "order": "asc",
-            "id__gt": last_processed_id}
+            "order": "desc"}
         
-        # Удаляем None значения
-        params = {k: v for k, v in params.items() if v is not None}
-        
+        # Только если это не первый запрос
+        if last_processed_id > 0:
+            params["id__gt"] = last_processed_id
+        if lesson_id is not None:
+            params["lesson"] = lesson_id
+        if step_id is not None:
+            params["step"] = step_id
+
         new_comments = await self.make_api_request(
             "GET", "comments", params=params)
     
