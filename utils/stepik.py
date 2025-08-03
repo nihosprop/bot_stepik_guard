@@ -138,7 +138,7 @@ class StepikAPIClient:
             "GET", "comments", params=params)
         
         return comments
-    
+
     @staticmethod
     async def analyze_comment_text(text: str, banned_words: list) -> bool:
         """Анализ текста комментария на наличие запрещенных слов"""
