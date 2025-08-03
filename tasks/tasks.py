@@ -20,6 +20,12 @@ class StepikTasks:
         for course_id in self.stepik_courses_ids:
             logger_tasks.debug(f'Поиск в {course_id=}')
             
+            # Получаем текущий last_processed_id ДО запроса
+            last_id_key = f"last_comment:{course_id}"
+            current_last_id = int(
+                await self.stepik_client.redis_client.get(last_id_key) or 0)
+            logger_tasks.debug(f"Текущий last_processed_id: {current_last_id}")
+            
             comments_data: dict[str, Any] = await (
                 self.stepik_client.get_comments(
                     course_id=course_id, limit=20))
@@ -28,20 +34,21 @@ class StepikTasks:
             course_comments = comments_data.get("comments", [])
             
             if course_comments:
-                all_comments.extend(course_comments)
-                
-                last_id = max(comment["id"] for comment in course_comments)
-                
-                last_id_key = f"last_comment:{course_id}"
-                logger_tasks.debug(f'{last_id_key=}')
-                
-                await self.stepik_client.redis_client.set(last_id_key, last_id)
+                # Фильтруем только действительно новые комментарии
+                new_comments = [c for c in course_comments if
+                    c['id'] > current_last_id]
+                if new_comments:
+                    all_comments.extend(new_comments)
+                    new_last_id = max(comment["id"] for comment in new_comments)
+                    await self.stepik_client.redis_client.set(
+                        last_id_key,
+                        new_last_id)
             
-            logger_tasks.info(
+            logger_tasks.debug(
                 f'Для курса:{course_id} найдено '
                 f'{len(course_comments)} комментов')
         
-        logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментариев")
+        logger_tasks.debug(f"🔵 Найдено {len(all_comments)} новых комментариев")
         
         banned_words = ['плохое слово']
         users_url = 'https://stepik.org/users/'
@@ -50,16 +57,16 @@ class StepikTasks:
             # logger_tasks.debug(f'Data: {comment=}')
             
             user_stepik_id: int = comment.get('user')
-            logger_tasks.debug(f'{user_stepik_id=}')
+            # logger_tasks.debug(f'{user_stepik_id=}')
             
             user = await self.stepik_client.get_user(user_id=user_stepik_id)
-            logger_tasks.debug(f'{user=}')
+            # logger_tasks.debug(f'{user=}')
             
             link_to_user_profile: str = f'{users_url}{user_stepik_id}/profile'
             lesson_id = comment.get('target')
-            logger_tasks.debug(f'{lesson_id=}')
+            # logger_tasks.debug(f'{lesson_id=}')
             comment_id = comment.get('id')
-            logger_tasks.debug(f'{comment_id=}')
+            # logger_tasks.debug(f'{comment_id=}')
             
             comment_text = comment.get('text')
             user_name = user.get('full_name')
