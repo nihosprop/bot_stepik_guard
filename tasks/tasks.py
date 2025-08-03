@@ -1,11 +1,11 @@
 import logging
-import bs4
 
 from dataclasses import dataclass, field
 from typing import Any
 from datetime import datetime, timedelta
 
 from utils.stepik import StepikAPIClient
+from utils.utils import clean_html_tags
 
 logger_tasks = logging.getLogger(__name__)
 
@@ -22,6 +22,10 @@ class StepikTasks:
         
         for course_id in self.stepik_courses_ids:
             logger_tasks.debug(f'Поиск в {course_id=}')
+            
+            course_title = await self.stepik_client.get_course_title(
+                course_id=course_id)
+            # logger_tasks.debug(f'Course title: {course_title}')
             
             redis_key = f'{course_id}:time_last_comment'
             time_last_comment_str = await self.stepik_client.redis_client.get(
@@ -46,7 +50,7 @@ class StepikTasks:
             
             for comment in course_comments:
                 comment_time_str = comment.get("time")
-                
+                comment.update({'course_title': course_title})
                 if not comment_time_str:
                     continue
                 
@@ -78,7 +82,7 @@ class StepikTasks:
         users_url = 'https://stepik.org/users/'
         
         for comment in all_comments:
-            # logger_tasks.debug(f'Data: {comment=}')
+            logger_tasks.debug(f'Data: {comment=}')
             
             user_stepik_id: int = comment.get('user')
             # logger_tasks.debug(f'{user_stepik_id=}')
@@ -87,17 +91,23 @@ class StepikTasks:
             # logger_tasks.debug(f'{user=}')
             
             link_to_user_profile: str = f'{users_url}{user_stepik_id}/profile'
-            lesson_id = comment.get('target')
+            course_title: str = comment.get('course_title')
             comment_id = comment.get('id')
-            comment_text = comment.get('text')
+            comment_text = clean_html_tags(comment.get('text'))
             user_name = user.get('full_name')
             reputation: int = user.get('reputation')
             count_steps: int = user.get('solved_steps_count')
             reputation_rank: int = user.get('reputation_rank')
             link_to_comment = 'None'
+            comment_time = datetime.strptime(
+                comment.get('time'),
+                '%Y-%m-%dT%H:%M:%SZ')
             
-            # TODO добавить инфу название курса, ссылку на коммент
-            user_info = (f'User: {user_name}\n'
+            user_info = (f'\nUser: {user_name}\n'
+                         f'Course title: {course_title}\n'
+                         f'Comment ID: {comment_id}\n'
+                         f'Comment time: '
+                         f'{comment_time}\n'
                          f'Reputation: {reputation}\n'
                          f'Reputation Rank: {reputation_rank}\n'
                          f'Сount steps: {count_steps}\n'
@@ -105,13 +115,11 @@ class StepikTasks:
                          f'Link to comment: {link_to_comment}\n'
                          f'Comment: {comment_text}')
             
-            logger_tasks.debug(user_info)
-            
             if await self.stepik_client.analyze_comment_text(
-                comment_text, banned_words):
+                text=comment_text, banned_words=banned_words):
                 await self.stepik_client.delete_comment(comment_id=comment_id)
                 logger_tasks.warning(
-                    f"Found problematic comment: "
-                    f"ID_[{comment_id}]\n"
-                    f"Text: {comment_text}\n"
+                    f"Problematic comment!!!"
                     f"{user_info}")
+                
+            logger_tasks.debug(user_info)
