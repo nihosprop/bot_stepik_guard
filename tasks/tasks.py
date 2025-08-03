@@ -72,8 +72,6 @@ class StepikTasks:
             
         logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментов")
         
-        return
-        
         banned_words = ['плохое слово']
         users_url = 'https://stepik.org/users/'
         
