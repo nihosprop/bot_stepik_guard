@@ -34,9 +34,10 @@ class StepikTasks:
                 
                 await self.stepik_client.redis_client.set(
                     f"last_comment:{course_id}", last_id)
-                
-            logger_tasks.info(f'Для курса:{course_id} найдено '
-                              f'{len(course_comments)} комментов')
+            
+            logger_tasks.info(
+                f'Для курса:{course_id} найдено '
+                f'{len(course_comments)} комментов')
         
         logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментариев")
         
@@ -69,20 +70,20 @@ class StepikTasks:
             # https://stepik.org/lesson/<lesson_id>/step/1?discussion=<comment_id>&unit=<unit_id>
             
             user_info = f'User: {user_name}\n'
-            f'  Reputation: {reputation}\n'
-            f'  Reputation Rank: {reputation_rank}\n'
-            f'  Сount steps: {count_steps}\n'
-            f'  Link to user: {link_to_user_profile}\n'
-            f'  Link to comment: {link_to_comment}\n'
-            f'  Comment: {comment_text}'
+            f'Reputation: {reputation}\n'
+            f'Reputation Rank: {reputation_rank}\n'
+            f'Сount steps: {count_steps}\n'
+            f'Link to user: {link_to_user_profile}\n'
+            f'Link to comment: {link_to_comment}\n'
+            f'Comment: {comment_text}'
             
             logger_tasks.debug(f'{user_info=}')
             
             if await self.stepik_client.analyze_comment_text(
-            comment_text, banned_words):
+                comment_text, banned_words):
                 await self.stepik_client.delete_comment(comment_id=comment_id)
                 logger_tasks.warning(
-                f"Found problematic comment: "
-                f"ID_[{comment_id}]\n"
-                f"Text: {comment_text}\n"
-                f"{user_info}")
+                    f"Found problematic comment: "
+                    f"ID_[{comment_id}]\n"
+                    f"Text: {comment_text}\n"
+                    f"{user_info}")
