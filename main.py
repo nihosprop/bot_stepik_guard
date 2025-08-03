@@ -34,13 +34,12 @@ async def setup_redis(config: Config) -> tuple[Redis, Redis]:
         host=config.redis_host,
         port=6379,
         db=0,
-        decode_responses=True,
         password=config.redis_password or None)
     
     redis_data = Redis(
         host=config.redis_host,
         port=6379,
-        db=1,
+        db=1, decode_responses=True,
         password=config.redis_password or None)
     
     try:
