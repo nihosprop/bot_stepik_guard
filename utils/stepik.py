@@ -131,11 +131,8 @@ class StepikAPIClient:
             "page_size": limit,
             "course": course_id,
             "sort": "id",
-            "order": "asc"}
-        
-        # Только если это не первый запрос
-        if last_processed_id > 0:
-            params["id__gt"] = last_processed_id
+            "order": "asc",
+            "id__gt": last_processed_id}
         
         new_comments = await self.make_api_request(
             "GET", "comments", params=params)
