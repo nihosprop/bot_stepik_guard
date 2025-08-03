@@ -82,6 +82,7 @@ class StepikAPIClient:
                                json_data: Optional[Dict[str, Any]] = None) -> \
         Dict[str, Any]:
         """Базовый метод для выполнения API-запросов"""
+        
         url = f"https://stepik.org/api/{endpoint.lstrip('/')}"
         headers = {"Authorization": f"Bearer {await self._get_access_token()}"}
         
@@ -119,25 +120,16 @@ class StepikAPIClient:
         :param limit:
         :return:
         """
-        try:
-            last_processed_id = int(
-                await self.redis_client.get(f"last_comment:{course_id}") or 0)
-        except (ValueError, TypeError):
-            last_processed_id = 0
-        
-        logger_stepik.debug(f'{last_processed_id=}')
-        
         params = {
             "page_size": limit,
             "course": course_id,
-            "sort": "id",
-            "order": "asc",
-            "id__gt": last_processed_id}
+            'sort': 'time',
+            "order": "desc"}
         
-        new_comments = await self.make_api_request(
+        comments = await self.make_api_request(
             "GET", "comments", params=params)
         
-        return new_comments
+        return comments
     
     @staticmethod
     async def analyze_comment_text(text: str, banned_words: list) -> bool:
