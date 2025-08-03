@@ -70,11 +70,7 @@ class StepikTasks:
                     name=f'{course_id}:time_last_comment',
                     value=max_comments_time.strftime('%Y-%m-%dT%H:%M:%SZ'))
             
-            logger_tasks.debug(
-                    f'Для курса:{course_id} найдено '
-                    f'{len(new_comments)} новых комментов')
-        
-        logger_tasks.debug(f"🔵 Найдено {len(all_comments)} новых комментариев")
+        logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментов")
         
         return
         
