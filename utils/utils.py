@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from aiogram.exceptions import TelegramBadRequest
 from aiogram.fsm.context import FSMContext
-from aiogram.types import CallbackQuery, Message, ChatFullInfo, Update
+from aiogram.types import CallbackQuery, ChatFullInfo, Message, Update
 
 logger_utils = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ async def get_username(_type_update: Message | CallbackQuery | ChatFullInfo) -> 
         return first_name
     return 'Anonymous'
 
+
 @dataclass
 class MessageProcessor:
     """
@@ -36,8 +37,8 @@ class MessageProcessor:
     _state: FSMContext
     
     async def deletes_messages(self,
-        msgs_for_del=False,
-        msgs_remove_kb=False) -> None:
+                               msgs_for_del=False,
+                               msgs_remove_kb=False) -> None:
         """
         Deleting messages from chat based on passed parameters.
         This method removes various types of messages from a chat.
@@ -86,9 +87,9 @@ class MessageProcessor:
         logger_utils.debug('Exit')
     
     async def save_msg_id(self,
-        value: Message | CallbackQuery,
-        msgs_for_del=False,
-        msgs_remove_kb=False) -> None:
+                          value: Message | CallbackQuery,
+                          msgs_for_del=False,
+                          msgs_remove_kb=False) -> None:
         """
         The writes_msg_id_to_storage method is intended for writing an identifier
         messages in the store depending on the values of the passed flags.
@@ -184,8 +185,7 @@ class MessageProcessor:
                         "Update does not contain a valid chat or message.")
                     return
             await self._type_update.bot.delete_message(
-                chat_id=chat_id,
-                message_id=data.get(key))
+                chat_id=chat_id, message_id=data.get(key))
         except Exception as err:
             logger_utils.error(f'{err=}', exc_info=True)
         logger_utils.debug('Exit')
@@ -228,8 +228,7 @@ class MessageProcessor:
                 await asyncio.sleep(delay=1)
         except Exception as e:
             logger_utils.error(
-                f"Ошибка при обновлении сообщения: {e}",
-                exc_info=True)
+                f"Ошибка при обновлении сообщения: {e}", exc_info=True)
         finally:
             await type_update.delete()
             logger_utils.debug('Exit')
