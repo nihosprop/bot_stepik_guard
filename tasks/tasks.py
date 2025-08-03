@@ -28,8 +28,8 @@ class StepikTasks:
         banned_words = ['плохое слово']
         users_url = 'https://stepik.org/users/'
         
-        for comment in comments:
-            logger_tasks.debug(f'Data: {comment=}')
+        for comment in all_comments:
+            # logger_tasks.debug(f'Data: {comment=}')
             
             user_stepik_id: int = comment.get('user')
             logger_tasks.debug(f'{user_stepik_id=}')
