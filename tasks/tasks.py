@@ -94,6 +94,7 @@ class StepikTasks:
             reputation_rank: int = user.get('reputation_rank')
             link_to_comment = 'None'
             
+            # TODO добавить инфу название курса, ссылку на коммент
             user_info = (f'User: {user_name}\n'
                          f'Reputation: {reputation}\n'
                          f'Reputation Rank: {reputation_rank}\n'
