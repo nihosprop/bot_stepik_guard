@@ -1,5 +1,4 @@
 import logging
-
 from dataclasses import dataclass, field
 from typing import Any
 from datetime import datetime, timedelta
@@ -100,14 +99,12 @@ class StepikTasks:
             reputation_rank: int = user.get('reputation_rank')
             link_to_comment = 'None'
             comment_time = datetime.strptime(
-                comment.get('time'),
-                '%Y-%m-%dT%H:%M:%SZ')
+                comment.get('time'), '%Y-%m-%dT%H:%M:%SZ')
             
             user_info = (f'\nUser: {user_name}\n'
                          f'Course title: {course_title}\n'
                          f'Comment ID: {comment_id}\n'
-                         f'Comment time: '
-                         f'{comment_time}\n'
+                         f'Comment time: {comment_time}\n'
                          f'Reputation: {reputation}\n'
                          f'Reputation Rank: {reputation_rank}\n'
                          f'Сount steps: {count_steps}\n'
@@ -121,5 +118,5 @@ class StepikTasks:
                 logger_tasks.warning(
                     f"Problematic comment!!!"
                     f"{user_info}")
-                
+            
             logger_tasks.debug(user_info)
