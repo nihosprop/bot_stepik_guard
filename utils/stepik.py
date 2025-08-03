@@ -122,6 +122,8 @@ class StepikAPIClient:
         :param limit:
         :return:
         """
+        last_processed_id = int(await self.redis_client.get(
+            f"last_comment:{course_id}") or 0)
         
         params = {
             "page_size": limit,
