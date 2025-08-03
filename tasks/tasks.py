@@ -52,7 +52,7 @@ class StepikTasks:
                 
                 comment_time: datetime = datetime.strptime(
                     comment_time_str, '%Y-%m-%dT%H:%M:%SZ')
-
+                
                 logger_tasks.debug(
                     f'Comment_time:{comment_time.strftime("%Y-%m-%d %H:%M:%S")}')
                 logger_tasks.debug(
