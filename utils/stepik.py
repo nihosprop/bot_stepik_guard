@@ -113,7 +113,7 @@ class StepikAPIClient:
                            course_id: int,
                            lesson_id: int | None = None,
                            step_id: int | None = None,
-                           limit: int = 20) -> Dict[str, Any]:
+                           limit: int = 100) -> Dict[str, Any]:
         """
         Получение списка комментариев по ID курса
         :param course_id:
@@ -128,13 +128,17 @@ class StepikAPIClient:
         params = {
             "page_size": limit,
             "course": course_id,
-            "lesson": lesson_id,
-            "target": step_id, }
+            "sort": "id",
+            "order": "asc",
+            "id__gt": last_processed_id}
+        
         # Удаляем None значения
         params = {k: v for k, v in params.items() if v is not None}
         
-        return await self.make_api_request(
+        new_comments = await self.make_api_request(
             "GET", "comments", params=params)
+    
+        return new_comments
     
     @staticmethod
     async def analyze_comment_text(text: str, banned_words: list) -> bool:
