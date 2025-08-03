@@ -44,9 +44,9 @@ class StepikTasks:
                         last_id_key,
                         new_last_id)
             
-            logger_tasks.debug(
-                f'Для курса:{course_id} найдено '
-                f'{len(course_comments)} комментов')
+                logger_tasks.debug(
+                    f'Для курса:{course_id} найдено '
+                    f'{len(new_comments)} комментов')
         
         logger_tasks.debug(f"🔵 Найдено {len(all_comments)} новых комментариев")
         
