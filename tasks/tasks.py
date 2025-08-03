@@ -1,4 +1,6 @@
 import logging
+import bs4
+
 from dataclasses import dataclass, field
 from typing import Any
 from datetime import datetime, timedelta
