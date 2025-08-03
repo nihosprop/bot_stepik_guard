@@ -131,7 +131,7 @@ class StepikAPIClient:
             "page_size": limit,
             "course": course_id,
             "sort": "id",
-            "order": "desc"}
+            "order": "asc"}
         
         # Только если это не первый запрос
         if last_processed_id > 0:
