@@ -44,6 +44,7 @@ class StepikTasks:
                     course_id=course_id, limit=2))
             
             course_comments = comments_data.get("comments", [])
+            # logger_tasks.debug(f'{course_comments=}')
             new_comments = []
             max_comments_time = time_last_comment
             
@@ -77,7 +78,7 @@ class StepikTasks:
         
         logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментов")
         
-        banned_words = ['плохое слово']
+        banned_words = ['мат']
         users_url = 'https://stepik.org/users/'
         
         for comment in all_comments:
@@ -91,25 +92,25 @@ class StepikTasks:
             
             link_to_user_profile: str = f'{users_url}{user_stepik_id}/profile'
             course_title: str = comment.get('course_title')
+            course_id = comment.get('course_id')
             comment_id = comment.get('id')
             comment_text = clean_html_tags(comment.get('text'))
             user_name = user.get('full_name')
             reputation: int = user.get('reputation')
             count_steps: int = user.get('solved_steps_count')
             reputation_rank: int = user.get('reputation_rank')
-            link_to_comment = 'None'
             comment_time = datetime.strptime(
                 comment.get('time'), '%Y-%m-%dT%H:%M:%SZ')
             
             user_info = (f'\nUser: {user_name}\n'
                          f'Course title: {course_title}\n'
+                         f'Course ID: {course_id}\n'
                          f'Comment ID: {comment_id}\n'
                          f'Comment time: {comment_time}\n'
                          f'Reputation: {reputation}\n'
                          f'Reputation Rank: {reputation_rank}\n'
                          f'Сount steps: {count_steps}\n'
                          f'Link to user: {link_to_user_profile}\n'
-                         f'Link to comment: {link_to_comment}\n'
                          f'Comment: {comment_text}')
             
             if await self.stepik_client.analyze_comment_text(
@@ -118,5 +119,5 @@ class StepikTasks:
                 logger_tasks.warning(
                     f"Problematic comment!!!"
                     f"{user_info}")
-            
-            logger_tasks.debug(user_info)
+            else:
+                logger_tasks.debug(user_info)
