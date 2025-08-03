@@ -79,7 +79,7 @@ class StepikTasks:
                          f'Link to comment: {link_to_comment}\n'
                          f'Comment: {comment_text}')
             
-            logger_tasks.debug(f'{user_info=}')
+            logger_tasks.debug(user_info)
             
             if await self.stepik_client.analyze_comment_text(
                 comment_text, banned_words):
