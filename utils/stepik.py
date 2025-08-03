@@ -144,6 +144,7 @@ class StepikAPIClient:
         async with aiohttp.ClientSession() as session:
             async with session.delete(url, headers=headers) as response:
                 if response.status in (200, 204):
+                    logger_stepik.warning('Удален подозрительный коммент')
                     return True
                 logger_stepik.error(
                     f"Ошибка удаления: {response.status} {await response.text()}")
