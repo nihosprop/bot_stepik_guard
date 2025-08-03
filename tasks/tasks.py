@@ -69,13 +69,13 @@ class StepikTasks:
             # https://stepik.org/lesson/1631463/step/1?discussion=12012236&unit=1653744
             # https://stepik.org/lesson/<lesson_id>/step/1?discussion=<comment_id>&unit=<unit_id>
             
-            user_info = f'User: {user_name}\n'
-            f'Reputation: {reputation}\n'
-            f'Reputation Rank: {reputation_rank}\n'
-            f'Сount steps: {count_steps}\n'
-            f'Link to user: {link_to_user_profile}\n'
-            f'Link to comment: {link_to_comment}\n'
-            f'Comment: {comment_text}'
+            user_info = (f'User: {user_name}\n'
+                         f'Reputation: {reputation}\n'
+                         f'Reputation Rank: {reputation_rank}\n'
+                         f'Сount steps: {count_steps}\n'
+                         f'Link to user: {link_to_user_profile}\n'
+                         f'Link to comment: {link_to_comment}\n'
+                         f'Comment: {comment_text}')
             
             logger_tasks.debug(f'{user_info=}')
             
