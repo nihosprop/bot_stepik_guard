@@ -32,8 +32,10 @@ class StepikTasks:
                 
                 last_id = max(comment["id"] for comment in course_comments)
                 
-                await self.stepik_client.redis_client.set(
-                    f"last_comment:{course_id}", last_id)
+                last_id_key = f"last_comment:{course_id}"
+                logger_tasks.debug(f'{last_id_key=}')
+                
+                await self.stepik_client.redis_client.set(last_id_key, last_id)
             
             logger_tasks.info(
                 f'Для курса:{course_id} найдено '
