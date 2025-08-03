@@ -143,7 +143,7 @@ class StepikAPIClient:
     async def analyze_comment_text(text: str, banned_words: list) -> bool:
         """Анализ текста комментария на наличие запрещенных слов"""
         return any(bad_word.lower() in text.lower() for bad_word in banned_words)
-    
+
     async def delete_comment(self, comment_id: int) -> bool:
         """Удаление комментария через DELETE-запрос"""
         
