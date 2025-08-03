@@ -138,6 +138,7 @@ class StepikAPIClient:
     
     async def delete_comment(self, comment_id: int) -> bool:
         """Удаление комментария через DELETE-запрос"""
+        
         url = f"https://stepik.org/api/comments/{comment_id}"
         headers = {"Authorization": f"Bearer {await self._get_access_token()}"}
         
