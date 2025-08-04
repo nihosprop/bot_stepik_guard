@@ -8,7 +8,7 @@ from better_profanity import profanity
 from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
 
-from patterns import RePatterns
+from patterns import DataProfanity
 
 logger_filters = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ class ProfanityFilter:
         profanity.load_censor_words()
         
         # словарь соответствий
-        self.data_mapping = RePatterns.CHAR_REPLACEMENT_MAP
+        self.data_mapping = DataProfanity.CHAR_REPLACEMENT_MAP
         
         profanity.CHARS_MAPPING.update(self.data_mapping)
         logger_filters.debug(profanity.CHARS_MAPPING)
@@ -58,10 +58,10 @@ class ProfanityFilter:
         
         # 4. Компиляция регулярных выражений
         self.base_pattern = re.compile(
-            RePatterns.base_pattern, flags=re.IGNORECASE)
+            DataProfanity.base_pattern, flags=re.IGNORECASE)
         
         self.additional_patterns = [re.compile(pattern, flags=re.IGNORECASE) for
-            pattern in RePatterns.additional_patterns]
+            pattern in DataProfanity.additional_patterns]
         
         # 5. Паттерн для разбивки текста на слова
         self.word_pattern = re.compile(r'\b\w+\b')

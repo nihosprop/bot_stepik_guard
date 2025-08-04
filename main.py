@@ -15,7 +15,7 @@ from keyboards.set_menu import set_main_menu
 from scheduler import start_scheduler
 from utils.stepik import StepikAPIClient
 from middlewares.outer import MsgProcMiddleware
-
+from filters.filters import DataProfanity
 logger_main = logging.getLogger(__name__)
 
 

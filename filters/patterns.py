@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class RePatterns:
+class DataProfanity:
     base_pattern = (r'\b([хx][уyю][йjеёи]|[пp][иеi][з3z][дd]|[б6][лl][яaа@]|['
                     r'её][б6][аaа@]'
                     r'|[сc][уy][кk][аaа@]|[мm][уy][дd][аaкk]|[гg][аa][вv][нn][оo0]'
