@@ -1,10 +1,8 @@
 import logging
-
+import json
+import os
 from aiogram.filters import BaseFilter
-from aiogram.fsm.context import FSMContext
-from aiogram.fsm.state import StatesGroup
 from aiogram.types import CallbackQuery, Message
-from aiogram.enums import ContentType
 
 logger_filters = logging.getLogger(__name__)
 
