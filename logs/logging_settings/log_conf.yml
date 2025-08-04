@@ -65,48 +65,6 @@ loggers:
     handlers: [ stdout, warning_file, critical_file ]
     propagate: no
 
-  # queues
-  queues.que_utils:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  # database
-  database.db_utils:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  database.crud:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  database.user_crud:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  database.user_answer_crud:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  database.season_crud:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  database.results_crud:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  database.add_admin_crud:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
   # handlers
   handlers.owners_handlers:
     level: ${LOG_LEVEL}
@@ -114,16 +72,6 @@ loggers:
     propagate: no
 
   handlers.admin_handlers:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  handlers.chat_handlers:
-    level: ${LOG_LEVEL}
-    handlers: [ stdout, warning_file, critical_file ]
-    propagate: no
-
-  handlers.user_handlers:
     level: ${LOG_LEVEL}
     handlers: [ stdout, warning_file, critical_file ]
     propagate: no
@@ -163,12 +111,6 @@ loggers:
     propagate: no
 
   keyboards.set_menu:
-    level: ${LOG_LEVEL}
-    handlers: [stdout, warning_file, critical_file]
-    propagate: no
-
-  # lexicon
-  lexicon.lexicon_ru:
     level: ${LOG_LEVEL}
     handlers: [stdout, warning_file, critical_file]
     propagate: no
