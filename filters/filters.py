@@ -25,10 +25,10 @@ class AccessRightsFilter(BaseFilter):
         return user_tg_id in owners
 
 
-BAD_WORDS_PATH = Path(__file__).parent.parent / "badwords.json"
-
-
 class ProfanityFilter:
+
+    BAD_WORDS_PATH = Path(__file__).parent.parent / "badwords.json"
+
     def __init__(self, bad_words_file=BAD_WORDS_PATH):
         # 1. Инициализация better_profanity
         profanity.load_censor_words()
@@ -66,7 +66,7 @@ class ProfanityFilter:
         # 5. Паттерн для разбивки текста на слова
         self.word_pattern = re.compile(r'\b\w+\b')
     
-    def is_profanity(self, text: str) -> bool:
+    async def is_profanity(self, text: str) -> bool:
         """
         Основная функция проверки
         :param text:
@@ -109,7 +109,7 @@ class ProfanityFilter:
             return True
         return False
     
-    def _normalize_text(self, text: str) -> str:
+    async def _normalize_text(self, text: str) -> str:
         """Приводит текст к стандартному виду, заменяя символы на базовые буквы"""
         normalized = []
         for char in text.lower():
@@ -121,7 +121,7 @@ class ProfanityFilter:
             normalized.append(replacement)
         return ''.join(normalized)
     
-    def _check_levenshtein(self, phrase: str) -> bool:
+    async def _check_levenshtein(self, phrase: str) -> bool:
         """Проверка обходов фильтра (замены символов и т.д.)"""
         for key, value in self.data_mapping.items():
             # Проходимся по каждой букве в значении словаря. То есть по вот этим спискам ['а', 'a', '@'].
