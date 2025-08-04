@@ -82,7 +82,7 @@ class StepikTasks:
         users_url = 'https://stepik.org/users/'
         
         for comment in all_comments:
-            logger_tasks.debug(f'Data: {comment=}')
+            # logger_tasks.debug(f'Data: {comment=}')
             
             user_stepik_id: int = comment.get('user')
             # logger_tasks.debug(f'{user_stepik_id=}')
