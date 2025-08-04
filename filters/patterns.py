@@ -10,6 +10,7 @@ class RePatterns:
                     r'|[дd][еe][б6][иi][лl]|[дd][уy][рr][аa][кk]|[ч4][мm][оo0]|[шs][лl][юu][хxh]'
                     r'|[пp][оo0][сc][рr][аa][тtь]|[мm][аa][нn][дd][аa]|[еeё][б6][аa][лl]'
                     r'|[вv][ыy][еeё][б6][аa])\w*\b')
+    
     additional_patterns = [
         r'\b[аa][хxh][уy][еeё][лlтt]\w*\b',
         r'\b[пp][иi][з3z][дd][аaоo][кkцc]\w*\b',
