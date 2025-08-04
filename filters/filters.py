@@ -71,7 +71,8 @@ class ProfanityFilter:
         :param text:
         :return bool:
         """
-        normalized_text = self._normalize_text(text)
+        text = text.replace(" ", "")
+        normalized_text = await self._normalize_text(text)
         text_lower = str(normalized_text).lower()
         
         # Fast check
