@@ -72,7 +72,7 @@ class ProfanityFilter:
         :return bool:
         """
         normalized_text = self._normalize_text(text)
-        text_lower = normalized_text.lower()
+        text_lower = str(normalized_text).lower()
         
         # Fast check
         if len(text_lower.strip()) < 3:
