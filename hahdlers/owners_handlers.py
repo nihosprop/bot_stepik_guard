@@ -22,12 +22,13 @@ async def cmd_start(msg: Message,
     await msg_processor.deletes_messages(msgs_for_del=True)
     logger_owners.debug(f'{msg.model_dump_json(indent=4)}')
     
-    text = (f'Приветствую, {await get_username(msg)}!\n'
+    text = (f'Приветствую, {await get_username(msg)}!\n\n'
             f'Бот начал мониторинг комментариев на ваших курсах:\n'
             f'{stepik_courses_ids}\n'
             f'При каждом, не прошедшем фильтр комментарии, бот его удалит и '
             f'вышлет вам в ЛС данные.\n'
             f'Приятного полета ;)')
+    
     value = await msg.answer(text=text)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     logger_owners.debug('Exit')
