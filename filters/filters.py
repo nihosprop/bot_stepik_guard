@@ -147,5 +147,5 @@ class ProfanityFilter:
         return False
 
 
-f = ProfanityFilter()
-logger_filters.debug(f.is_profanity(input()))
+# f = ProfanityFilter()
+# logger_filters.debug(f.is_profanity(input()))
