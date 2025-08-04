@@ -88,8 +88,11 @@ async def main():
     
     await set_main_menu(bot=bot)
     
+    profanity_filter = ProfanityFilter()
+    
     await start_scheduler(stepik_client=stepik_client,
-                          stepik_courses_ids=stepik_courses_ids)
+                          stepik_courses_ids=stepik_courses_ids,
+                          profanity_filter=profanity_filter)
     
     try:
         # routers

@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from typing import Any
 from datetime import datetime, timedelta
 
+from filters.filters import ProfanityFilter
 from utils.stepik import StepikAPIClient
 from utils.utils import clean_html_tags
 
@@ -14,7 +15,7 @@ class StepikTasks:
     stepik_client: StepikAPIClient
     stepik_courses_ids: list[int] = field(default_factory=list)
     
-    async def check_comments(self):
+    async def check_comments(self, profanity_filter: ProfanityFilter):
         logger_tasks.info("🟢 Начало проверки комментариев")
         
         all_comments = []
@@ -78,7 +79,6 @@ class StepikTasks:
         
         logger_tasks.info(f"🔵 Найдено {len(all_comments)} новых комментов")
         
-        banned_words = ['мат']
         users_url = 'https://stepik.org/users/'
         
         for comment in all_comments:
@@ -113,8 +113,7 @@ class StepikTasks:
                          f'Link to user: {link_to_user_profile}\n'
                          f'Comment: {comment_text}')
             
-            if await self.stepik_client.analyze_comment_text(
-                text=comment_text, banned_words=banned_words):
+            if await profanity_filter.is_profanity(text=comment_text):
                 await self.stepik_client.delete_comment(comment_id=comment_id)
                 logger_tasks.warning(
                     f"Problematic comment!!!"
