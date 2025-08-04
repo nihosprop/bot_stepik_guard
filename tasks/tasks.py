@@ -51,7 +51,8 @@ class StepikTasks:
             
             for comment in course_comments:
                 comment_time_str = comment.get("time")
-                comment.update({'course_title': course_title})
+                comment.update({'course_title': course_title,
+                                'course_id': course_id})
                 if not comment_time_str:
                     continue
                 
