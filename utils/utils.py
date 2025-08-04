@@ -1,8 +1,7 @@
 import asyncio
 import logging
-import re
 import html
-
+import re
 from dataclasses import dataclass
 
 from aiogram.exceptions import TelegramBadRequest
@@ -27,6 +26,7 @@ async def get_username(_type_update: Message | CallbackQuery | ChatFullInfo) -> 
         return first_name
     return 'Anonymous'
 
+
 def clean_html_tags(raw_html: str) -> str:
     """Удаляет HTML-теги из строки, оставляя только текст."""
     
@@ -35,6 +35,7 @@ def clean_html_tags(raw_html: str) -> str:
     clean_text = re.sub(r'\s+', ' ', clean_text)
     
     return clean_text.strip()
+
 
 @dataclass
 class MessageProcessor:
