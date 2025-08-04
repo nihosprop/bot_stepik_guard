@@ -8,7 +8,7 @@ from better_profanity import profanity
 from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
 
-from patterns import DataProfanity
+from filters.patterns import DataProfanity
 
 logger_filters = logging.getLogger(__name__)
 
