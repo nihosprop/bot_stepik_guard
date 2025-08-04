@@ -37,7 +37,6 @@ class ProfanityFilter:
         self.data_mapping = DataProfanity.CHAR_REPLACEMENT_MAP
         
         profanity.CHARS_MAPPING.update(self.data_mapping)
-        logger_filters.debug(profanity.CHARS_MAPPING)
         
         # 2. Загрузка кастомных слов из файла
         self.bad_words = []
