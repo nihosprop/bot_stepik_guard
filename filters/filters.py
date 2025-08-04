@@ -147,4 +147,4 @@ class ProfanityFilter:
 
 
 # f = ProfanityFilter()
-# logger_filters.debug(f.is_profanity(input()))
+# print(f.is_profanity(input()))
