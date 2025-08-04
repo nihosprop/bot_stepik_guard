@@ -97,7 +97,6 @@ class ProfanityFilter:
         
         # 3. Проверка по списку слов (с учетом опечаток)
         words = re.findall(r'\w+', text_lower)
-        logger_filters.warning(words)
         if any(word in self.bad_words for word in words):
             logger_filters.warning('Фильтр 4 с учетом опечаток')
             return True
