@@ -11,6 +11,7 @@ from utils.utils import MessageProcessor, get_username
 logger_owners = logging.getLogger(__name__)
 
 owners_router = Router()
+
 owners_router.message.filter(AccessRightsFilter())
 owners_router.callback_query.filter(AccessRightsFilter())
 
