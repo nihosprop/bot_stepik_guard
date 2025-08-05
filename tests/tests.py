@@ -1,3 +1,5 @@
+from filters.filters import ProfanityFilter
+
 test_cases = [
     # Базовые матерные слова
     "хуй",
