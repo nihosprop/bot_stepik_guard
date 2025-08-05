@@ -41,4 +41,3 @@ async def in_development(clbk: CallbackQuery):
     logger_owners.debug('Entry')
     logger_owners.debug('Exit')
     await clbk.answer('Кнопка в разработке', show_alert=True)
-    
