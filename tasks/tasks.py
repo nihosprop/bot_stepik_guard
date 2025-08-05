@@ -3,6 +3,8 @@ from dataclasses import dataclass, field
 from typing import Any
 from datetime import datetime, timedelta
 
+from aiogram import Bot
+
 from filters.filters import ProfanityFilter
 from utils.stepik import StepikAPIClient
 from utils.utils import clean_html_tags
@@ -13,6 +15,7 @@ logger_tasks = logging.getLogger(__name__)
 @dataclass
 class StepikTasks:
     stepik_client: StepikAPIClient
+    bot: Bot
     stepik_courses_ids: list[int] = field(default_factory=list)
     
     async def check_comments(self, profanity_filter: ProfanityFilter):

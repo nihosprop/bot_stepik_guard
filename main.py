@@ -92,7 +92,8 @@ async def main():
     
     await start_scheduler(stepik_client=stepik_client,
                           stepik_courses_ids=stepik_courses_ids,
-                          profanity_filter=profanity_filter)
+                          profanity_filter=profanity_filter,
+                          bot=bot)
     
     try:
         # routers

@@ -13,12 +13,14 @@ logger_scheduler = logging.getLogger(__name__)
 
 async def start_scheduler(stepik_client: StepikAPIClient,
                           stepik_courses_ids: list[int],
-                          profanity_filter: ProfanityFilter) -> None:
+                          profanity_filter: ProfanityFilter,
+                          bot: Bot) -> None:
     scheduler = AsyncIOScheduler()
     logger_scheduler.info("🟢 Инициализация планировщика…")
     
     stepik_tasks = StepikTasks(stepik_client=stepik_client,
-                               stepik_courses_ids=stepik_courses_ids)
+                               stepik_courses_ids=stepik_courses_ids,
+                               bot=bot)
     
     scheduler.add_job(stepik_tasks.check_comments,
                       args=[profanity_filter],
