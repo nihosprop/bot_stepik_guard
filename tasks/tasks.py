@@ -46,7 +46,7 @@ class StepikTasks:
             
             comments_data: dict[str, Any] = await (
                 self.stepik_client.get_comments(
-                    course_id=course_id, limit=2))
+                    course_id=course_id))
             
             course_comments = comments_data.get("comments", [])
             # logger_tasks.debug(f'{course_comments=}')
