@@ -120,11 +120,10 @@ class StepikTasks:
             
             if await profanity_filter.is_profanity(text=comment_text):
                 await self.stepik_client.delete_comment(comment_id=comment_id)
-                logger_tasks.warning(
-                    f"Problematic comment!!!"
-                    f"{user_info}")
+                text = f"Problematic comment!\n{user_info}"
+                logger_tasks.warning(text)
                 for owner in self.owners:
                     await self.bot.send_message(chat_id=owner,
-                                                text=user_info)
+                                                text=text)
             else:
                 logger_tasks.debug(user_info)
