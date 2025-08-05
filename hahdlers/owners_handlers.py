@@ -7,6 +7,7 @@ from aiogram.filters import and_f, or_f
 
 from filters.filters import AccessRightsFilter
 from utils.utils import MessageProcessor, get_username
+from keyboards.keyboards import kb_start
 
 logger_owners = logging.getLogger(__name__)
 
@@ -30,6 +31,7 @@ async def cmd_start(msg: Message,
             f'вышлет вам в ЛС данные.\n'
             f'Приятного полета 🫡')
     
-    value = await msg.answer(text=text)
+    value = await msg.answer(text=text, reply_markup=kb_start)
+    
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     logger_owners.debug('Exit')
