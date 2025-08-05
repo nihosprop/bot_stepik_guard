@@ -1,0 +1,52 @@
+# PROD
+services:
+  main:
+    image: niwibonihs/bot_stepik_guard:v1
+    container_name: YourNameBot
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      redis_fsm:
+        condition: service_healthy
+    networks:
+      your_bot_net:
+        aliases: [ bot ]
+    volumes:
+      - logs:/app/logs
+      - /etc/localtime:/etc/localtime:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 256M
+  redis_fsm:
+    image: redis:7-alpine
+    container_name: YourRedisFSM
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "$$REDIS_PASSWORD", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    env_file: .env
+    volumes:
+      - redis_data:/data
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    networks:
+      your_bot_net:
+        aliases: [ redis ]
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+
+networks:
+  your_bot_net:
+    driver: bridge
+    name: your_bot_net
+
+volumes:
+  redis_data:
+  logs:
