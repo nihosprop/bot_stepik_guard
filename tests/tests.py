@@ -457,14 +457,10 @@ class TestProfanityFilter:
                 # print(f'Простая проверка: {word}')
                 return True
         
-        # if profanity.contains_profanity(simple_text):
-        #     return True
-        
         text = text.replace(" ", "")
         normalized_text = self._normalize_text(text)
         text_lower = str(normalized_text).lower()
         
-        # Fast check
         if len(text_lower.strip()) < 3:
             return False
         
