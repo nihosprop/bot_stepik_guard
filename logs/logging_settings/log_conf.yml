@@ -56,6 +56,11 @@ handlers:
 
 loggers:
 
+  tests.tests:
+    level: ${LOG_LEVEL}
+    handlers: [ stdout, warning_file, critical_file ]
+    propagate: no
+
   apscheduler:
     level: ${LOG_LEVEL}
     propagate: False
