@@ -4,7 +4,6 @@ from aiogram import F, Router
 from aiogram.types import CallbackQuery, Message
 
 from filters.filters import AccessRightsFilter
-from utils.stepik import StepikAPIClient
 from utils.utils import MessageProcessor, get_username
 from keyboards.keyboards import kb_start
 
