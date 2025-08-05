@@ -119,11 +119,13 @@ class StepikTasks:
                          f'Comment: {comment_text}')
             
             if await profanity_filter.is_profanity(text=comment_text):
-                await self.stepik_client.delete_comment(comment_id=comment_id)
-                text = f"Удален комментарий!\n{user_info}"
-                logger_tasks.warning(text)
-                for owner in self.owners:
-                    await self.bot.send_message(chat_id=owner,
-                                                text=text)
+                
+                # TODO заменить temp_text на text
+                # text = f"Удален комментарий!\n{user_info}"
+                temp_text = f"Kомментарий для удаления!\n{user_info}"
+                logger_tasks.warning(temp_text)
+                # for owner in self.owners:
+                #     await self.bot.send_message(chat_id=owner,
+                #                                 text=temp_text)
             else:
                 logger_tasks.debug(user_info)
