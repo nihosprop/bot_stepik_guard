@@ -139,7 +139,7 @@ class ProfanityFilter:
                 # Вот сам наш фрагмент.
                 fragment = phrase[part: part + len(word)]
                 # Если отличие этого фрагмента меньше или равно 25% этого слова, то считаем, что они равны.
-                if distance(fragment, word) <= len(word) * 0.25:
+                if distance(fragment, word) <= len(word) * 0.20:
                     # Если они равны, выводим надпись о их нахождении
                     logger_filters.warning(f'Найдено: {word}')
                     return word
