@@ -35,7 +35,8 @@ class ProfanityFilter:
         
         # словарь соответствий
         self.data_mapping = DataProfanity.CHAR_REPLACEMENT_MAP
-        
+        self.min_word_length = 4
+        self.special_chars = set('0123456789!@#$%^&*')
         profanity.CHARS_MAPPING.update(self.data_mapping)
         
         # 2. Загрузка кастомных слов из файла
@@ -109,7 +110,8 @@ class ProfanityFilter:
         return False
     
     async def _normalize_text(self, text: str) -> str:
-        """Приводит текст к стандартному виду, заменяя символы на базовые буквы"""
+        """Улучшенная нормализация текста с учетом контекста"""
+        # Сначала заменяем все спецсимволы и похожие буквы
         normalized = []
         for char in text.lower():
             replacement = char
@@ -118,31 +120,60 @@ class ProfanityFilter:
                     replacement = base_char
                     break
             normalized.append(replacement)
-        return ''.join(normalized)
+        normalized_text = ''.join(normalized)
+        
+        # Удаляем повторяющиеся символы (например "прривет" -> "привет")
+        normalized_text = re.sub(r'(.)\1+', r'\1', normalized_text)
+        return normalized_text
+    
+    def _is_valid_match(self, candidate: str, bad_word: str) -> bool:
+        """Проверка, является ли совпадение валидным"""
+        # Если в кандидате есть цифры/спецсимволы - считаем подозрительным
+        if any(c in self.special_chars for c in candidate):
+            return True
+        
+        # Для коротких слов (3-4 символа) требуем точного совпадения после нормализации
+        if len(bad_word) <= 4:
+            return candidate == bad_word
+        
+        # Для слов из 5 символов - максимум 1 ошибка
+        if len(bad_word) == 5:
+            return distance(candidate, bad_word) <= 1
+        
+        # Для более длинных слов - максимум 2 ошибки
+        return distance(candidate, bad_word) <= 2
     
     async def _check_levenshtein(self, phrase: str) -> bool:
-        """Проверка обходов фильтра (замены символов и т.д.)"""
-        for key, value in self.data_mapping.items():
-            # Проходимся по каждой букве в значении словаря. То есть по вот этим спискам ['а', 'a', '@'].
-            for letter in value:
-                # Проходимся по каждой букве в нашей фразе.
-                for phr in phrase:
-                    # Если буква совпадает с буквой в нашем списке.
-                    if letter == phr:
-                        # Заменяем эту букву на ключ словаря.
-                        phrase = phrase.replace(phr, key)
+        """Улучшенная проверка с контекстным анализом"""
+        normalized = await self._normalize_text(phrase)
+        words = re.findall(r'\b\w+\b', normalized)  # выделяем целые слова
         
-        # Проходимся по всем словам.
-        for word in self.bad_words:
-            # Разбиваем слово на части, и проходимся по ним.
-            for part in range(len(phrase)):
-                # Вот сам наш фрагмент.
-                fragment = phrase[part: part + len(word)]
-                # Если отличие этого фрагмента меньше или равно 25% этого слова, то считаем, что они равны.
-                if distance(fragment, word) <= len(word) * 0.20:
-                    # Если они равны, выводим надпись о их нахождении
-                    logger_filters.warning(f'Найдено: {word}')
-                    return word
+        for bad_word in self.bad_words:
+            bw_len = len(bad_word)
+            
+            # Не проверяем слишком короткие слова
+            if bw_len < self.min_word_length:
+                continue
+            
+            for candidate in words:
+                c_len = len(candidate)
+                
+                # Быстрая проверка по длине
+                if abs(c_len - bw_len) > 2:  # допускаем разницу до 2 символов
+                    continue
+                
+                # Точное совпадение после нормализации
+                if candidate == bad_word:
+                    logger_filters.warning(f'Точное совпадение: {bad_word}')
+                    return True
+                
+                # Проверка расстояния Левенштейна с учетом контекста
+                if self._is_valid_match(candidate, bad_word):
+                    logger_filters.warning(
+                        f'Найдено по Левенштейну: {bad_word} '
+                        f'(кандидат: {candidate}, расстояние: {distance(candidate, bad_word)})')
+                    return True
+        
         return False
 
 
