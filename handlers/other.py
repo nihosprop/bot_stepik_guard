@@ -14,4 +14,6 @@ other_router.callback_query.filter(AccessRightsFilter())
 
 @other_router.message()
 async def other_handler(msg: Message):
+    logger_owners.debug('Entry')
     await msg.delete()
+    logger_owners.debug('Exit')
