@@ -35,3 +35,11 @@ async def cmd_start(msg: Message,
     
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     logger_owners.debug('Exit')
+
+
+@owners_router.callback_query(F.data.in_(['add_course_id', 'get_logs']))
+async def in_development(clbk: CallbackQuery):
+    logger_owners.debug('Entry')
+    logger_owners.debug('Exit')
+    await clbk.answer('Кнопка в разработке', show_alert=True)
+    
