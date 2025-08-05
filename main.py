@@ -10,7 +10,7 @@ from aiogram.fsm.storage.redis import Redis, RedisStorage
 from aiogram import Bot, Dispatcher
 
 from config_data.config import Config, load_config
-from hahdlers import owners_handlers
+from handlers import owners_handlers, other
 from keyboards.set_menu import set_main_menu
 from scheduler import start_scheduler
 from utils.stepik import StepikAPIClient
@@ -97,6 +97,7 @@ async def main():
     try:
         # routers
         dp.include_router(owners_handlers.owners_router)
+        dp.include_router(other.other_router)
 
         # middlewares
         dp.update.middleware(MsgProcMiddleware())
