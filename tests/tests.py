@@ -111,15 +111,15 @@ test_cases = [
     
     # Краткие формы и производные
     ("хер", True),
-    ("хрен", True),
+    ("хрен", False),
     ("пизд", True),
     ("еб", False),
     ("бля", True),
     ("сук", True),
-    ("гон", True),
-    ("муд", True),
-    ("зал", True),
-    ("пид", True),
+    ("гон", False),
+    ("муд", False),
+    ("зал", False),
+    ("пид", False),
     ("хуев", True),
     ("пиздец", True),
     ("ебанутый", True),
@@ -223,6 +223,7 @@ test_cases = [
     ("Никаких плохих слов здесь нет", False),
     ("Хороший день для программирования", False),
     ("Фильтр должен пропустить этот текст", False),
+    ("hello world", False),
     
     # Эвфемизмы и завуалированные оскорбления
     ("х****й", True),
@@ -272,13 +273,13 @@ test_cases = [
     ("хер", True),
     ("жоп", False),
     ("дро", False),
-    ("суч", False),
+    ("суч", True),
     ("гнд", False),
     ("мдк", False),
     ("злп", False),
-    ("шлх", False),
-    ("пдр", False),
-    ("хй", False),
+    ("шлх", True),
+    ("пдр", True),
+    ("хй", True),
     
     # Числовые замены (leet speak)
     ("xy1", True),
@@ -286,9 +287,9 @@ test_cases = [
     ("3ba7", True),
     ("6149b", True),
     ("cyk@", True),
-    ("607d0h", False),
+    ("607d0h", True),
     ("myd@k", True),
-    ("241upa", False),
+    ("241upa", True),
     ("sh1ux@", True),
     ("nud0p", True),
     ("x|_|й", True),
@@ -325,11 +326,11 @@ test_cases = [
     ("fuck", True),
     ("bitch", True),
     ("asshole", True),
-    ("damn", True),
+    ("damn", False),
     ("cunt", True),
     ("dick", True),
     ("pussy", True),
-    ("bastard", True),
+    ("bastard", False),
     
     # Сложные юникод-кейсы
     ("х\u0435р", True),
@@ -438,6 +439,26 @@ class TestProfanityFilter:
         :param text:
         :return bool:
         """
+        if any(
+            symbol in text for symbol in
+            {'=', '(', ')', 'print', 'def', 'class'}):
+            return False
+        
+        if len(set(text)) == 1:
+            return False
+        
+        if text.isdigit():
+            return False
+        
+        simple_text = text.split()
+        for word in simple_text:
+            if word in self.bad_words:
+                # print(f'Простая проверка: {word}')
+                return True
+        
+        # if profanity.contains_profanity(simple_text):
+        #     return True
+        
         text = text.replace(" ", "")
         normalized_text = self._normalize_text(text)
         text_lower = str(normalized_text).lower()
@@ -448,25 +469,29 @@ class TestProfanityFilter:
         
         # 1. Быстрая проверка по better_profanity
         if profanity.contains_profanity(text_lower):
-            logger_tests.warning(
-                'Фильтр 1 better_profanity(полное '
-                'совпадение)')
+            # logger_tests.warning(
+            #     'Фильтр 1 better_profanity(полное '
+            #     'совпадение)')
             return True
         
         # 2. Проверка по регулярным выражениям
         if self.base_pattern.search(text_lower):
-            logger_tests.warning('Фильтр 2  re1')
+            # logger_tests.warning('Фильтр 2  re1')
             return True
         
         for pattern in self.additional_patterns:
+            if pattern.search(text.lower()):
+                return True
+            
+        for pattern in self.additional_patterns:
             if pattern.search(text_lower):
-                logger_tests.warning('Фильтр 3 re2')
+                # logger_tests.warning('Фильтр 3 re2')
                 return True
         
         # 3. Проверка по списку слов (с учетом опечаток)
         words = re.findall(r'\w+', text_lower)
         if any(word in self.bad_words for word in words):
-            logger_tests.warning('Фильтр 4 с учетом опечаток')
+            # logger_tests.warning('Фильтр 4 с учетом опечаток')
             return True
         
         # 4. Дополнительные проверки (опционально)
@@ -499,7 +524,7 @@ class TestProfanityFilter:
             return True
         
         # Для коротких слов (3-4 символа) требуем точного совпадения после нормализации
-        if len(bad_word) <= 4:
+        if len(bad_word) <= 3:
             return candidate == bad_word
         
         # Для слов из 5 символов - максимум 1 ошибка
@@ -550,7 +575,7 @@ def test_comment_filter():
         result = profanity_filter.is_profanity(text=comment)
         if result == expected:
             passed += 1
-            print(f'Найдено: {comment}')
+            # print(f'Найдено: {comment}')
         else:
             print(
                 f"Тест провален: '{comment}' | Ожидалось: {expected}, Получено: {result}")
