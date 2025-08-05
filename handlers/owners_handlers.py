@@ -19,8 +19,7 @@ owners_router.callback_query.filter(AccessRightsFilter())
 @owners_router.message(F.text == '/start')
 async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
-                    stepik_courses_ids: list[int],
-                    stepik_client: StepikAPIClient) -> None:
+                    stepik_courses_ids: list[int]) -> None:
     logger_owners.debug('Entry')
     
     await msg_processor.deletes_messages(msgs_for_del=True)
