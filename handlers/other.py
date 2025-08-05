@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import F, Router
-
+from aiogram.types import Message
 from filters.filters import AccessRightsFilter
 
 logger_owners = logging.getLogger(__name__)
