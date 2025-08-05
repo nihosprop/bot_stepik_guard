@@ -16,6 +16,7 @@ logger_tasks = logging.getLogger(__name__)
 class StepikTasks:
     stepik_client: StepikAPIClient
     bot: Bot
+    owners: list[int] = field(default_factory=list)
     stepik_courses_ids: list[int] = field(default_factory=list)
     
     async def check_comments(self, profanity_filter: ProfanityFilter):
@@ -122,5 +123,8 @@ class StepikTasks:
                 logger_tasks.warning(
                     f"Problematic comment!!!"
                     f"{user_info}")
+                for owner in self.owners:
+                    await self.bot.send_message(chat_id=owner,
+                                                text=user_info)
             else:
                 logger_tasks.debug(user_info)

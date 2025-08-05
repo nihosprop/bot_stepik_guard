@@ -26,9 +26,9 @@ async def cmd_start(msg: Message,
     await msg_processor.deletes_messages(msgs_for_del=True)
     
     key = f'owner_chat:{msg.chat.id}'
-    logger_owners.debug(f'{key=}')
-    logger_owners.debug(f'{msg.from_user.id=}')
-    await stepik_client.redis_client.set(key, msg.chat.id)
+    # logger_owners.debug(f'{key=}')
+    # logger_owners.debug(f'{msg.from_user.id=}')
+    # await stepik_client.redis_client.set(key, msg.chat.id)
     
     text = (f'Приветствую, {await get_username(msg)}!\n\n'
             f'Бот начал мониторинг комментариев на ваших курсах:\n'
