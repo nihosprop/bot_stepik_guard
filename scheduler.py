@@ -27,7 +27,7 @@ async def start_scheduler(stepik_client: StepikAPIClient,
     scheduler.add_job(stepik_tasks.check_comments,
                       args=[profanity_filter],
                       trigger='interval',
-                      seconds=30,
+                      minutes=1,
                       max_instances=1,
                       coalesce=True,
                       misfire_grace_time=60)
