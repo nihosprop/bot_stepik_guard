@@ -76,6 +76,11 @@ loggers:
     handlers: [ stdout, warning_file, critical_file ]
     propagate: no
 
+  handlers.other:
+    level: ${LOG_LEVEL}
+    handlers: [ stdout, warning_file, critical_file ]
+    propagate: no
+
   # middlewares
   middlewares.outer:
     level: ${LOG_LEVEL}
