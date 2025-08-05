@@ -1,9 +1,7 @@
-import html
 import json
 import logging
 import re
 
-import unicodedata
 from Levenshtein import distance
 from pathlib import Path
 
