@@ -573,7 +573,7 @@ def test_comment_filter():
         result = profanity_filter.is_profanity(text=comment)
         if result == expected:
             passed += 1
-            # print(f'Найдено: {comment}')
+            # print(f'Тест пройден: {comment}')
         else:
             print(
                 f"Тест провален: '{comment}' | Ожидалось: {expected}, Получено: {result}")
