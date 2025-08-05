@@ -26,9 +26,9 @@ class AccessRightsFilter(BaseFilter):
 
 
 class ProfanityFilter:
-
+    
     BAD_WORDS_PATH = Path(__file__).parent.parent / "badwords.json"
-
+    
     def __init__(self, bad_words_file=BAD_WORDS_PATH):
         # 1. Инициализация better_profanity
         profanity.load_censor_words()
@@ -66,14 +66,34 @@ class ProfanityFilter:
         # 5. Паттерн для разбивки текста на слова
         self.word_pattern = re.compile(r'\b\w+\b')
     
-    async def is_profanity(self, text: str) -> bool:
+    def is_profanity(self, text: str) -> bool:
         """
         Основная функция проверки
         :param text:
         :return bool:
         """
+        if any(
+            symbol in text for symbol in
+                {'=', '(', ')', 'print', 'def', 'class'}):
+            return False
+        
+        if len(set(text)) == 1:
+            return False
+        
+        if text.isdigit():
+            return False
+        
+        simple_text = text.split()
+        for word in simple_text:
+            if word in self.bad_words:
+                # print(f'Простая проверка: {word}')
+                return True
+        
+        # if profanity.contains_profanity(simple_text):
+        #     return True
+        
         text = text.replace(" ", "")
-        normalized_text = await self._normalize_text(text)
+        normalized_text = self._normalize_text(text)
         text_lower = str(normalized_text).lower()
         
         # Fast check
@@ -82,34 +102,38 @@ class ProfanityFilter:
         
         # 1. Быстрая проверка по better_profanity
         if profanity.contains_profanity(text_lower):
-            logger_filters.warning(
-                'Фильтр 1 better_profanity(полное '
-                'совпадение)')
+            # logger_tests.warning(
+            #     'Фильтр 1 better_profanity(полное '
+            #     'совпадение)')
             return True
         
         # 2. Проверка по регулярным выражениям
         if self.base_pattern.search(text_lower):
-            logger_filters.warning('Фильтр 2  re1')
+            # logger_tests.warning('Фильтр 2  re1')
             return True
         
         for pattern in self.additional_patterns:
+            if pattern.search(text.lower()):
+                return True
+        
+        for pattern in self.additional_patterns:
             if pattern.search(text_lower):
-                logger_filters.warning('Фильтр 3 re2')
+                # logger_tests.warning('Фильтр 3 re2')
                 return True
         
         # 3. Проверка по списку слов (с учетом опечаток)
         words = re.findall(r'\w+', text_lower)
         if any(word in self.bad_words for word in words):
-            logger_filters.warning('Фильтр 4 с учетом опечаток')
+            # logger_tests.warning('Фильтр 4 с учетом опечаток')
             return True
         
         # 4. Дополнительные проверки (опционально)
-        if await self._check_levenshtein(text_lower):
+        if self._check_levenshtein(text_lower):
             logger_filters.warning('Фильтр 5 "Levenshtein"')
             return True
         return False
     
-    async def _normalize_text(self, text: str) -> str:
+    def _normalize_text(self, text: str) -> str:
         """Улучшенная нормализация текста с учетом контекста"""
         # Сначала заменяем все спецсимволы и похожие буквы
         normalized = []
@@ -133,7 +157,7 @@ class ProfanityFilter:
             return True
         
         # Для коротких слов (3-4 символа) требуем точного совпадения после нормализации
-        if len(bad_word) <= 4:
+        if len(bad_word) <= 3:
             return candidate == bad_word
         
         # Для слов из 5 символов - максимум 1 ошибка
@@ -143,9 +167,9 @@ class ProfanityFilter:
         # Для более длинных слов - максимум 2 ошибки
         return distance(candidate, bad_word) <= 2
     
-    async def _check_levenshtein(self, phrase: str) -> bool:
+    def _check_levenshtein(self, phrase: str) -> bool:
         """Улучшенная проверка с контекстным анализом"""
-        normalized = await self._normalize_text(phrase)
+        normalized = self._normalize_text(phrase)
         words = re.findall(r'\b\w+\b', normalized)  # выделяем целые слова
         
         for bad_word in self.bad_words:
@@ -175,7 +199,3 @@ class ProfanityFilter:
                     return True
         
         return False
-
-
-# f = ProfanityFilter()
-# print(f.is_profanity(input()))
