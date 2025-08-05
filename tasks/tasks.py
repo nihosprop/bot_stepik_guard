@@ -128,4 +128,4 @@ class StepikTasks:
                 #     await self.bot.send_message(chat_id=owner,
                 #                                 text=temp_text)
             else:
-                logger_tasks.debug(user_info)
+                logger_tasks.debug(f'Чисто\n{user_info}')
