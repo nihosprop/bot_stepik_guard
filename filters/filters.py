@@ -2,7 +2,7 @@ import logging
 import json
 import re
 from pathlib import Path
-
+import pymorphy3 as pymorphy2
 from Levenshtein import distance
 from better_profanity import profanity
 from aiogram.filters import BaseFilter
@@ -28,33 +28,49 @@ class AccessRightsFilter(BaseFilter):
 class ProfanityFilter:
     
     BAD_WORDS_PATH = Path(__file__).parent.parent / "badwords.json"
+    TECHNICAL_WORDS_PATH = (
+        Path(__file__).parent.parent / 'filters' / 'technical_words.json')
     
-    def __init__(self, bad_words_file=BAD_WORDS_PATH):
+    def __init__(self,
+                 bad_words_file=BAD_WORDS_PATH,
+                 technical_words_file=TECHNICAL_WORDS_PATH):
         # 1. Инициализация better_profanity
         profanity.load_censor_words()
         
+        # Инициализация pymorphy2
+        self.morph = pymorphy2.MorphAnalyzer()
+        
         # словарь соответствий
         self.data_mapping = DataProfanity.CHAR_REPLACEMENT_MAP
-        self.min_word_length = 4
+        self.min_word_length = 3
         self.special_chars = set('0123456789!@#$%^&*')
         profanity.CHARS_MAPPING.update(self.data_mapping)
         
-        # 2. Загрузка кастомных слов из файла
+        # Загрузка кастомных слов из файла
         self.bad_words = []
         
         if bad_words_file:
             try:
                 with open(bad_words_file, 'r', encoding='utf-8') as json_f:
                     self.bad_words = json.load(json_f)
-                    logger_filters.debug(f'Добавляются слова')
+                    logger_filters.debug(f'Добавляются bad_words')
                     profanity.add_censor_words(self.bad_words)
             
             except (FileNotFoundError, json.JSONDecodeError) as err:
                 logger_filters.error(
-                    f"Ошибка загрузки файла {bad_words_file}:{err}")
+                    f"🟢Ошибка загрузки файла {bad_words_file}:{err}")
                 self.bad_words = []
             except Exception as err:
-                logger_filters.error(f'Ошибка чтения JSON: {err}', exc_info=True)
+                logger_filters.error(f'🟢Ошибка чтения JSON: {err}', exc_info=True)
+        
+        # Загрузка технических терминов(слов)
+        self.tech_keywords = []
+        try:
+            with open(technical_words_file, 'r', encoding='utf-8') as json_f:
+                self.tech_words = json.load(json_f)
+                logger_filters.debug(f'Добавляются тех слова')
+        except Exception as err:
+            logger_filters.error(f'🟢Ошибка чтения JSON: {err}', exc_info=True)
         
         # 4. Компиляция регулярных выражений
         self.base_pattern = re.compile(
@@ -72,21 +88,29 @@ class ProfanityFilter:
         :param text:
         :return bool:
         """
+        
+        if await self._is_technical_text(text):
+            logger_filters.debug('Пропущено (тех. текст)')
+            return False
+        
         if any(
             symbol in text for symbol in
                 {'=', '(', ')', 'print', 'def', 'class'}):
+            logger_filters.debug('Пропущено (код/скобки)')
             return False
         
         if len(set(text)) == 1:
+            logger_filters.debug(f'Пропущено (повтор символов): {set(text)=}')
             return False
         
         if text.isdigit():
+            logger_filters.debug(f'Пропущено (цифры):{text}')
             return False
         
-        simple_text = text.split()
+        simple_text = text.lower().split()
         for word in simple_text:
             if word in self.bad_words:
-                logger_filters.debug(f'Простая проверка нашла: {word}')
+                logger_filters.debug(f'🟢Заблокировано simple_text bad_words: {word}')
                 return True
         
         text = text.replace(" ", "")
@@ -94,42 +118,63 @@ class ProfanityFilter:
         text_lower = str(normalized_text).lower()
         
         if len(text_lower.strip()) < 3:
+            logger_filters.debug(f'Пропущено: длина меньше 3х: {text_lower}')
             return False
         
         # 1. Быстрая проверка по better_profanity
         if profanity.contains_profanity(text_lower):
-            logger_filters.warning(
-                'Фильтр 1 better_profanity(полное '
-                'совпадение)')
+            # logger_tests.warning(
+            #     'Фильтр 1 better_profanity(полное '
+            #     'совпадение)')
+            logger_filters.debug(f'🟢Заблокировано better_profanity: {text}')
             return True
         
         # 2. Проверка по регулярным выражениям
         if self.base_pattern.search(text_lower):
-            logger_filters.warning('Фильтр re1')
+            logger_filters.debug(f'🟢Заблокировано base_pattern: {text}')
             return True
         
         for pattern in self.additional_patterns:
             if pattern.search(text.lower()):
-                logger_filters.warning('Фильтр re2')
-
+                logger_filters.debug(f'🟢Заблокировано additional_p'
+                                f'atterns: {text.lower()}')
                 return True
         
         for pattern in self.additional_patterns:
             if pattern.search(text_lower):
-                logger_filters.warning('Фильтр re3')
+                logger_filters.debug(f'🟢Заблокировано additional_patterns: {
+                text_lower}')
                 return True
         
         # 3. Проверка по списку слов (с учетом опечаток)
         words = re.findall(r'\w+', text_lower)
         if any(word in self.bad_words for word in words):
-            logger_filters.warning('Фильтр 4 с учетом опечаток')
+            logger_filters.debug(
+                f'🟢Заблокировано Проверка по списку слов (с учетом опечаток): {words}')
             return True
         
         # 4. Дополнительные проверки (опционально)
-        if await self._check_levenshtein(text_lower):
-            logger_filters.warning('Фильтр 5 "Levenshtein"')
+        if self._check_levenshtein(text_lower):
+            logger_filters.debug('🟢Заблокировано: Фильтр 5 "Levenshtein"')
             return True
+        logger_filters.debug('Текст прошел все фильтры')
         return False
+    
+    async def _is_technical_text(self, text: str) -> bool:
+        """Проверяет, является ли текст техническим (игнорирует мат в таком контексте)"""
+        words = re.findall(r'\w+', text.lower())
+        for word in words:
+            parsed = self.morph.parse(word)[0]  # берем самый вероятный разбор
+            normal_form = parsed.normal_form  # нормальная форма слова
+            if normal_form in self.tech_keywords:  # если это технический термин
+                return True
+        return False
+    
+    async def _is_technical_word(self, word: str) -> bool:
+        """Проверяет, является ли слово техническим термином (игнорирует его в проверках)."""
+        parsed = self.morph.parse(word.lower())[0]
+        normal_form = parsed.normal_form  # нормальная форма слова
+        return normal_form in self.tech_keywords
     
     async def _normalize_text(self, text: str) -> str:
         """Улучшенная нормализация текста с учетом контекста"""
@@ -181,20 +226,33 @@ class ProfanityFilter:
             for candidate in words:
                 c_len = len(candidate)
                 
+                # Игнорируем слова короче min_word_length
+                if c_len < self.min_word_length:
+                    continue
+                
                 # Быстрая проверка по длине
-                if abs(c_len - bw_len) > 2:  # допускаем разницу до 2 символов
+                if abs(c_len - bw_len) > 2:  # допускаем разницу до 1 символов
                     continue
                 
                 # Точное совпадение после нормализации
                 if candidate == bad_word:
-                    logger_filters.warning(f'Точное совпадение: {bad_word}')
+                    logger_filters.warning(f'🟢Точное совпадение: {bad_word}')
                     return True
                 
-                # Проверка расстояния Левенштейна с учетом контекста
-                if await self._is_valid_match(candidate, bad_word):
-                    logger_filters.warning(
-                        f'Найдено по Левенштейну: {bad_word} '
-                        f'(кандидат: {candidate}, расстояние: {distance(candidate, bad_word)})')
-                    return True
+                # Проверка расстояния Левенштейна (ужесточённая)
+                max_allowed_distance = 1 if bw_len <= 6 else 2
+                
+                # Если кандидат — часть другого слова (например, "код" в "кодекс"), пропускаем
+                if candidate in bad_word or bad_word in candidate:
+                    continue
+                
+                # Если расстояние Левенштейна в допустимых пределах
+                if distance(candidate, bad_word) <= max_allowed_distance:
+                    # Дополнительная проверка: слово не должно быть частью технического термина
+                    if not await self._is_technical_word(candidate):
+                        logger_filters.warning(
+                            f'🟢Найдено по Левенштейну: {bad_word} '
+                            f'(кандидат: {candidate}, расстояние: {distance(candidate, bad_word)})')
+                        return True
         
         return False
