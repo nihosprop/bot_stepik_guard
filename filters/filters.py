@@ -154,7 +154,7 @@ class ProfanityFilter:
             return True
         
         # 4. Дополнительные проверки (опционально)
-        if self._check_levenshtein(text_lower):
+        if await self._check_levenshtein(text_lower):
             logger_filters.debug('🟢Заблокировано: Фильтр 5 "Levenshtein"')
             return True
         logger_filters.debug('Текст прошел все фильтры')
