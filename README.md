@@ -1,6 +1,6 @@
 # BotStepikGuard 🛡️
 
-[![Version](https://img.shields.io/badge/version-v1.0-blue)](https://github.com/yourname/BotStepikGuard/releases)
+[![Version](https://img.shields.io/badge/version-v1.0-blue)](https://github.com/nihosprop/bot_stepik_guard.git)
 [![Python](https://img.shields.io/badge/Python-3.13.1-green)](https://www.python.org/)
 [![Aiogram](https://img.shields.io/badge/Aiogram-3.21-brightgreen)](https://docs.aiogram.dev/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
