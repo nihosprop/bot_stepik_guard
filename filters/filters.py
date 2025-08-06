@@ -148,6 +148,7 @@ class ProfanityFilter:
         normalized_text = re.sub(r'(.)\1+', r'\1', normalized_text)
         return normalized_text
     
+    # TODO проверить использование _is_valid_match
     async def _is_valid_match(self, candidate: str, bad_word: str) -> bool:
         """Проверка, является ли совпадение валидным"""
         # Если в кандидате есть цифры/спецсимволы - считаем подозрительным
