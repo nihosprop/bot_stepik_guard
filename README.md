@@ -75,6 +75,6 @@ docker compose up -d
 ```mermaid
 graph LR
     A[Текущая версия] --> A(PostgreSQL + SQLAlchemy)
-    A[Обновленная версия] --> B(ML-фильтры)
+    A --> B(ML-фильтры)
     B --> C[Автомодерация]
 ```
