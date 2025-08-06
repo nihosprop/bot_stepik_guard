@@ -1,421 +1,47 @@
 import json
 import logging
 import re
-
-from Levenshtein import distance
 from pathlib import Path
 
+import pymorphy3 as pymorphy2
+from Levenshtein import distance
 from better_profanity import profanity
 
 from filters.patterns import DataProfanity
+from tests_cases import TestCases
 
 logger_tests = logging.getLogger(__name__)
 
-test_cases = [
-    # Базовые матерные слова
-    ("хуй", True),
-    ("пизда", True),
-    ("ебал", True),
-    ("блядь", True),
-    ("сука", True),
-    ("гондон", True),
-    ("мудак", True),
-    ("залупа", True),
-    ("шлюха", True),
-    ("пидор", True),
-    
-    # Обычные слова (не должны триггерить)
-    ("хороший", False),
-    ("прекрасно", False),
-    ("нейтрально", False),
-    ("обычный", False),
-    ("слово", False),
-    ("фильтр", False),
-    ("проверка", False),
-    
-    # Опечатки и замены символов
-    ("х@й", True),
-    ("п!зда", True),
-    ("е6ал", True),
-    ("бляdь", True),
-    ("суkа", True),
-    ("г0ндон", True),
-    ("муdак", True),
-    ("залуп@", True),
-    ("шлюxа", True),
-    ("пиd0р", True),
-    ("xyй", True),
-    ("пiзда", True),
-    ("ебaл", True),
-    ("бл9дь", True),
-    ("сyка", True),
-    ("гандон", True),
-    ("муд@к", True),
-    ("залупa", True),
-    ("шльуха", True),
-    ("пiдор", True),
-    
-    # Разделение символами
-    ("х у й", True),
-    ("п-изда", True),
-    ("еб@л", True),
-    ("бл*ядь", True),
-    ("с у к а", True),
-    ("г о н д о н", True),
-    ("м у д а к", True),
-    ("з а л у п а", True),
-    ("ш л ю х а", True),
-    ("п и д о р", True),
-    ("х.у.й", True),
-    ("п!з!д!а", True),
-    ("е#б@а@л", True),
-    ("б$л%я^дь", True),
-    ("с*у*к*а", True),
-    ("милейший п из дю k", True),
-    
-    # Повторения символов
-    ("хуууй", True),
-    ("пппизда", True),
-    ("ееебал", True),
-    ("бляяядь", True),
-    ("сууука", True),
-    ("гооондон", True),
-    ("муудак", True),
-    ("залууупа", True),
-    ("шлюююха", True),
-    ("пииидор", True),
-    ("ххххх", False),
-    ("ппппп", False),
-    ("еееее", False),
-    ("ббббб", False),
-    ("ссссс", False),
-    
-    # Смешанные языки
-    ("hуй", True),
-    ("pизда", True),
-    ("eбал", True),
-    ("blять", True),
-    ("cyка", True),
-    ("gондон", True),
-    ("mудак", True),
-    ("zалупа", True),
-    ("шlюха", True),
-    ("pидор", True),
-    ("xуj", True),
-    ("пiзdа", True),
-    ("ебa1", True),
-    ("бл9dь", True),
-    ("суkа", True),
-    
-    # Краткие формы и производные
-    ("хер", True),
-    ("хрен", False),
-    ("пизд", True),
-    ("еб", False),
-    ("бля", True),
-    ("сук", True),
-    ("гон", False),
-    ("муд", False),
-    ("зал", False),
-    ("пид", False),
-    ("хуев", True),
-    ("пиздец", True),
-    ("ебанутый", True),
-    ("блядский", True),
-    ("сучара", True),
-    ("гандонский", True),
-    ("мудацкий", True),
-    ("залупиться", True),
-    ("шлюшиный", True),
-    ("пидорасина", True),
-    
-    # Обход через Unicode (гомоглифы)
-    ("хᥙй", True),
-    ("пізда", True),
-    ("ебɑл", True),
-    ("бⅼядь", True),
-    ("ѕука", True),
-    ("ɡондон", True),
-    ("ｍудак", True),
-    ("ᴢалупа", True),
-    ("шɭюха", True),
-    ("рідоｒ", True),
-    ("һуй", True),
-    ("рizdа", True),
-    ("еьал", True),
-    ("ьлядь", True),
-    ("ѕцка", True),
-    
-    # Проблемные кейсы (ложные срабатывания)
-    ("художник", False),
-    ("познание", False),
-    ("белый", False),
-    ("суккулент", False),
-    ("голубой", False),
-    ("мудачок", False),
-    ("шлюмберье", False),
-    ("пиджаки", False),
-    ("херсонес", False),
-    ("хулиган", False),
-    ("кот", False),
-    
-    # Сложные комбинации
-    ("датыдинах@й", True),
-    ("подпизд@шить", True),
-    ("разъебашить", True),
-    ("ублюдоксуч@", True),
-    ("гандоноподобный", True),
-    ("мудаковатый", True),
-    ("залупиноголовый", True),
-    ("шлюхомойка", True),
-    ("пидорашка", True),
-    ("херосрач", True),
-    ("пиздабол", True),
-    ("ебануться", True),
-    ("блядослов", True),
-    ("сукоёб", True),
-    ("гандономат", True),
-    ("мудакоид", True),
-    ("залупоглаз", True),
-    ("шлюходроч", True),
-    ("пидорванец", True),
-    ("херомантия", True),
-    
-    # Граничные кейсы
-    ("", False),
-    (" ", False),
-    ("   ", False),
-    ("!@#$%", False),
-    ("12345", False),
-    ("абвгд", False),
-    ("х", False),
-    ("ху", False),
-    ("хую", True),
-    ("хуюш", True),
-    ("а", False),
-    ("б", False),
-    ("в", False),
-    ("г", False),
-    ("д", False),
-    ("е", False),
-    ("ё", False),
-    ("ж", False),
-    ("з", False),
-    ("и", False),
-    
-    # Длинные тексты с матом
-    ("Это текст с хуём посередине", True),
-    ("Вот такая пиздец ситуация", True),
-    ("Ну ты и блядь", True),
-    ("Сучка ты конченная", True),
-    ("Гандон ты ебаный", True),
-    ("Мудак вонючий", True),
-    ("Залупа кривая", True),
-    ("Шлюха ты тупая", True),
-    ("Пидор несчастный", True),
-    ("Хуй тебе а не ответ", True),
-    ("ебись оно все конем", True),
-    ("кошка драная", True),
-
-    # Текст без мата (не должен триггерить)
-    ("Это нормальный текст без оскорблений", False),
-    ("Просто проверка работы фильтра", False),
-    ("Никаких плохих слов здесь нет", False),
-    ("Хороший день для программирования", False),
-    ("Фильтр должен пропустить этот текст", False),
-    ("hello world", False),
-    
-    # Эвфемизмы и завуалированные оскорбления
-    ("х****й", True),
-    ("п****а", True),
-    ("******", False),
-    ("б****ь", True),
-    ("с***а", True),
-    ("****он", True),
-    ("м***к", True),
-    ("з****а", True),
-    ("ш***а", True),
-    ("п****р", True),
-    ("х*й", True),
-    ("п*зда", True),
-    ("*бал", True),
-    ("бл*дь", True),
-    ("с*ка", True),
-    ("г*ндон", True),
-    ("м*дак", True),
-    ("з*лупа", True),
-    ("ш*люха", True),
-    ("п*дор", True),
-    
-    # Творческие написания
-    ("хуйландия", True),
-    ("пиздаболище", True),
-    ("ебанько", True),
-    ("блядюга", True),
-    ("сукодел", False),
-    ("гандончик", True),
-    ("мудачина", True),
-    ("залупень", True),
-    ("шлюшенция", True),
-    ("пидорама", True),
-    ("хуяк", True),
-    ("пиздак", True),
-    ("ебаклак", True),
-    ("блямба", True),
-    ("сукотник", True),
-    ("гандонюк", True),
-    ("мудачье", True),
-    ("залупляндия", True),
-    ("шлюхенция", True),
-    ("пидорюга", True),
-    
-    # Проверка минимальной длины
-    ("хер", True),
-    ("жоп", False),
-    ("дро", False),
-    ("суч", True),
-    ("гнд", False),
-    ("мдк", False),
-    ("злп", False),
-    ("шлх", True),
-    ("пдр", True),
-    ("хй", True),
-    
-    # Числовые замены (leet speak)
-    ("xy1", True),
-    ("p1zd@", True),
-    ("3ba7", True),
-    ("6149b", True),
-    ("cyk@", True),
-    ("607d0h", True),
-    ("myd@k", True),
-    ("241upa", True),
-    ("sh1ux@", True),
-    ("nud0p", True),
-    ("x|_|й", True),
-    ("|o|зда", True),
-    ("ёьа1", True),
-    ("6ля9ь", True),
-    ("(_)ка", True),
-    
-    # Комбинации с разрешенными словами
-    ("ахуенный", True),
-    ("пиздатый", True),
-    ("ебануться", True),
-    ("блядский", True),
-    ("сука ты", True),
-    ("гандонский", True),
-    ("мудаковатый", True),
-    ("залупиться", True),
-    ("шлюшиный", True),
-    ("пидорашка", True),
-    ("охуеть", True),
-    ("распиздеться", True),
-    ("доебываться", True),
-    ("ублядок", True),
-    ("подсука", True),
-    ("гандончик", True),
-    ("мудачина", True),
-    ("залупень", True),
-    ("шлюшенция", True),
-    ("пидорама", True),
-    ("конченый", True),
-    ("koнчита", True),
-    
-    # Иностранные слова (не должны триггерить)
-    ("hello", False),
-    ("shit", True),
-    ("fuck", True),
-    ("bitch", True),
-    ("asshole", True),
-    ("damn", False),
-    ("cunt", True),
-    ("dick", True),
-    ("pussy", True),
-    ("bastard", False),
-    
-    # Сложные юникод-кейсы
-    ("х\u0435р", True),
-    ("п\u0456зда", True),
-    ("\u0435бал", True),
-    ("бл\u044fдь", True),
-    ("с\u0443ка", True),
-    ("\u0433ондон", True),
-    ("м\u0443дак", True),
-    ("з\u0430лупа", True),
-    ("ш\u043bюха", True),
-    ("п\u0438дор", True),
-    ("х\u200bуй", True),
-    ("п\u200cизда", True),
-    ("е\u200dбал", True),
-    ("б\u200eлядь", True),
-    ("с\u200fука", True),
-    
-    # Эмодзи и символы
-    ("хуй 😈", True),
-    ("пизда 🔥", True),
-    ("ебал 🖕", True),
-    ("блядь 💩", True),
-    ("сука 👹", True),
-    ("гандон 👺", True),
-    ("мудак 🤡", True),
-    ("залупа 👻", True),
-    ("шлюха 🍑", True),
-    ("пидор 🏳️‍🌈", True),
-    ("😈 хуй", True),
-    ("🔥 пизда", True),
-    ("🖕 ебал", True),
-    ("💩 блядь", True),
-    ("👹 сука", True),
-    
-    # Граничные кейсы длины
-    ("а" * 1000, False),
-    ("хуй" * 300, True),
-    ("пизда" * 200, True),
-    ("блядь" * 150, True),
-    ("сука" * 250, True),
-    ("п" * 400 + "изда", True),
-    ("е" * 300 + "бал", True),
-    ("б" * 200 + "лядь", True),
-    ("с" * 100 + "ука", True),
-    
-    # Реальные примеры обхода фильтров
-    ("хуюшки-плюшки", True),
-    ("пиздато-блядский", True),
-    ("ебашиловка", True),
-    ("блядюшник", True),
-    ("сукодельник", False),
-    ("гандонометр", True),
-    ("мудакоскоп", True),
-    ("залупоглот", True),
-    ("шлюходрочка", True),
-    ("пидорвалье", True)]
-
 BAD_WORDS_PATH = Path(__file__).parent.parent / "badwords.json"
+TECHNICAL_WORDS_PATH = (
+    Path(__file__).parent.parent / 'filters' / 'technical_words.json')
 
 
 class TestProfanityFilter:
     
-    BAD_WORDS_PATH = Path(__file__).parent.parent / "badwords.json"
-    
-    def __init__(self, bad_words_file=BAD_WORDS_PATH):
+    def __init__(self,
+                 bad_words_file=BAD_WORDS_PATH,
+                 technical_words_file=TECHNICAL_WORDS_PATH):
         # 1. Инициализация better_profanity
         profanity.load_censor_words()
         
+        # Инициализация pymorphy2
+        self.morph = pymorphy2.MorphAnalyzer()
+        
         # словарь соответствий
         self.data_mapping = DataProfanity.CHAR_REPLACEMENT_MAP
-        self.min_word_length = 4
+        self.min_word_length = 3
         self.special_chars = set('0123456789!@#$%^&*')
         profanity.CHARS_MAPPING.update(self.data_mapping)
         
-        # 2. Загрузка кастомных слов из файла
+        # Загрузка кастомных слов из файла
         self.bad_words = []
         
         if bad_words_file:
             try:
                 with open(bad_words_file, 'r', encoding='utf-8') as json_f:
                     self.bad_words = json.load(json_f)
-                    logger_tests.debug(f'Добавляются слова')
+                    logger_tests.debug(f'Добавляются bad_words')
                     profanity.add_censor_words(self.bad_words)
             
             except (FileNotFoundError, json.JSONDecodeError) as err:
@@ -424,6 +50,15 @@ class TestProfanityFilter:
                 self.bad_words = []
             except Exception as err:
                 logger_tests.error(f'Ошибка чтения JSON: {err}', exc_info=True)
+        
+        # Загрузка технических терминов(слов)
+        self.tech_keywords = []
+        try:
+            with open(technical_words_file, 'r', encoding='utf-8') as json_f:
+                self.tech_words = json.load(json_f)
+                logger_tests.debug(f'Добавляются тех слова')
+        except Exception as err:
+            logger_tests.error(f'Ошибка чтения JSON: {err}', exc_info=True)
         
         # 4. Компиляция регулярных выражений
         self.base_pattern = re.compile(
@@ -441,21 +76,29 @@ class TestProfanityFilter:
         :param text:
         :return bool:
         """
+        
+        if self._is_technical_text(text):
+            print('Пропущено (тех. текст)')
+            return False
+        
         if any(
             symbol in text for symbol in
-            {'=', '(', ')', 'print', 'def', 'class'}):
+                {'=', '(', ')', 'print', 'def', 'class'}):
+            print('Пропущено (код/скобки)')
             return False
         
         if len(set(text)) == 1:
+            print(f'Пропущено (повтор символов): {set(text)=}')
             return False
         
         if text.isdigit():
+            print(f'Пропущено (цифры):{text}')
             return False
         
-        simple_text = text.split()
+        simple_text = text.lower().split()
         for word in simple_text:
             if word in self.bad_words:
-                # print(f'Простая проверка: {word}')
+                print(f'Заблокировано simple_text bad_words: {word}')
                 return True
         
         text = text.replace(" ", "")
@@ -463,6 +106,7 @@ class TestProfanityFilter:
         text_lower = str(normalized_text).lower()
         
         if len(text_lower.strip()) < 3:
+            print(f'Пропущено: длина меньше 3х: {text_lower}')
             return False
         
         # 1. Быстрая проверка по better_profanity
@@ -470,33 +114,52 @@ class TestProfanityFilter:
             # logger_tests.warning(
             #     'Фильтр 1 better_profanity(полное '
             #     'совпадение)')
+            print(f'Заблокировано better_profanity: {text}')
             return True
         
         # 2. Проверка по регулярным выражениям
         if self.base_pattern.search(text_lower):
-            # logger_tests.warning('Фильтр 2  re1')
+            print(f'Заблокировано base_pattern: {text}')
             return True
         
         for pattern in self.additional_patterns:
             if pattern.search(text.lower()):
+                print(f'Заблокировано additional_patterns: {text.lower()}')
                 return True
-            
+        
         for pattern in self.additional_patterns:
             if pattern.search(text_lower):
-                # logger_tests.warning('Фильтр 3 re2')
+                print(f'Заблокировано additional_patterns: {text_lower}')
                 return True
         
         # 3. Проверка по списку слов (с учетом опечаток)
         words = re.findall(r'\w+', text_lower)
         if any(word in self.bad_words for word in words):
-            # logger_tests.warning('Фильтр 4 с учетом опечаток')
+            print(f'Заблокировано Проверка по списку слов (с учетом опечаток): {words}')
             return True
         
         # 4. Дополнительные проверки (опционально)
         if self._check_levenshtein(text_lower):
-            logger_tests.warning('Фильтр 5 "Levenshtein"')
+            print('Заблокировано: Фильтр 5 "Levenshtein"')
             return True
+        print('Текст прошел все фильтры')
         return False
+    
+    def _is_technical_text(self, text: str) -> bool:
+        """Проверяет, является ли текст техническим (игнорирует мат в таком контексте)"""
+        words = re.findall(r'\w+', text.lower())
+        for word in words:
+            parsed = self.morph.parse(word)[0]  # берем самый вероятный разбор
+            normal_form = parsed.normal_form  # нормальная форма слова
+            if normal_form in self.tech_keywords:  # если это технический термин
+                return True
+        return False
+    
+    def _is_technical_word(self, word: str) -> bool:
+        """Проверяет, является ли слово техническим термином (игнорирует его в проверках)."""
+        parsed = self.morph.parse(word.lower())[0]
+        normal_form = parsed.normal_form  # нормальная форма слова
+        return normal_form in self.tech_keywords
     
     def _normalize_text(self, text: str) -> str:
         """Улучшенная нормализация текста с учетом контекста"""
@@ -547,39 +210,62 @@ class TestProfanityFilter:
             for candidate in words:
                 c_len = len(candidate)
                 
+                # Игнорируем слова короче min_word_length
+                if c_len < self.min_word_length:
+                    continue
+                
                 # Быстрая проверка по длине
-                if abs(c_len - bw_len) > 2:  # допускаем разницу до 2 символов
+                if abs(c_len - bw_len) > 2:  # допускаем разницу до 1 символов
                     continue
                 
                 # Точное совпадение после нормализации
                 if candidate == bad_word:
                     logger_tests.warning(f'Точное совпадение: {bad_word}')
                     return True
+                    
+                # Проверка расстояния Левенштейна (ужесточённая)
+                max_allowed_distance = 1 if bw_len <= 6 else 2
                 
-                # Проверка расстояния Левенштейна с учетом контекста
-                if self._is_valid_match(candidate, bad_word):
-                    logger_tests.warning(
-                        f'Найдено по Левенштейну: {bad_word} '
-                        f'(кандидат: {candidate}, расстояние: {distance(candidate, bad_word)})')
-                    return True
+                # Если кандидат — часть другого слова (например, "код" в "кодекс"), пропускаем
+                if candidate in bad_word or bad_word in candidate:
+                    continue
+                    
+                # Если расстояние Левенштейна в допустимых пределах
+                if distance(candidate, bad_word) <= max_allowed_distance:
+                    # Дополнительная проверка: слово не должно быть частью технического термина
+                    if not self._is_technical_word(candidate):
+                        logger_tests.warning(
+                            f'Найдено по Левенштейну: {bad_word} '
+                            f'(кандидат: {candidate}, расстояние: {distance(candidate, bad_word)})')
+                        return True
         
         return False
 
+
 def test_comment_filter():
     profanity_filter = TestProfanityFilter()
+    print(
+        profanity_filter._check_levenshtein(
+            "ра"))
+    print('---------------------')
     passed = 0
     
-    for comment, expected in test_cases:
+    for comment, expected in TestCases.test_cases:
         result = profanity_filter.is_profanity(text=comment)
         if result == expected:
-            passed += 1
             # print(f'Тест пройден: {comment}')
+            passed += 1
+        
         else:
             print(
-                f"Тест провален: '{comment}' | Ожидалось: {expected}, Получено: {result}")
+                f"🟢Тест провален: '{comment}' | Ожидалось: {expected}, Получено: {result}")
     
-    print(f"\nРезультат: {passed} из {len(test_cases)} тестов пройдено")
-    print(f"Процент успеха: {passed / len(test_cases) * 100:.2f}%")
+    print(
+        f"\nРезультат: {passed} из {len(TestCases.test_cases)} тестов "
+        f"пройдено")
+    print(
+        f"Процент успеха:"
+        f" {passed / len(TestCases.test_cases) * 100:.2f}%")
 
 
 if __name__ == "__main__":
