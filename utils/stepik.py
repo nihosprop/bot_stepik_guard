@@ -120,8 +120,8 @@ class StepikAPIClient:
         return course_data.get('courses')[0].get('title')
     
     async def get_section(self, course_id: int) -> List[int]:
-        sections_data = await self.make_api_request(method='GET',
-                                                    endpoint=f'courses/{course_id}')
+        sections_data = await self.make_api_request(
+            method='GET', endpoint=f'courses/{course_id}')
         sections = sections_data['courses'][0]['sections']
         return sections
     
