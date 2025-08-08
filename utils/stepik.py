@@ -160,10 +160,10 @@ class StepikAPIClient:
         
         if comment['parent']:
             base_url += f"&reply={comment_id}"
-            
-        return (f"https://stepik.org/lesson/{step_data['steps'][0]['lesson']}"
-                f"/step/{step_data['steps'][0]['position']}?discussion"
-                f"={comment_id}")
+        if 'unit' in step_data:
+            base_url += f"&unit={step_data['unit']}"
+        
+        return base_url
     
     async def get_comments(self, course_id: int, limit: int = 100) -> Dict[
         str, Any]:
