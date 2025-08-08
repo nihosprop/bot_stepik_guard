@@ -131,7 +131,10 @@ class StepikAPIClient:
             method='GET', endpoint=f'sections/{section_id}')
         unit = units_data['sections'][0]['units']
         return unit
-
+    
+    async def get_step(self, target_id: int):
+        return await self.make_api_request('GET', f'steps/{target_id}')
+    
     async def get_lesson_id(self, unit_id: int) -> Optional[int]:
         lesson_data = await self.make_api_request('GET', f'units/{unit_id}')
         lesson_id = lesson_data['units'][0]['lesson']
