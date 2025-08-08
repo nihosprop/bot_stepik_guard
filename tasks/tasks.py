@@ -55,8 +55,8 @@ class StepikTasks:
             
             for comment in course_comments:
                 comment_time_str = comment.get("time")
-                comment.update({'course_title': course_title,
-                                'course_id': course_id})
+                comment.update(
+                    {'course_title': course_title, 'course_id': course_id})
                 if not comment_time_str:
                     continue
                 
@@ -99,6 +99,8 @@ class StepikTasks:
             course_title: str = comment.get('course_title')
             course_id = comment.get('course_id')
             comment_id = comment.get('id')
+            link_to_comment: str = await self.stepik_client.get_comment_url(
+                comment_id=comment_id)
             comment_text = clean_html_tags(comment.get('text'))
             user_name = user.get('full_name')
             reputation: int = user.get('reputation')
@@ -116,6 +118,7 @@ class StepikTasks:
                          f'Reputation Rank: {reputation_rank}\n'
                          f'Сount steps: {count_steps}\n'
                          f'Link to user: {link_to_user_profile}\n'
+                         f'Link to comment: {link_to_comment}\n'
                          f'Comment: {comment_text}')
             
             for owner in self.owners:
@@ -124,20 +127,9 @@ class StepikTasks:
                     logger_tasks.warning(temp_text)
                     await self.bot.send_message(chat_id=owner, text=temp_text)
                 else:
-                    await self.bot.send_message(chat_id=owner,
-                                                text=f'Чисто\n{user_info}')
-
+                    await self.bot.send_message(
+                        chat_id=owner, text=f'Чисто\n{user_info}')
             
             # if await profanity_filter.is_profanity(text=comment_text):
-                
-                # TODO заменить temp_text на text
-                # text = f"Удален комментарий!\n{user_info}"
-                # temp_text = f"Kомментарий для удаления!\n{user_info}"
-                # logger_tasks.warning(temp_text)
-                # for owner in self.owners:
-                #     await self.bot.send_message(chat_id=owner,
-                #                                 text=temp_text)
-            # else:
-            #     logger_tasks.debug(f'Чисто\n{user_info}')
-            #     await self.bot.send_message(
-            #         chat_id=owner, text=temp_text)
+            
+            # TODO заменить temp_text на text  # text = f"Удален комментарий!\n{user_info}"  # temp_text = f"Kомментарий для удаления!\n{user_info}"  # logger_tasks.warning(temp_text)  # for owner in self.owners:  #     await self.bot.send_message(chat_id=owner,  #                                 text=temp_text)  # else:  #     logger_tasks.debug(f'Чисто\n{user_info}')  #     await self.bot.send_message(  #         chat_id=owner, text=temp_text)

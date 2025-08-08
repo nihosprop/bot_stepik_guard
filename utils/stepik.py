@@ -136,7 +136,26 @@ class StepikAPIClient:
         lesson_data = await self.make_api_request('GET', f'units/{unit_id}')
         lesson_id = lesson_data['units'][0]['lesson']
         return lesson_id
-
+    
+    async def get_comment_url(self, comment_id):
+        # 1. Получаем данные комментария
+        # comment = requests.get(
+        #     f'https://stepik.org/api/comments/{comment_id}',
+        #     headers={'Authorization': 'Bearer YOUR_TOKEN'}).json()
+        
+        comment = await self.make_api_request('GET', f'comments/{comment_id}')
+        
+        target_id = comment['comments'][0]['target']
+        
+        # 2. Получаем данные шага
+        # step = requests.get(
+        #     f'https://stepik.org/api/steps/{target_id}',
+        #     headers={'Authorization': 'Bearer YOUR_TOKEN'}).json()
+        step = await self.make_api_request('GET', f'steps/{target_id}')
+        # 3. Формируем URL
+        return (f"https://stepik.org/lesson/{step['steps'][0]['lesson']}"
+                f"/step/{step['steps'][0]['position']}?discussion={comment_id}")
+    
     async def get_comments(self, course_id: int, limit: int = 100) -> Dict[str, Any]:
         """
         Получение списка комментариев по ID курса
