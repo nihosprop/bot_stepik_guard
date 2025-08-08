@@ -150,15 +150,15 @@ class StepikAPIClient:
         return lesson_id
     
     async def get_comment_url(self, comment_id):
-        comment = await self.get_comment_data(comment_id)
-        target_id = comment['comments'][0]['target']
+        comment_data = await self.get_comment_data(comment_id)
+        target_id = comment_data['comments'][0]['target']
         step_data = await self.get_step_data(target_id)
         base_url = (f"https://stepik.org/lesson/"
                     f"{step_data['steps'][0]['lesson']}"
                 f"/step/{step_data['steps'][0]['position']}?discussion"
                     f"={comment_id}")
         
-        if comment['parent']:
+        if comment_data['parent']:
             base_url += f"&reply={comment_id}"
         if 'unit' in step_data:
             base_url += f"&unit={step_data['unit']}"
