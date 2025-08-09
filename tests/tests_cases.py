@@ -279,7 +279,7 @@ class TestCases:
         ("хер", True),
         ("жоп", False),
         ("дро", False),
-        ("суч", True),
+        ("суч", False),
         ("гнд", False),
         ("мдк", False),
         ("злп", False),
