@@ -7,3 +7,4 @@ APScheduler==3.11.0
 better-profanity==0.7.0
 Levenshtein==0.27.1
 pymorphy3==2.0.4
+transformers==4.55.0
