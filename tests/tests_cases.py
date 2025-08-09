@@ -98,6 +98,7 @@ class TestCases:
         ("ебa1", True),
         ("бл9dь", True),
         ("суkа", True),
+        ("хyй", True),
         
         # Краткие формы и производные
         ("хер", True),
