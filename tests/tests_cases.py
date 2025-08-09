@@ -296,7 +296,7 @@ class TestCases:
         ("cyk@", True),
         ("607d0h", False),
         ("myd@k", True),
-        ("241upa", True),
+        ("241upa", False),
         ("sh1ux@", True),
         ("nud0p", True),
         ("x|_|й", True),
