@@ -11,15 +11,12 @@ services:
       - "redis_fsm"
     networks:
       - stepik_guard_bot_net
-    volumes:
-      # Монтируем локальную папку с кодом в контейнер
-      - .:/app
     environment:
       # Указываем, что работаем в режиме разработки
       - ENVIRONMENT=development
 
   redis_fsm:
-    image: redis:8-alpine
+    image: redis:7-alpine
     container_name: StepikGuardRedis
     restart: unless-stopped
     healthcheck:
