@@ -78,13 +78,13 @@ class TestProfanityFilter:
         """
         
         if self._is_technical_text(text):
-            print('Пропущено (тех. текст)')
+            print(f'Пропущено (тех. текст): {text}')
             return False
         
         if any(
             symbol in text for symbol in
                 {'=', '(', ')', 'print', 'def', 'class'}):
-            print('Пропущено (код/скобки)')
+            print(f'Пропущено (код/скобки): {text}')
             return False
         
         if len(set(text)) == 1:
