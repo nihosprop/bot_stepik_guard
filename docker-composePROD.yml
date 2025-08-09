@@ -1,7 +1,7 @@
 # PROD
 services:
   main:
-    image: niwibonihs/bot_stepik_guard:v1
+    image: niwibonihs/bot_stepik_guard:tag
     container_name: YourNameBot
     restart: unless-stopped
     env_file: .env
