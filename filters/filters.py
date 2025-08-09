@@ -90,13 +90,13 @@ class ProfanityFilter:
         """
         
         if await self._is_technical_text(text):
-            logger_filters.debug('Пропущено (тех. текст)')
+            logger_filters.debug(f'Пропущено (тех. текст): {text}')
             return False
         
         if any(
             symbol in text for symbol in
                 {'=', '(', ')', 'print', 'def', 'class'}):
-            logger_filters.debug('Пропущено (код/скобки)')
+            logger_filters.debug(f'Пропущено (код/скобки): {text}')
             return False
         
         if len(set(text)) == 1:
@@ -110,7 +110,8 @@ class ProfanityFilter:
         simple_text = text.lower().split()
         for word in simple_text:
             if word in self.bad_words:
-                logger_filters.debug(f'🟢Заблокировано simple_text bad_words: {word}')
+                logger_filters.warning(f'🟢Заблокировано simple_text bad_words:'
+                                  f' {word}')
                 return True
         
         text = text.replace(" ", "")
@@ -126,36 +127,36 @@ class ProfanityFilter:
             # logger_tests.warning(
             #     'Фильтр 1 better_profanity(полное '
             #     'совпадение)')
-            logger_filters.debug(f'🟢Заблокировано better_profanity: {text}')
+            logger_filters.warning(f'🟢Заблокировано better_profanity: {text}')
             return True
         
         # 2. Проверка по регулярным выражениям
         if self.base_pattern.search(text_lower):
-            logger_filters.debug(f'🟢Заблокировано base_pattern: {text}')
+            logger_filters.warning(f'🟢Заблокировано base_pattern: {text}')
             return True
         
         for pattern in self.additional_patterns:
             if pattern.search(text.lower()):
-                logger_filters.debug(f'🟢Заблокировано additional_p'
+                logger_filters.warning(f'🟢Заблокировано additional_p'
                                 f'atterns: {text.lower()}')
                 return True
         
         for pattern in self.additional_patterns:
             if pattern.search(text_lower):
-                logger_filters.debug(f'🟢Заблокировано additional_patterns: {
+                logger_filters.warning(f'🟢Заблокировано additional_patterns: {
                 text_lower}')
                 return True
         
         # 3. Проверка по списку слов (с учетом опечаток)
         words = re.findall(r'\w+', text_lower)
         if any(word in self.bad_words for word in words):
-            logger_filters.debug(
+            logger_filters.warning(
                 f'🟢Заблокировано Проверка по списку слов (с учетом опечаток): {words}')
             return True
         
         # 4. Дополнительные проверки (опционально)
         if await self._check_levenshtein(text_lower):
-            logger_filters.debug('🟢Заблокировано: Фильтр 5 "Levenshtein"')
+            logger_filters.warning('🟢Заблокировано: Фильтр 5 "Levenshtein"')
             return True
         logger_filters.debug('Текст прошел все фильтры')
         return False
