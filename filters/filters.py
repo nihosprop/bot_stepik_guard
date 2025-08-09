@@ -2,7 +2,7 @@ import logging
 import json
 import re
 from pathlib import Path
-import pymorphy3 as pymorphy2
+import pymorphy3
 from Levenshtein import distance
 from better_profanity import profanity
 from aiogram.filters import BaseFilter
@@ -37,8 +37,8 @@ class ProfanityFilter:
         # 1. Инициализация better_profanity
         profanity.load_censor_words()
         
-        # Инициализация pymorphy2
-        self.morph = pymorphy2.MorphAnalyzer()
+        # Инициализация
+        self.morph = pymorphy3.MorphAnalyzer()
         
         # словарь соответствий
         self.data_mapping = DataProfanity.CHAR_REPLACEMENT_MAP
