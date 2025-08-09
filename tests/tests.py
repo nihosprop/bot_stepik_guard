@@ -139,8 +139,8 @@ class TestProfanityFilter:
             return True
         
         # 4. Дополнительные проверки (опционально)
-        if self._check_levenshtein(text_lower):
-            print('Заблокировано: Фильтр 5 "Levenshtein"')
+        if self._check_levenshtein(text):
+            print(f'Заблокировано: Фильтр 5 "Levenshtein": {text_lower}')
             return True
         print('Текст прошел все фильтры')
         return False
