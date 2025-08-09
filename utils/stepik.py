@@ -149,14 +149,7 @@ class StepikAPIClient:
         return lesson_id
     
     async def get_comment_url(self, comment_id: int) -> str:
-        """
-        Формирует корректную ссылку на комментарий или ответ в Stepik.
-        Обрабатывает случаи:
-        - Обычные комментарии (без parent)
-        - Ответы на комментарии (с parent)
-        - Отсутствие данных о unit
-        - Ошибки при получении данных
-        """
+        
         try:
             # Получаем данные комментария
             comment_data = await self.get_comment_data(comment_id)
