@@ -126,7 +126,6 @@ class StepikAPIClient:
         return sections
     
     async def get_unit(self, section_id: int) -> List[int]:
-        section_url = f'https://stepik.org/api/sections/{section_id}'
         units_data = await self.make_api_request(
             method='GET', endpoint=f'sections/{section_id}')
         unit = units_data['sections'][0]['units']
