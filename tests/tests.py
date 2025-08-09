@@ -142,7 +142,7 @@ class TestProfanityFilter:
         if self._check_levenshtein(text):
             print(f'Заблокировано: Фильтр 5 "Levenshtein": {text_lower}')
             return True
-        print('Текст прошел все фильтры')
+        print(f'Текст прошел все фильтры: {text}')
         return False
     
     def _is_technical_text(self, text: str) -> bool:
