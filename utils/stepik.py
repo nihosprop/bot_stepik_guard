@@ -153,8 +153,7 @@ class StepikAPIClient:
         try:
             # Получаем данные комментария
             comment_data = await self.get_comment_data(comment_id)
-            if not comment_data or 'comments' not in comment_data or not \
-            comment_data['comments']:
+            if not comment_data or not comment_data.get('comments'):
                 return f"https://stepik.org/discussion/comments/{comment_id}/"
             
             comment = comment_data['comments'][0]
@@ -167,28 +166,31 @@ class StepikAPIClient:
                 return f"https://stepik.org/discussion/comments/{comment_id}/"
             
             step_data = await self.get_step_data(target_id)
-            if not step_data or 'steps' not in step_data or not step_data[
-                'steps']:
+            if not step_data or not step_data.get('steps'):
                 return f"https://stepik.org/discussion/comments/{comment_id}/"
             
             step = step_data['steps'][0]
-            
-            # Формируем базовые параметры URL
             lesson_id = step.get('lesson')
             step_position = step.get('position', 1)
             unit_id = step.get('unit')
             
             # Базовые параметры URL
-            base_url = f"https://stepik.org/lesson/{lesson_id}/step/{step_position}?"
+            base_url = f'https://stepik.org/lesson/{lesson_id}/step/{step_position}?'
             
             # Определяем параметры в зависимости от типа комментария
             params = []
             
             if thread_type == 'solutions':
-                params.append(f"discussion={comment_id}")
-                params.append("thread=solutions")
                 if parent_id:
+                    # Для ответов в решениях используем parent_id в discussion
+                    params.append(f"discussion={parent_id}")
                     params.append(f"reply={comment_id}")
+                else:
+                    # Для корневых комментариев в решениях
+                    params.append(f"discussion={comment_id}")
+                params.append("thread=solutions")
+                
+                # Обработка обычных комментариев
             else:
                 discussion_param = parent_id if parent_id else comment_id
                 params.append(f"discussion={discussion_param}")
