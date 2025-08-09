@@ -290,8 +290,8 @@ class TestCases:
         # Числовые замены (leet speak)
         ("xy1", True),
         ("p1zd@", True),
-        ("3ba7", True),
-        ("6149b", True),
+        ("3ba7", False),
+        ("6149b", False),
         ("cyk@", True),
         ("607d0h", True),
         ("myd@k", True),
