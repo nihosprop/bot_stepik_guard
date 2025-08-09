@@ -198,6 +198,7 @@ class TestProfanityFilter:
     def _check_levenshtein(self, phrase: str) -> bool:
         """Улучшенная проверка с контекстным анализом"""
         normalized = self._normalize_text(phrase)
+        print(f'Normalized: {normalized}: Not normalized: {phrase}')
         words = re.findall(r'\b\w+\b', normalized)  # выделяем целые слова
         
         for bad_word in self.bad_words:
