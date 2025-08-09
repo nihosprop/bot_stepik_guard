@@ -165,6 +165,8 @@ class StepikAPIClient:
                 return f"https://stepik.org/discussion/comments/{comment_id}/"
             
             comment = comment_data['comments'][0]
+            parent_id = comment.get('parent')
+            thread_type = comment.get('thread', 'discussion')
             
             # Получаем данные шага
             target_id = comment.get('target')
@@ -179,32 +181,38 @@ class StepikAPIClient:
             step = step_data['steps'][0]
             
             # Формируем базовые параметры URL
-            url_params = []
             lesson_id = step.get('lesson')
             step_position = step.get('position', 1)
+            unit_id = step.get('unit')
             
-            # Определяем discussion параметр
-            parent_id = comment.get('parent')
-            discussion_param = parent_id if parent_id else comment_id
-            url_params.append(f"discussion={discussion_param}")
+            # Базовые параметры URL
+            base_url = f"https://stepik.org/lesson/{lesson_id}/step/{step_position}?"
             
-            # Добавляем reply для ответов
-            if parent_id:
-                url_params.append(f"reply={comment_id}")
+            # Определяем параметры в зависимости от типа комментария
+            params = []
             
-            # Добавляем unit если есть
-            if 'unit' in step:
-                url_params.append(f"unit={step['unit']}")
+            if thread_type == 'solutions':
+                params.append(f"discussion={comment_id}")
+                params.append("thread=solutions")
+                if parent_id:
+                    params.append(f"reply={comment_id}")
+            else:
+                discussion_param = parent_id if parent_id else comment_id
+                params.append(f"discussion={discussion_param}")
+                if parent_id:
+                    params.append(f"reply={comment_id}")
             
-            # Собираем итоговый URL
-            query_string = '&'.join(url_params)
-            return (f"https://stepik.org/lesson/{lesson_id}/"
-                    f"step/{step_position}?{query_string}")
+            if unit_id:
+                params.append(f"unit={unit_id}")
+                
+                # Собираем итоговый URL
+            query_string = '&'.join(params)
+            return f"{base_url}{query_string}"
         
         except Exception as e:
             logging.error(
-                f"Error generating comment URL for {comment_id}: {str(e)}")
-            # Возвращаем базовую ссылку как fallback
+                f"Error generating URL for comment {comment_id}: {str(e)}",
+                exc_info=True)
             return f"https://stepik.org/discussion/comments/{comment_id}/"
     
     async def get_comments(self, course_id: int, limit: int = 100) -> Dict[
