@@ -244,10 +244,6 @@ class TestProfanityFilter:
 
 def test_comment_filter():
     profanity_filter = TestProfanityFilter()
-    print(
-        profanity_filter._check_levenshtein(
-            "ра"))
-    print('---------------------')
     passed = 0
     
     for comment, expected in TestCases.test_cases:
