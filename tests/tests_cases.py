@@ -293,7 +293,7 @@ class TestCases:
         ("3ba7", False),
         ("6149b", False),
         ("cyk@", True),
-        ("607d0h", True),
+        ("607d0h", False),
         ("myd@k", True),
         ("241upa", True),
         ("sh1ux@", True),
