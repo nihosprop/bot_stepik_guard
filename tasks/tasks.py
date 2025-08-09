@@ -20,7 +20,7 @@ class StepikTasks:
     stepik_courses_ids: list[int] = field(default_factory=list)
     
     async def check_comments(self, profanity_filter: ProfanityFilter):
-        logger_tasks.info("🟢 Начало проверки комментариев")
+        logger_tasks.debug("🟢Начало проверки комментариев")
         
         all_comments = []
         
