@@ -30,7 +30,7 @@ class TestProfanityFilter:
         
         # словарь соответствий
         self.data_mapping = DataProfanity.CHAR_REPLACEMENT_MAP
-        self.min_word_length = 3
+        self.min_word_length = 4
         self.special_chars = set('0123456789!@#$%^&*')
         profanity.CHARS_MAPPING.update(self.data_mapping)
         
