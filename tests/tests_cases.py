@@ -244,7 +244,7 @@ class TestCases:
         ("с***а", True),
         ("****он", False),
         ("м***к", False),
-        ("з****а", False),
+        ("з****а", True),
         ("ш***а", True),
         ("п****р", True),
         ("х*й", True),
