@@ -13,6 +13,7 @@ from config_data.config import Config, load_config
 from handlers import owners_handlers, other
 from keyboards.set_menu import set_main_menu
 from scheduler import start_scheduler
+from tasks.tasks import StepikTasks
 from utils.stepik import StepikAPIClient
 from middlewares.outer import MsgProcMiddleware
 from filters.filters import ProfanityFilter
@@ -90,11 +91,14 @@ async def main():
     
     profanity_filter = ProfanityFilter()
     
-    await start_scheduler(stepik_client=stepik_client,
-                          stepik_courses_ids=stepik_courses_ids,
-                          profanity_filter=profanity_filter,
-                          bot=bot,
-                          owners=config.tg_bot.id_owners)
+    stepik_tasks = StepikTasks(
+        stepik_client=stepik_client,
+        stepik_courses_ids=stepik_courses_ids,
+        bot=bot,
+        owners=config.tg_bot.id_owners)
+    
+    await start_scheduler(stepik_tasks=stepik_tasks,
+                          profanity_filter=profanity_filter)
     
     try:
         # routers
