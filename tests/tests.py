@@ -232,7 +232,7 @@ class TestProfanityFilter:
                 # Если кандидат — часть другого слова (например, "код" в "кодекс"), пропускаем
                 if candidate in bad_word or bad_word in candidate:
                     continue
-                    
+                
                 # Если расстояние Левенштейна в допустимых пределах
                 if distance(candidate, bad_word) <= max_allowed_distance:
                     # Дополнительная проверка: слово не должно быть частью технического термина
