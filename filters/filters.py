@@ -2,6 +2,7 @@ import logging
 import json
 import re
 from pathlib import Path
+
 import pymorphy3
 from Levenshtein import distance
 from better_profanity import profanity
@@ -61,7 +62,9 @@ class ProfanityFilter:
                     f"🟢Ошибка загрузки файла {bad_words_file}:{err}")
                 self.bad_words = []
             except Exception as err:
-                logger_filters.error(f'🟢Ошибка чтения JSON: {err}', exc_info=True)
+                logger_filters.error(
+                    f'🟢Ошибка чтения JSON: {err}',
+                    exc_info=True)
         
         # Загрузка технических терминов(слов)
         self.tech_keywords = []
@@ -110,8 +113,9 @@ class ProfanityFilter:
         simple_text = text.lower().split()
         for word in simple_text:
             if word in self.bad_words:
-                logger_filters.warning(f'🟢Заблокировано simple_text bad_words:'
-                                  f' {word}')
+                logger_filters.warning(
+                    f'🟢Заблокировано simple_text bad_words:'
+                    f' {word}')
                 return True
         
         text = text.replace(" ", "")
@@ -137,14 +141,15 @@ class ProfanityFilter:
         
         for pattern in self.additional_patterns:
             if pattern.search(text.lower()):
-                logger_filters.warning(f'🟢Заблокировано additional_p'
-                                f'atterns: {text.lower()}')
+                logger_filters.warning(
+                    f'🟢Заблокировано additional_p'
+                    f'atterns: {text.lower()}')
                 return True
         
         for pattern in self.additional_patterns:
             if pattern.search(text_lower):
-                logger_filters.warning(f'🟢Заблокировано additional_patterns: {
-                text_lower}')
+                logger_filters.warning(
+                    f'🟢Заблокировано additional_patterns: {text_lower}')
                 return True
         
         # 3. Проверка по списку слов (с учетом опечаток)
