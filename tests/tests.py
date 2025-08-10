@@ -225,7 +225,7 @@ class TestProfanityFilter:
                 if candidate == bad_word:
                     logger_tests.warning(f'Точное совпадение: {bad_word}')
                     return True
-                    
+                
                 # Проверка расстояния Левенштейна (ужесточённая)
                 max_allowed_distance = 1 if bw_len <= 6 else 2
                 
