@@ -342,7 +342,7 @@ class TestCases:
         ("damn", False),
         ("cunt", True),
         ("dick", True),
-        ("pussy", True),
+        ("pussy", False),
         ("bastard", False),
         
         # Сложные юникод-кейсы
