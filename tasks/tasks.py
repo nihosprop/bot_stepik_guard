@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from aiogram import Bot
 
 from filters.filters import ProfanityFilter
+from filters.toxicity_classifiers import RussianToxicityClassifier
 from utils.stepik import StepikAPIClient
 from utils.utils import clean_html_tags
 
@@ -19,7 +20,8 @@ class StepikTasks:
     owners: list[int] = field(default_factory=list)
     stepik_courses_ids: list[int] = field(default_factory=list)
     
-    async def check_comments(self, profanity_filter: ProfanityFilter):
+    async def check_comments(self, profanity_filter: ProfanityFilter,
+                             toxicity_filter: RussianToxicityClassifier):
         logger_tasks.debug("🟢Начало проверки комментариев")
         
         all_comments = []

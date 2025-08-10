@@ -10,13 +10,15 @@ from aiogram.fsm.storage.redis import Redis, RedisStorage
 from aiogram import Bot, Dispatcher
 
 from config_data.config import Config, load_config
-from handlers import owners_handlers, other
+from filters.toxicity_classifiers import RussianToxicityClassifier
+from handlers import other, owners_handlers
 from keyboards.set_menu import set_main_menu
 from scheduler import start_scheduler
 from tasks.tasks import StepikTasks
 from utils.stepik import StepikAPIClient
 from middlewares.outer import MsgProcMiddleware
 from filters.filters import ProfanityFilter
+
 logger_main = logging.getLogger(__name__)
 
 
@@ -40,7 +42,8 @@ async def setup_redis(config: Config) -> tuple[Redis, Redis]:
     redis_data = Redis(
         host=config.redis_host,
         port=6379,
-        db=1, decode_responses=True,
+        db=1,
+        decode_responses=True,
         password=config.redis_password or None)
     
     try:
@@ -48,8 +51,7 @@ async def setup_redis(config: Config) -> tuple[Redis, Redis]:
         logger_main.info("Redis FSM успешно подключен.")
     except Exception as err:
         logger_main.error(
-            f"Ошибка подключения к Redis FSM: {err}",
-            exc_info=True)
+            f"Ошибка подключения к Redis FSM: {err}", exc_info=True)
         raise
     
     try:
@@ -80,8 +82,9 @@ async def main():
         client_secret=stepik_client_secret,
         redis_client=redis_data)
     
-    bot = Bot(token=config.tg_bot.token,
-              default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    bot = Bot(
+        token=config.tg_bot.token,
+        default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     
     storage = RedisStorage(redis=redis_fsm)
     
@@ -90,20 +93,32 @@ async def main():
     await set_main_menu(bot=bot)
     
     profanity_filter = ProfanityFilter()
+    
+    toxicity_filter = RussianToxicityClassifier(
+        ["SkolkovoInstitute/russian_toxicity_classifier"])
+    try:
+        await toxicity_filter.initialize()
+    except Exception as e:
+        logger_main.error(f'Initialization toxicity_filter failed: {e}')
+    else:
+        logger_main.info(f'Initialization toxicity_filter succeeded')
+    
     stepik_tasks = StepikTasks(
         stepik_client=stepik_client,
         stepik_courses_ids=stepik_courses_ids,
         bot=bot,
         owners=config.tg_bot.id_owners)
     
-    await start_scheduler(stepik_tasks=stepik_tasks,
-                          profanity_filter=profanity_filter)
+    await start_scheduler(
+        stepik_tasks=stepik_tasks,
+        profanity_filter=profanity_filter,
+        toxicity_filter=toxicity_filter)
     
     try:
         # routers
         dp.include_router(owners_handlers.owners_router)
         dp.include_router(other.other_router)
-
+        
         # middlewares
         dp.update.middleware(MsgProcMiddleware())
         
@@ -125,7 +140,7 @@ async def main():
     finally:
         await redis_fsm.aclose()
         logger_main.info('Stop bot')
-    
+
 
 if __name__ == "__main__":
     asyncio.run(main())
