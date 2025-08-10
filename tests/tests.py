@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 import re
@@ -245,27 +246,77 @@ class TestProfanityFilter:
         return False
 
 
-def test_comment_filter():
+async def test_comment_filter():
     profanity_filter = TestProfanityFilter()
-    passed = 0
+    toxicity_classifier = RussianToxicityClassifier(
+        ["SkolkovoInstitute/russian_toxicity_classifier"])
+    try:
+        await toxicity_classifier.initialize()
+    except Exception as e:
+        logger_tests.error(f'Initialization failed: {e}')
+        return
+    
+    passed_profanity = 0
+    passed_toxicity = 0
+    passed_mutual = 0
     
     for comment, expected in TestCases.test_cases:
-        result = profanity_filter.is_profanity(text=comment)
-        if result == expected:
-            # print(f'Тест пройден: {comment}')
-            passed += 1
+        result_profanity_filter = profanity_filter.is_profanity(text=comment)
+        result_toxicity_classifier = await toxicity_classifier.predict(
+            comment.lower(), threshold=0.82)
         
+        print(
+            f'📌 toxicity: {result_toxicity_classifier["is_toxic"]}:'
+            f'{result_toxicity_classifier.get("confidence")}\n'
+            f'  profanity: {bool(result_profanity_filter)}')
+        
+        if result_toxicity_classifier.get("is_toxic") == expected:
+            passed_toxicity += 1
         else:
             print(
-                f"🟢Тест провален: '{comment}' | Ожидалось: {expected}, Получено: {result}")
+                f"🟢Toxicity провален: '{comment}' | Ожидалось: {expected}, "
+                f"Получено: {result_toxicity_classifier['is_toxic']}")
+        
+        if result_profanity_filter == expected:
+            passed_profanity += 1
+        else:
+            print(
+                f"🟢Profanity провален: '{comment}' | Ожидалось: {expected}, "
+                f"Получено: {result_profanity_filter}")
+        
+        passed_flag = (result_profanity_filter,
+                result_toxicity_classifier.get("is_toxic"))
+        
+        if expected in passed_flag:
+            passed_mutual += 1
+        else:
+            print(result_profanity_filter, result_toxicity_classifier.get(
+                "is_toxic"), sep='\n')
+            print(
+                f"🟢Passed провален: '{comment}' | Ожидалось: {expected}, "
+                f"Получено: {passed_flag}")
     
     print(
-        f"\nРезультат: {passed} из {len(TestCases.test_cases)} тестов "
+        f"\nРезультат: {passed_profanity} из {len(TestCases.test_cases)} тестов "
         f"пройдено")
     print(
-        f"Процент успеха:"
-        f" {passed / len(TestCases.test_cases) * 100:.2f}%")
+        f"Процент Profanity:"
+        f" {passed_profanity / len(TestCases.test_cases) * 100:.2f}%")
+    
+    print(
+        f"\nРезультат: {passed_toxicity} из {len(TestCases.test_cases)} тестов "
+        f"пройдено")
+    print(
+        f"Процент Toxicity:"
+        f" {passed_toxicity / len(TestCases.test_cases) * 100:.2f}%")
+    
+    print(
+        f"\nРезультат: {passed_mutual} из {len(TestCases.test_cases)} тестов "
+        f"пройдено")
+    print(
+        f"Процент Mutual:"
+        f" {passed_mutual / len(TestCases.test_cases) * 100:.2f}%")
 
 
 if __name__ == "__main__":
-    test_comment_filter()
+    asyncio.run(test_comment_filter())
