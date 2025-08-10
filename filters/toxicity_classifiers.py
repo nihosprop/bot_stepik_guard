@@ -63,6 +63,7 @@ class RussianToxicityClassifier:
                 await self._normalized_text(text))
             logger_classifier.debug(f"{result=}")
             first_result = result[0]
+            logger_classifier.debug(f"{first_result=}")
             
             is_toxic = (
                 first_result['label'] == 'toxic' if 'label' in first_result else
