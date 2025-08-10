@@ -136,7 +136,8 @@ class TestProfanityFilter:
         # 3. Проверка по списку слов (с учетом опечаток)
         words = re.findall(r'\w+', text_lower)
         if any(word in self.bad_words for word in words):
-            print(f'Заблокировано Проверка по списку слов (с учетом опечаток): {words}')
+            print(
+                f'Заблокировано Проверка по списку слов (с учетом опечаток): {words}')
             return True
         
         # 4. Дополнительные проверки (опционально)
