@@ -7,6 +7,7 @@ import pymorphy3 as pymorphy2
 from Levenshtein import distance
 from better_profanity import profanity
 
+from filters.toxicity_classifiers import RussianToxicityClassifier
 from filters.patterns import DataProfanity
 from tests_cases import TestCases
 
