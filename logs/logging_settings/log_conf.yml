@@ -104,6 +104,11 @@ loggers:
     handlers: [stdout, warning_file, critical_file]
     propagate: no
 
+  filters.toxicity_classifiers:
+    level: ${LOG_LEVEL}
+    handlers: [ stdout, warning_file, critical_file ]
+    propagate: no
+
   # keyboards
   keyboards.utils_menu:
     level: ${LOG_LEVEL}
