@@ -14,6 +14,10 @@ services:
     environment:
       # Указываем, что работаем в режиме разработки
       - ENVIRONMENT=development
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
 
   redis_fsm:
     image: redis:7-alpine
@@ -26,6 +30,8 @@ services:
       retries: 3
     networks:
       - stepik_guard_bot_net
+    volumes:
+      - redis_data:/data
 
 networks:
   stepik_guard_bot_net:

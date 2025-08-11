@@ -23,22 +23,30 @@ class RussianToxicityClassifier:
     
     async def initialize(self) -> None:
         """Инициализирует классификатор (должен быть вызван перед использованием)"""
+        logger_classifier.info('=== TOXICITY FILTER INITIALIZATION STARTED ===')
+        
         for model_name in self.models:
             try:
                 self.classifier = await asyncio.to_thread(
                     pipeline,
-                    task="text-classification",
+                    task=self.task,
                     model=model_name,
                     tokenizer=model_name,
                     device="cpu",
                     framework="pt")
                 self.loaded_model_name = model_name
+                await asyncio.sleep(20)
+                logger_classifier.info(f'Classifier loaded!')
                 return
             except Exception as e:
-                print(f"Failed to load {model_name}: {str(e)}")
+                logger_classifier.error(f"Failed to load {model_name}: {str(e)}")
                 continue
         
         raise RuntimeError("All models failed to load")
+    
+    async def is_initialized(self) -> bool:
+        """Проверяет, была ли успешная инициализация"""
+        return self.classifier is not None
     
     @staticmethod
     async def _normalized_text(text: str) -> str:
@@ -76,7 +84,7 @@ class RussianToxicityClassifier:
                 'confidence': confidence}
         
         except Exception as e:
-            print(f"Prediction error: {str(e)}")
+            logger_classifier.error(f"Prediction error: {str(e)}")
             return {
                 'text': text,
                 'error': str(e),

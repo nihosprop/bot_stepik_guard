@@ -92,16 +92,15 @@ async def main():
     
     await set_main_menu(bot=bot)
     
+    logger_main.debug('start profanity_filter')
     profanity_filter = ProfanityFilter()
+    logger_main.debug('end profanity_filter')
     
+    logger_main.info('Starting toxicity_filter initialization...')
     toxicity_filter = RussianToxicityClassifier(
-        ["SkolkovoInstitute/russian_toxicity_classifier"])
-    try:
-        await toxicity_filter.initialize()
-    except Exception as e:
-        logger_main.error(f'Initialization toxicity_filter failed: {e}')
-    else:
-        logger_main.info(f'Initialization toxicity_filter succeeded')
+            ["SkolkovoInstitute/russian_toxicity_classifier"])
+    await toxicity_filter.initialize()
+    logger_main.info(f'Initialization toxicity_filter succeeded')
     
     stepik_tasks = StepikTasks(
         stepik_client=stepik_client,

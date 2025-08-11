@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from dataclasses import dataclass, field
 from typing import Any
@@ -124,13 +125,28 @@ class StepikTasks:
                          f'Comment: {comment_text}')
             
             for owner in self.owners:
-                if await profanity_filter.is_profanity(text=comment_text):
-                    temp_text = f"Kомментарий для удаления!\n{user_info}"
-                    logger_tasks.warning(temp_text)
-                    await self.bot.send_message(chat_id=owner, text=temp_text)
+                logger_tasks.debug(f'{len(comment_text)=}')
+                result_profanity_filter = await profanity_filter.is_profanity(
+                    text=comment_text)
+                logger_tasks.debug(f'{result_profanity_filter=}')
+                logger_tasks.debug(f'{len(comment_text)=}')
+                
+                if result_profanity_filter and len(comment_text) >= 12:
+                    logger_tasks.debug(f'profanity and len conn == True')
+                    result_toxicity_classifier = await toxicity_filter.predict(
+                        comment_text.lower(), threshold=0.82)
+                    if result_toxicity_classifier.get('is_toxic'):
+                        temp_text = f"Kомментарий для удаления!\n{user_info}"
+                        logger_tasks.warning(temp_text)
+                        await self.bot.send_message(chat_id=owner, text=temp_text)
+                        await asyncio.sleep(1)
+                    else:
+                        logger_tasks.debug(f'Чисто\n{user_info}')
+                        continue
                 else:
-                    await self.bot.send_message(
-                        chat_id=owner, text=f'Чисто\n{user_info}')
+                    logger_tasks.debug(f'Чисто\n{user_info}')
+                    # await self.bot.send_message(
+                    #     chat_id=owner, text=f'Чисто\n{user_info}')
             
             # if await profanity_filter.is_profanity(text=comment_text):
             
