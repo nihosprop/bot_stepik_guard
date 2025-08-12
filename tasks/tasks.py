@@ -113,17 +113,17 @@ class StepikTasks:
             comment_time = datetime.strptime(
                 comment.get('time'), '%Y-%m-%dT%H:%M:%SZ')
             
-            user_info = (f'\nCourse title: {course_title}\n'
+            user_info = (f'\n<b>Course name:</b> {course_title}\n'
                          f'🧑‍🎓 <a href="{link_to_user_profile}">'
                          f' {user_name}</a>\n'
-                         f'Reputation: {reputation}\n'
-                         f'Reputation Rank: {reputation_rank}\n'
-                         f'Сount steps: {count_steps}\n'
-                         f'Course ID: {course_id}\n'
-                         f'Comment time: {comment_time}\n'
-                         f'Comment ID: {comment_id}\n'
+                         f'<b>Reputation:</b> {reputation}\n'
+                         f'<b>Reputation Rank:</b> {reputation_rank}\n'
+                         f'<b>Сount steps:</b> {count_steps}\n'
+                         f'<b>Course ID:</b> {course_id}\n'
+                         f'<b>Comment time:</b> {comment_time}\n'
+                         f'<b>Comment ID:</b> {comment_id}\n'
                          f'👉 <a href="{link_to_comment}">Link to Comment</a>\n\n'
-                         f'Comment: {comment_text}')
+                         f'<b>Comment:</b> {comment_text}')
             
             result_profanity_filter: bool = await profanity_filter.is_profanity(
                 text=comment_text)
