@@ -29,7 +29,7 @@ async def setup_logging(config: Config):
     config_str = config_str.replace('${LOG_LEVEL}', config.level_log)
     log_config = yaml.safe_load(config_str)
     dictConfig(log_config)
-    logger_main.info('Загрузка конфигурации логирования: Успех')
+    logger_main.info('=== LOGGING CONFIGURATION IS LOADED SUCCESSFULLY ===')
 
 
 async def setup_redis(config: Config) -> tuple[Redis, Redis]:
@@ -48,7 +48,7 @@ async def setup_redis(config: Config) -> tuple[Redis, Redis]:
     
     try:
         await redis_fsm.ping()
-        logger_main.info("Redis FSM успешно подключен.")
+        logger_main.info("=== REDIS FSM SUCCESSFULLY CONNECTED ===")
     except Exception as err:
         logger_main.error(
             f"Ошибка подключения к Redis FSM: {err}", exc_info=True)
@@ -56,7 +56,7 @@ async def setup_redis(config: Config) -> tuple[Redis, Redis]:
     
     try:
         await redis_data.ping()
-        logger_main.info("Redis Data успешно подключен.")
+        logger_main.info("=== REDIS DATA  SUCCESSFULLY CONNECTED ===")
     except Exception as err:
         logger_main.error(
             f"Ошибка подключения к Redis Cache: {err}", exc_info=True)
@@ -85,6 +85,7 @@ async def main():
     bot = Bot(
         token=config.tg_bot.token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    logger_main.info('=== BOT INITIALIZATION SUCCEEDED ===')
     
     storage = RedisStorage(redis=redis_fsm)
     
@@ -92,21 +93,20 @@ async def main():
     
     await set_main_menu(bot=bot)
     
-    logger_main.debug('start profanity_filter')
     profanity_filter = ProfanityFilter()
-    logger_main.debug('end profanity_filter')
+    logger_main.info('=== PROFANITY FILTER INITIALIZATION SUCCEEDED ===')
     
-    logger_main.info('Starting toxicity_filter initialization...')
     toxicity_filter = RussianToxicityClassifier(
             ["SkolkovoInstitute/russian_toxicity_classifier"])
     await toxicity_filter.initialize()
-    logger_main.info(f'Initialization toxicity_filter succeeded')
+    logger_main.info('=== TOXICITY FILTER INITIALIZATION SUCCEEDED ===')
     
     stepik_tasks = StepikTasks(
         stepik_client=stepik_client,
         stepik_courses_ids=stepik_courses_ids,
         bot=bot,
         owners=config.tg_bot.id_owners)
+    logger_main.info('=== STEPIK TASKS INITIALIZATION SUCCEEDED ===')
     
     await start_scheduler(
         stepik_tasks=stepik_tasks,
