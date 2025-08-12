@@ -147,12 +147,12 @@ class StepikTasks:
                     temp_text = 'Чисто ✅'
                     user_info = temp_text + user_info
                     logger_tasks.debug(f'Чисто\n{user_info}')
-            else:
+            elif result_profanity_filter:
                 user_info = text_remove + user_info
                 logger_tasks.warning(f'Profanity filter: {user_info}')
             
             for owner in self.owners:
                 await self.bot.send_message(
                     chat_id=owner,
-                    text=f'Чисто\n{user_info}')
+                    text=f'{user_info}')
                 await asyncio.sleep(0.3)
