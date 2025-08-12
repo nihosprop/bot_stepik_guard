@@ -256,7 +256,7 @@ class ProfanityFilter:
                 if distance(candidate, bad_word) <= max_allowed_distance:
                     # Дополнительная проверка: слово не должно быть частью технического термина
                     if not await self._is_technical_word(candidate):
-                        logger_filters.warning(
+                        logger_filters.debug(
                             f'🟢Найдено по Левенштейну: {bad_word} '
                             f'(кандидат: {candidate}, расстояние: {distance(candidate, bad_word)})')
                         return True
