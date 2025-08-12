@@ -134,7 +134,7 @@ class StepikTasks:
             text_solution_high = 'Решения 🟢\n'
             text_comment_low = 'Коммент 🔴\n'
             text_comment_high = 'Коммент 🟢\n'
-            text_remove = f"🚨 Удалить! 🗑️\n"
+            text_remove = f"🚨 Удалить! 🚨\n"
             
             flag_low_comment: bool = (len(set(comment_text)) <= 2) or (len(
                 comment_text) <= 3)
