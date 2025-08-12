@@ -54,7 +54,7 @@ class ProfanityFilter:
             try:
                 with open(bad_words_file, 'r', encoding='utf-8') as json_f:
                     self.bad_words = json.load(json_f)
-                    logger_filters.debug(f'Добавляются bad_words')
+                    logger_filters.debug(f'Added bad_words')
                     profanity.add_censor_words(self.bad_words)
             
             except (FileNotFoundError, json.JSONDecodeError) as err:
@@ -71,7 +71,7 @@ class ProfanityFilter:
         try:
             with open(technical_words_file, 'r', encoding='utf-8') as json_f:
                 self.tech_words = json.load(json_f)
-                logger_filters.debug(f'Добавляются тех слова')
+                logger_filters.debug(f'Added technical words')
         except Exception as err:
             logger_filters.error(f'🟢Ошибка чтения JSON: {err}', exc_info=True)
         
