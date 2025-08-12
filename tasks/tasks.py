@@ -114,7 +114,7 @@ class StepikTasks:
             comment_time = datetime.strptime(
                 comment.get('time'), '%Y-%m-%dT%H:%M:%SZ')
             
-            user_info = (f'\n<b>Course name:</b> {course_title}\n'
+            user_info = (f'\n<b>Course:</b> {course_title}\n'
                          f'🧑‍🎓 <a href="{link_to_user_profile}">'
                          f' {user_name}</a>\n'
                          f'<b>Reputation:</b> {reputation}\n'
@@ -136,8 +136,9 @@ class StepikTasks:
             text_comment_low = 'Коммент 🔴\n'
             text_comment_high = 'Коммент 🟢\n'
             
-            flag_low_comment: bool = (len(set(comment_text)) == 1) or (len(
+            flag_low_comment: bool = (len(set(comment_text)) <= 2) or (len(
                 comment_text) <= 3)
+            res_text: str = (text_comment_high, text_comment_low)[flag_low_comment]
             
             if result_profanity_filter and len(comment_text) >= 12:
                 result_toxicity_classifier = await toxicity_filter.predict(
@@ -148,13 +149,13 @@ class StepikTasks:
                     user_info = text_remove + user_info
                     logger_tasks.warning(f'Toxicity filter: {user_info}')
                 else:
-                    res_text = (text_comment_high, text_comment_low)[flag_low_comment]
                     user_info = res_text + user_info
-                    logger_tasks.debug(f'Чисто\n{user_info}')
-            
+                    logger_tasks.debug(f'{user_info}')
             elif result_profanity_filter:
                 user_info = text_remove + user_info
                 logger_tasks.warning(f'Profanity filter: {user_info}')
+            else:
+                user_info = res_text + user_info
             
             for owner in self.owners:
                 await self.bot.send_message(
