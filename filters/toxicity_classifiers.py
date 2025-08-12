@@ -23,8 +23,6 @@ class RussianToxicityClassifier:
     
     async def initialize(self) -> None:
         """Инициализирует классификатор (должен быть вызван перед использованием)"""
-        logger_classifier.info('=== TOXICITY FILTER INITIALIZATION STARTED ===')
-        
         for model_name in self.models:
             try:
                 self.classifier = await asyncio.to_thread(
