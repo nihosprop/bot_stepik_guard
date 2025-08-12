@@ -5,6 +5,7 @@ from typing import Any
 from datetime import datetime, timedelta
 
 from aiogram import Bot
+from torch.backends.cudnn import flags
 
 from filters.filters import ProfanityFilter
 from filters.toxicity_classifiers import RussianToxicityClassifier
@@ -135,6 +136,9 @@ class StepikTasks:
             text_comment_low = 'Коммент 🔴\n'
             text_comment_high = 'Коммент 🟢\n'
             
+            flag_low_comment: bool = (len(set(comment_text)) == 1) or (len(
+                comment_text) < 3)
+            
             if result_profanity_filter and len(comment_text) >= 12:
                 result_toxicity_classifier = await toxicity_filter.predict(
                     comment_text.lower(), threshold=0.82)
@@ -144,9 +148,10 @@ class StepikTasks:
                     user_info = text_remove + user_info
                     logger_tasks.warning(f'Toxicity filter: {user_info}')
                 else:
-                    temp_text = 'Чисто ✅'
-                    user_info = temp_text + user_info
+                    res_text = (text_comment_high, text_comment_low)[flag_low_comment]
+                    user_info = res_text + user_info
                     logger_tasks.debug(f'Чисто\n{user_info}')
+            
             elif result_profanity_filter:
                 user_info = text_remove + user_info
                 logger_tasks.warning(f'Profanity filter: {user_info}')
