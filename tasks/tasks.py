@@ -139,7 +139,7 @@ class StepikTasks:
                         temp_text = f"Kомментарий для удаления!\n{user_info}"
                         logger_tasks.warning(temp_text)
                         await self.bot.send_message(chat_id=owner, text=temp_text)
-                        await asyncio.sleep(0.5)
+                        await asyncio.sleep(0.4)
                     else:
                         logger_tasks.debug(f'Чисто\n{user_info}')
                         continue
