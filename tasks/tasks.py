@@ -139,8 +139,16 @@ class StepikTasks:
                     user_info = temp_text + user_info
                     logger_tasks.warning(f'Toxicity filter: {user_info}')
                 else:
+                    temp_text = 'Чисто ✅'
+                    user_info = temp_text + user_info
                     logger_tasks.debug(f'Чисто\n{user_info}')
+            else:
+                temp_text = f"☢️ Для удаления!\n"
+                user_info = temp_text + user_info
+                logger_tasks.warning(f'Profanity filter: {user_info}')
             
             for owner in self.owners:
-                await self.bot.send_message(chat_id=owner, text=user_info)
+                await self.bot.send_message(
+                    chat_id=owner,
+                    text=f'Чисто\n{user_info}')
                 await asyncio.sleep(0.3)
