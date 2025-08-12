@@ -129,22 +129,26 @@ class StepikTasks:
                 text=comment_text)
             logger_tasks.debug(f'{result_profanity_filter=}')
             
+            text_remove = f"🗑️ Удалить!\n"
+            text_solution_low = 'Решение 🔴\n'
+            text_solution_high = 'Решение 🟢\n'
+            text_comment_low = 'Коммент 🔴\n'
+            text_comment_high = 'Коммент 🟢\n'
+            
             if result_profanity_filter and len(comment_text) >= 12:
                 result_toxicity_classifier = await toxicity_filter.predict(
                     comment_text.lower(), threshold=0.82)
                 logger_tasks.debug(f'{result_toxicity_classifier=}')
                 
                 if result_toxicity_classifier.get('is_toxic'):
-                    temp_text = f"Kомментарий для удаления!\n"
-                    user_info = temp_text + user_info
+                    user_info = text_remove + user_info
                     logger_tasks.warning(f'Toxicity filter: {user_info}')
                 else:
                     temp_text = 'Чисто ✅'
                     user_info = temp_text + user_info
                     logger_tasks.debug(f'Чисто\n{user_info}')
             else:
-                temp_text = f"☢️ Для удаления!\n"
-                user_info = temp_text + user_info
+                user_info = text_remove + user_info
                 logger_tasks.warning(f'Profanity filter: {user_info}')
             
             for owner in self.owners:
