@@ -18,7 +18,9 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 256M
+          memory: 1024M  # Максимальная память(После превышения OOM killer убьет контейнер)
+        reservations:
+          memory: 512M   # Гарантированная память
   redis_fsm:
     image: redis:7-alpine
     container_name: YourRedisFSM
