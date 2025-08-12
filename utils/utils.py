@@ -32,9 +32,15 @@ def clean_html_tags(raw_html: str) -> str:
     
     clean_text = re.sub(r'<[^>]+>', '', raw_html)
     clean_text = html.unescape(clean_text)
-    clean_text = re.sub(r'\s+', ' ', clean_text)
+    safe_text = (clean_text.replace(
+        '&', '&amp;').replace(
+        '<', '&lt;').replace(
+        '>', '&gt;').replace('"', '&quot;'))
     
-    return clean_text.strip()
+    # Нормализация пробелов
+    safe_text = re.sub(r'\s+', ' ', safe_text).strip()
+    
+    return safe_text
 
 
 @dataclass
