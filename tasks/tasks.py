@@ -41,13 +41,13 @@ class StepikTasks:
                 redis_key)
             
             if time_last_comment_str is None:
-                time_last_comment = datetime.now() - timedelta(hours=2)
+                time_last_comment = datetime.now() - timedelta(hours=1)
             else:
                 try:
                     time_last_comment: datetime = datetime.strptime(
                         time_last_comment_str, '%Y-%m-%dT%H:%M:%SZ')
                 except ValueError:
-                    time_last_comment = datetime.now() - timedelta(hours=2)
+                    time_last_comment = datetime.now() - timedelta(hours=1)
             
             comments_data: dict[str, Any] = await (
                 self.stepik_client.get_comments(
@@ -137,7 +137,7 @@ class StepikTasks:
             text_comment_high = 'Коммент 🟢\n'
             
             flag_low_comment: bool = (len(set(comment_text)) == 1) or (len(
-                comment_text) < 3)
+                comment_text) <= 3)
             
             if result_profanity_filter and len(comment_text) >= 12:
                 result_toxicity_classifier = await toxicity_filter.predict(
