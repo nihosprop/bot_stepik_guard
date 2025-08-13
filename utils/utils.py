@@ -83,17 +83,6 @@ class MessageProcessor:
     async def deletes_messages(self,
                                msgs_for_del=False,
                                msgs_remove_kb=False) -> None:
-        """
-        Deleting messages from chat based on passed parameters.
-        This method removes various types of messages from a chat.
-        Messages are deleted only if the corresponding parameters
-        are set to True.
-        If no parameters are specified, the method does not perform any
-        actions.
-        :param msgs_for_del: bool
-        :param msgs_remove_kb: bool
-        :return: None
-        """
         logger_utils.debug(f'Entry')
         
         if hasattr(self._type_update, 'message') and self._type_update.message:
@@ -134,21 +123,6 @@ class MessageProcessor:
                           value: Message | CallbackQuery,
                           msgs_for_del=False,
                           msgs_remove_kb=False) -> None:
-        """
-        The writes_msg_id_to_storage method is intended for writing an identifier
-        messages in the store depending on the values of the passed flags.
-        It analyzes the method signature, determines the parameters with the set
-        defaults to True, and then stores the message ID
-        in the corresponding list in the object's state.
-        After the recording process is completed, a success message is logged.
-        completion of the operation.
-        :param value: Message | CallbackQuery
-        :param msgs_for_del: bool
-        :param msgs_remove_kb: bool
-        :return: None
-        """
-        logger_utils.debug('Entry')
-        
         flags: dict = {
             'msgs_for_del': msgs_for_del,
             'msgs_remove_kb': msgs_remove_kb}
@@ -165,18 +139,7 @@ class MessageProcessor:
         logger_utils.debug('Exit')
     
     async def removes_inline_kb(self, key='msgs_remove_kb') -> None:
-        """
-        Removes built-in keyboards from messages.
-        This function gets message IDs from the state and removes
-        built-in keyboards from these messages. After removing the keyboards,
-        the state is updated to clear the list of message IDs.
-        Logs:
-            — Start the keyboard removal process.
-            — Errors when removing the keyboard.
-            — Successful completion of the keyboard removal process.
-        :param key: Str
-        :return: None
-        """
+
         logger_utils.debug('Entry')
         
         msgs: list = dict(await self._state.get_data()).get(key, [])
