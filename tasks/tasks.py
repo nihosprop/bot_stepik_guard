@@ -161,4 +161,4 @@ class StepikTasks:
                 await self.bot.send_message(
                     chat_id=owner,
                     text=f'{user_info}')
-                await asyncio.sleep(0.3)
+                await asyncio.sleep(0.5)
