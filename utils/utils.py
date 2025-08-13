@@ -28,7 +28,14 @@ async def get_username(_type_update: Message | CallbackQuery | ChatFullInfo) -> 
 
 
 def clean_html_tags(raw_html: str) -> str:
-    """Удаляет HTML-теги из строки, оставляя только текст."""
+    """Удаляет HTML-теги из строки, оставляя только текст.
+    
+    Args:
+        raw_html (str): Строка с HTML-тегами.
+        
+    Returns:
+        str: Текст без HTML-тегов.
+    """
     
     clean_text = re.sub(r'<[^>]+>', '', raw_html)
     clean_text = html.unescape(clean_text)
