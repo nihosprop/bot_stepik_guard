@@ -19,6 +19,21 @@ owners_router.callback_query.filter(AccessRightsFilter())
 async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
                     stepik_courses_ids: list[int]) -> None:
+    """
+    Handler for the /start command.
+
+    Sends a welcome message to the user and starts monitoring comments on the
+    courses specified in the `stepik_courses_ids` list.
+
+    Args:
+        msg (Message): The message object that triggered the /start command
+        msg_processor (MessageProcessor): An instance of the MessageProcessor
+            class for deleting messages
+        stepik_courses_ids (list[int]): A list of course IDs to monitor for
+            comments
+    Returns:
+        None
+    """
     logger_owners.debug('Entry')
     
     await msg_processor.deletes_messages(msgs_for_del=True)
