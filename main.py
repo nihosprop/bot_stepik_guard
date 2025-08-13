@@ -96,6 +96,7 @@ async def main():
     profanity_filter = ProfanityFilter()
     logger_main.info('=== PROFANITY FILTER INITIALIZATION SUCCEEDED ===')
     
+    logger_main.info('=== TOXICITY FILTER START INITIALIZATION ===')
     toxicity_filter = RussianToxicityClassifier(
             ["SkolkovoInstitute/russian_toxicity_classifier"])
     await toxicity_filter.initialize()
