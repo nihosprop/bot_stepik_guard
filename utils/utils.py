@@ -53,10 +53,29 @@ def clean_html_tags(raw_html: str) -> str:
 @dataclass
 class MessageProcessor:
     """
-    Class for managing and processing chat messages.
-
-    _message (Message | CallbackQuery): The message or callback query object.
-    _state (FSMContext): The finite state machine context.
+    Класс для удаления сообщений и установки клавиатур.
+    
+    Attributes:
+        _type_update (Union[Message, CallbackQuery]): Объект апдейта.
+        _state (FSMContext): Объект контекста FSM.
+        
+    Methods:
+        deletes_messages(msgs_for_del=False, msgs_remove_kb=False):
+         Удаляет сообщения из чата.
+        save_msg_id(value, msgs_for_del=False, msgs_remove_kb=False):
+         Сохраняет идентификатор сообщения в хранилище.
+        removes_inline_kb(msgs_remove_kb=False):
+         Удаляет встроенную клавиатуру.
+    Note:
+        Этот класс предназначен для управления сообщениями в чате
+         и установки клавиатур. Он предоставляет методы для удаления
+         сообщений, сохранения и удаления клавиатур.
+    
+    Example:
+        message_processor = MessageProcessor(update, state)
+        await message_processor.deletes_messages(msgs_for_del=True)
+        await message_processor.removes_inline_kb(msgs_remove_kb=True)
+    
     """
     _type_update: Message | CallbackQuery
     _state: FSMContext
