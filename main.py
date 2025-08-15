@@ -11,7 +11,7 @@ from aiogram import Bot, Dispatcher
 
 from config_data.config import Config, load_config
 from filters.toxicity_classifiers import RussianToxicityClassifier
-from handlers import other, owners_handlers
+from handlers import other, owners_handlers, user_handlers
 from keyboards.set_menu import set_main_menu
 from scheduler import start_scheduler
 from tasks.tasks import StepikTasks
@@ -122,6 +122,7 @@ async def main():
         # routers
         dp.include_router(owners_handlers.owners_router)
         dp.include_router(other.other_router)
+        dp.include_router(user_handlers.user_router)
         
         # middlewares
         dp.update.middleware(MsgProcMiddleware())
