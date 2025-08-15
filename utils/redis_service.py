@@ -1,7 +1,9 @@
+import logging
 from dataclasses import dataclass
 
 from aiogram.fsm.storage.redis import Redis
 
+logger = logging.getLogger(__name__)
 
 @dataclass
 class RedisService:

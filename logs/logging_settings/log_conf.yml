@@ -147,6 +147,11 @@ loggers:
     handlers: [ stdout, warning_file, critical_file ]
     propagate: no
 
+  utils.redis_service:
+    level: ${LOG_LEVEL}
+    handlers: [ stdout, warning_file, critical_file ]
+    propagate: no
+
   # tasks
   tasks.tasks:
     level: ${LOG_LEVEL}
