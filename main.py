@@ -110,6 +110,9 @@ async def main():
         owners=config.tg_bot.id_owners)
     logger_main.info('=== STEPIK TASKS INITIALIZATION SUCCEEDED ===')
     
+    stepik_service = RedisService(redis=redis_data)
+    logger_main.info('=== STEPIK SERVICE INITIALIZATION SUCCEEDED ===')
+    
     await start_scheduler(
         stepik_tasks=stepik_tasks,
         profanity_filter=profanity_filter,
@@ -133,7 +136,8 @@ async def main():
                 redis_fsm=redis_fsm,
                 redis_data=redis_data,
                 stepik_client=stepik_client,
-                stepik_courses_ids=stepik_courses_ids))
+                stepik_courses_ids=stepik_courses_ids,
+                stepik_service=stepik_service))
     
     except Exception as err:
         logger_main.exception(err)
