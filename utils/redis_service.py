@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from redis.asyncio import Redis
+from aiogram.fsm.storage.redis import Redis
 
 
 @dataclass
