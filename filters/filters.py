@@ -199,24 +199,6 @@ class ProfanityFilter:
         normalized_text = re.sub(r'(.)\1+', r'\1', normalized_text)
         return normalized_text
     
-    # TODO проверить использование _is_valid_match
-    async def _is_valid_match(self, candidate: str, bad_word: str) -> bool:
-        """Проверка, является ли совпадение валидным"""
-        # Если в кандидате есть цифры/спецсимволы — считаем подозрительным
-        if any(c in self.special_chars for c in candidate):
-            return True
-        
-        # Для коротких слов (3-4 символа) требуем точного совпадения после нормализации
-        if len(bad_word) <= 3:
-            return candidate == bad_word
-        
-        # Для слов из 5 символов — максимум 1 ошибка
-        if len(bad_word) == 5:
-            return distance(candidate, bad_word) <= 1
-        
-        # Для более длинных слов — максимум 2 ошибки
-        return distance(candidate, bad_word) <= 2
-    
     async def _check_levenshtein(self, phrase: str) -> bool:
         """Улучшенная проверка с контекстным анализом"""
         normalized = await self._normalize_text(phrase)
