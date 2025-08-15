@@ -18,6 +18,7 @@ from tasks.tasks import StepikTasks
 from utils.stepik import StepikAPIClient
 from middlewares.outer import MsgProcMiddleware
 from filters.filters import ProfanityFilter
+from utils.redis_service import RedisService
 
 logger_main = logging.getLogger(__name__)
 
