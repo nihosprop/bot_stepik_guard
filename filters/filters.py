@@ -15,16 +15,19 @@ logger_filters = logging.getLogger(__name__)
 
 
 class AccessRightsFilter(BaseFilter):
-    def __init__(self, flag_admins: bool = False):
-        self.flag_admins = flag_admins
+    def __init__(self, flag_users: bool = False):
+        self.flag_users = flag_users
     
     async def __call__(self,
                        msg: Message | CallbackQuery,
                        owners: list[int],
                        stepik_service: RedisService) -> bool:
-        user_tg_id = msg.from_user.id
-        users = await stepik_service.get_users()
-        return user_tg_id in owners + users
+        user_tg_id: int = msg.from_user.id
+        
+        if self.flag_users:
+            users = await stepik_service.get_users()
+            owners.extend(users)
+        return user_tg_id in owners
 
 
 class ProfanityFilter:
