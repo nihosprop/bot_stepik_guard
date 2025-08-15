@@ -121,8 +121,8 @@ async def main():
     try:
         # routers
         dp.include_router(owners_handlers.owners_router)
-        dp.include_router(other.other_router)
         dp.include_router(user_handlers.user_router)
+        dp.include_router(other.other_router)
         
         # middlewares
         dp.update.middleware(MsgProcMiddleware())
