@@ -21,11 +21,11 @@ class AccessRightsFilter(BaseFilter):
     async def __call__(self,
                        msg: Message | CallbackQuery,
                        owners: list[int],
-                       stepik_service: RedisService) -> bool:
+                       redis_service: RedisService) -> bool:
         user_tg_id: int = msg.from_user.id
         
         if self.flag_users:
-            users: list[int] = await stepik_service.get_users()
+            users: list[int] = await redis_service.get_users()
             owners.extend(users)
         return user_tg_id in owners
 
