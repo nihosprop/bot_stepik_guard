@@ -10,7 +10,7 @@ from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
 
 from filters.patterns import DataProfanity
-
+from utils.redis_service import RedisService
 logger_filters = logging.getLogger(__name__)
 
 
@@ -20,10 +20,11 @@ class AccessRightsFilter(BaseFilter):
     
     async def __call__(self,
                        msg: Message | CallbackQuery,
-                       owners: list[int]) -> bool:
+                       owners: list[int],
+                       stepik_service: RedisService) -> bool:
         user_tg_id = msg.from_user.id
-        
-        return user_tg_id in owners
+        users = await stepik_service.get_users()
+        return user_tg_id in owners + users
 
 
 class ProfanityFilter:
