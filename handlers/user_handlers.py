@@ -34,7 +34,7 @@ async def cmd_start(msg: Message,
     Returns:
         None
     """
-    logger_owners.debug('Entry')
+    logger.debug('Entry')
     
     await msg_processor.deletes_messages(msgs_for_del=True)
     
@@ -51,4 +51,4 @@ async def cmd_start(msg: Message,
     value = await msg.answer(text=text, reply_markup=kb_start)
     
     await msg_processor.save_msg_id(value, msgs_for_del=True)
-    logger_owners.debug('Exit')
+    logger.debug('Exit')
