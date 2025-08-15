@@ -210,7 +210,7 @@ class ProfanityFilter:
         if len(bad_word) <= 3:
             return candidate == bad_word
         
-        # Для слов из 5 символов - максимум 1 ошибка
+        # Для слов из 5 символов — максимум 1 ошибка
         if len(bad_word) == 5:
             return distance(candidate, bad_word) <= 1
         
