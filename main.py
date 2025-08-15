@@ -137,7 +137,7 @@ async def main():
                 redis_data=redis_data,
                 stepik_client=stepik_client,
                 stepik_courses_ids=stepik_courses_ids,
-                stepik_service=redis_service))
+                redis_service=redis_service))
     
     except Exception as err:
         logger_main.exception(err)
