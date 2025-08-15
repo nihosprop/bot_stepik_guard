@@ -39,7 +39,7 @@ async def cmd_start(msg: Message,
     await msg_processor.deletes_messages(msgs_for_del=True)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
-            f'Бот начал мониторинг комментариев на ваших курсах:\n'
+            f'Бот мониторит на курсы:\n'
             f'{stepik_courses_ids}\n'
             f'При каждом, не прошедшем фильтр комментарии, бот его удалит и '
             f'вышлет вам в ЛС данные.\n\n'
