@@ -214,7 +214,7 @@ class ProfanityFilter:
         if len(bad_word) == 5:
             return distance(candidate, bad_word) <= 1
         
-        # Для более длинных слов - максимум 2 ошибки
+        # Для более длинных слов — максимум 2 ошибки
         return distance(candidate, bad_word) <= 2
     
     async def _check_levenshtein(self, phrase: str) -> bool:
