@@ -8,12 +8,8 @@ logger_owners = logging.getLogger(__name__)
 
 other_router = Router()
 
-other_router.message.filter(AccessRightsFilter())
-other_router.callback_query.filter(AccessRightsFilter())
-
-
 @other_router.message()
-async def other_handler(msg: Message):
+async def other_handler(msg: Message) -> None:
     logger_owners.debug('Entry')
     await msg.delete()
     logger_owners.debug('Exit')
