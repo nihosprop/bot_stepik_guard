@@ -202,7 +202,7 @@ class ProfanityFilter:
     # TODO проверить использование _is_valid_match
     async def _is_valid_match(self, candidate: str, bad_word: str) -> bool:
         """Проверка, является ли совпадение валидным"""
-        # Если в кандидате есть цифры/спецсимволы - считаем подозрительным
+        # Если в кандидате есть цифры/спецсимволы — считаем подозрительным
         if any(c in self.special_chars for c in candidate):
             return True
         
