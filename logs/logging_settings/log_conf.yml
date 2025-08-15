@@ -76,7 +76,7 @@ loggers:
     handlers: [ stdout, warning_file, critical_file ]
     propagate: no
 
-  handlers.admin_handlers:
+  handlers.user_handlers:
     level: ${LOG_LEVEL}
     handlers: [ stdout, warning_file, critical_file ]
     propagate: no
