@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import Router, F
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 from filters.filters import AccessRightsFilter
 
 from keyboards.keyboards import kb_start
@@ -52,3 +52,9 @@ async def cmd_start(msg: Message,
     
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     logger.debug('Exit')
+
+@user_router.callback_query(F.data.in_(['add_course_id', 'get_logs']))
+async def in_development(clbk: CallbackQuery):
+    logger.debug('Entry')
+    logger.debug('Exit')
+    await clbk.answer('Кнопка в разработке', show_alert=True)
