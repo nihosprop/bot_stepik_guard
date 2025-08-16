@@ -34,7 +34,6 @@ class StepikTasks:
             
             course_title = await self.stepik_client.get_course_title(
                 course_id=course_id)
-            # logger_tasks.debug(f'Course title: {course_title}')
             
             redis_key = f'{course_id}:time_last_comment'
             time_last_comment_str = await self.stepik_client.redis_client.get(
