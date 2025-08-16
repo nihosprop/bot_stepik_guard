@@ -26,9 +26,9 @@ async def cmd_start(msg: Message,
     Args:
         msg (Message): The message object that triggered the /start command
         msg_processor (MessageProcessor): An instance of the MessageProcessor
-            class for deleting messages
+            class for deleting messages.
         stepik_courses_ids (list[int]): A list of course IDs to monitor for
-            comments
+            comments.
     """
     logger_owners.debug('Entry')
     
