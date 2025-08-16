@@ -90,6 +90,9 @@ async def main():
     
     storage = RedisStorage(redis=redis_fsm)
     
+    redis_service = RedisService(redis=redis_data)
+    logger_main.info('=== STEPIK SERVICE INITIALIZATION SUCCEEDED ===')
+    
     dp = Dispatcher(storage=storage)
     
     await set_main_menu(bot=bot)
@@ -110,8 +113,7 @@ async def main():
         owners=config.tg_bot.id_owners)
     logger_main.info('=== STEPIK TASKS INITIALIZATION SUCCEEDED ===')
     
-    redis_service = RedisService(redis=redis_data)
-    logger_main.info('=== STEPIK SERVICE INITIALIZATION SUCCEEDED ===')
+    
     
     await start_scheduler(
         stepik_tasks=stepik_tasks,
