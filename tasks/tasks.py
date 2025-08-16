@@ -5,10 +5,10 @@ from typing import Any
 from datetime import datetime, timedelta
 
 from aiogram import Bot
-from torch.backends.cudnn import flags
 
 from filters.filters import ProfanityFilter
 from filters.toxicity_classifiers import RussianToxicityClassifier
+from utils.redis_service import RedisService
 from utils.stepik import StepikAPIClient
 from utils.utils import clean_html_tags
 
@@ -17,10 +17,10 @@ logger_tasks = logging.getLogger(__name__)
 
 @dataclass
 class StepikTasks:
-    stepik_client: StepikAPIClient
     bot: Bot
+    stepik_client: StepikAPIClient
+    redis_service: RedisService
     owners: list[int] = field(default_factory=list)
-    stepik_courses_ids: list[int] = field(default_factory=list)
     
     async def check_comments(self,
                              profanity_filter: ProfanityFilter,
@@ -28,8 +28,13 @@ class StepikTasks:
         logger_tasks.debug("🟢Начало проверки комментариев")
         
         all_comments = []
+        stepik_courses_ids: list[int] = await self.redis_service.get_stepik_ids()
         
-        for course_id in self.stepik_courses_ids:
+        if not stepik_courses_ids:
+            logger_tasks.debug('Нет активных курсов')
+            return
+        
+        for course_id in stepik_courses_ids:
             logger_tasks.debug(f'Поиск в {course_id=}')
             
             course_title = await self.stepik_client.get_course_title(

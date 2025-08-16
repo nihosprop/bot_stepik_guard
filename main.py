@@ -108,12 +108,10 @@ async def main():
     
     stepik_tasks = StepikTasks(
         stepik_client=stepik_client,
-        stepik_courses_ids=stepik_courses_ids,
+        redis_service=redis_service,
         bot=bot,
         owners=config.tg_bot.id_owners)
     logger_main.info('=== STEPIK TASKS INITIALIZATION SUCCEEDED ===')
-    
-    
     
     await start_scheduler(
         stepik_tasks=stepik_tasks,
