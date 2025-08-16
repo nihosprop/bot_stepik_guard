@@ -95,3 +95,12 @@ class RedisService:
         await pipe.hdel(f'{self.user_tag}:{tg_user_id}', self.stepik_id)
         await pipe.srem(self.stepik_ids_set, str(user_stepik_id))
         await pipe.execute()
+    
+    async def get_stepik_ids(self) -> list[int]:
+        """
+        Returns a list of all Stepik IDs in the Redis database.
+        Returns:
+            list[int]: A list of unique Stepik IDs.
+        """
+        stepik_ids = await self.redis.smembers(self.stepik_ids_set)
+        return [int(stepik_id) for stepik_id in stepik_ids]
