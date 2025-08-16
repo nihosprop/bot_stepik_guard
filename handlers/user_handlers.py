@@ -60,8 +60,3 @@ async def shut(clbk: CallbackQuery):
     logger.debug('Entry')
     await clbk.answer('Кнопка в разработке', show_alert=True)
     logger.debug('Exit')
-
-
-
-
-
