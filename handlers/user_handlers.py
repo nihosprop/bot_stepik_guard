@@ -4,7 +4,6 @@ from aiogram import F, Router
 from aiogram.types import Message
 
 from filters.filters import AccessRightsFilter
-from keyboards.keyboards import kb_add_course
 from utils.utils import get_username
 from utils.utils import MessageProcessor
 
@@ -17,7 +16,8 @@ user_router.callback_query.filter(AccessRightsFilter(flag_users=True))
 
 
 @user_router.message(F.text == '/start')
-async def cmd_start(msg: Message, msg_processor: MessageProcessor,
+async def cmd_start(msg: Message,
+                    msg_processor: MessageProcessor,
                     stepik_courses_ids: list[int]) -> None:
     """Handler for the /start command.
 
