@@ -31,7 +31,7 @@ class StepikTasks:
         stepik_courses_ids: list[int] = await self.redis_service.get_stepik_ids()
         
         if not stepik_courses_ids:
-            logger_tasks.debug('Нет активных курсов')
+            logger_tasks.info('Нет активных курсов')
             return
         
         for course_id in stepik_courses_ids:
