@@ -4,5 +4,5 @@ import logging
 logger_lexicon = logging.getLogger(__name__)
 
 @dataclass
-class LexiconCommandsRu:
+class LexiconRu:
     start: str = 'Запуск'
