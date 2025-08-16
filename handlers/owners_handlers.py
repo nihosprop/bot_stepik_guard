@@ -6,6 +6,7 @@ from aiogram.types import CallbackQuery, Message
 from filters.filters import AccessRightsFilter
 from utils.utils import MessageProcessor, get_username
 from keyboards.keyboards import kb_add_course
+from lexicon.lexicon_ru import LexiconRu
 
 logger_owners = logging.getLogger(__name__)
 
@@ -35,13 +36,11 @@ async def cmd_start(msg: Message,
     await msg_processor.deletes_messages(msgs_for_del=True)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
-            f'Stepik курсы, которые бот мониторит:\n'
+            f'Бот отслеживает курсы Stepik:\n'
             f'{stepik_courses_ids}\n'
-            f'При каждом, не прошедшем фильтр комментарии, бот его удалит и '
-            f'вышлет вам в ЛС данные с пометкой "УДАЛЕНО".\n\n'
-            f'Для быстрого понимания важности комментов:\n'
-            f'<pre>Зеленый кружок 🟢 - Вероятно информативный коммент.\n\n'
-            f'Желтый кружок 🟡 - Вероятно НЕ информативный коммент.</pre>\n'
+            f'<b>Важность комментов обозначена кружками:</b>\n'
+            f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
+            f'Красный кружок 🔴 - Вероятно НЕ информативный.</pre>\n'
             f'<b>Приятного полета</b> 🫡')
     
     value = await msg.answer(text=text, reply_markup=kb_add_course)

@@ -4,8 +4,7 @@ from aiogram import F, Router
 from aiogram.types import Message
 
 from filters.filters import AccessRightsFilter
-from utils.utils import get_username
-from utils.utils import MessageProcessor
+from utils.utils import MessageProcessor, get_username
 
 logger = logging.getLogger(__name__)
 
@@ -34,14 +33,16 @@ async def cmd_start(msg: Message,
         None
     """
     logger.debug('Entry')
+
     await msg_processor.deletes_messages(msgs_for_del=True)
-    value = await msg.answer(
-        f'Приветствую, {await get_username(msg)}!\n'
-        f'Бот отслеживает курсы Stepik:\n'
-        f'{stepik_courses_ids}\n'
-        f'Важность комментов обозначена кружками:\n'
-        f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
-        f'Красный кружок 🔴 - Вероятно НЕ информативный.</pre>\n')
-    
+    text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
+            f'Бот отслеживает курсы Stepik:\n'
+            f'{stepik_courses_ids}\n'
+            f'<b>Важность комментов обозначена кружками:</b>\n'
+            f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
+            f'Красный кружок 🔴 - Вероятно НЕ информативный.</pre>\n'
+            f'<b>Приятного полета</b> 🫡')
+    value = await msg.answer(text=text)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
+
     logger.debug('Exit')
