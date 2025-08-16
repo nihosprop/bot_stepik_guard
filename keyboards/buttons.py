@@ -1,4 +1,6 @@
-BUTT_ADD_COURSE: dict[str, str] = {
-    'add_course': 'Добавить курс'}
+BUTTS_OWN_START: dict[str, str] = {
+    'settings_courses': 'Курсы',
+    'settings_users': 'Юзеры',
+    'user_settings': 'Настройки'}
 
 BUTTS_USER_START: dict[str, str] = {'user_settings': 'Настройки'}
