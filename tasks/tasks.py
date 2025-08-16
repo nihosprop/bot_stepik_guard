@@ -53,7 +53,6 @@ class StepikTasks:
                     course_id=course_id))
             
             course_comments = comments_data.get("comments", [])
-            # logger_tasks.debug(f'{course_comments=}')
             new_comments = []
             max_comments_time = time_last_comment
             
