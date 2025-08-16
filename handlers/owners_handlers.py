@@ -5,7 +5,7 @@ from aiogram.types import CallbackQuery, Message
 
 from filters.filters import AccessRightsFilter
 from utils.utils import MessageProcessor, get_username
-from keyboards.keyboards import kb_start
+from keyboards.keyboards import kb_add_course
 
 logger_owners = logging.getLogger(__name__)
 
@@ -21,18 +21,14 @@ async def cmd_start(msg: Message,
                     stepik_courses_ids: list[int]) -> None:
     """
     Handler for the /start command.
-
     Sends a welcome message to the user and starts monitoring comments on the
     courses specified in the `stepik_courses_ids` list.
-
     Args:
         msg (Message): The message object that triggered the /start command
         msg_processor (MessageProcessor): An instance of the MessageProcessor
             class for deleting messages
         stepik_courses_ids (list[int]): A list of course IDs to monitor for
             comments
-    Returns:
-        None
     """
     logger_owners.debug('Entry')
     
@@ -48,13 +44,13 @@ async def cmd_start(msg: Message,
             f'Желтый кружок 🟡 - Вероятно НЕ информативный коммент.</pre>\n'
             f'<b>Приятного полета</b> 🫡')
     
-    value = await msg.answer(text=text, reply_markup=kb_start)
+    value = await msg.answer(text=text, reply_markup=kb_add_course)
     
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     logger_owners.debug('Exit')
 
 
-@owners_router.callback_query(F.data.in_(['add_course_id', 'get_logs']))
+@owners_router.callback_query(F.data.in_(['add_course']))
 async def in_development(clbk: CallbackQuery):
     logger_owners.debug('Entry')
     await clbk.answer('Кнопка в разработке', show_alert=True)

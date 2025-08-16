@@ -1,10 +1,10 @@
 import logging
 
-from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
-from filters.filters import AccessRightsFilter
+from aiogram import F, Router
+from aiogram.types import Message
 
-from keyboards.keyboards import kb_start
+from filters.filters import AccessRightsFilter
+from keyboards.keyboards import kb_add_course
 from utils.utils import get_username
 from utils.utils import MessageProcessor
 
@@ -15,9 +15,33 @@ user_router = Router()
 user_router.message.filter(AccessRightsFilter(flag_users=True))
 user_router.callback_query.filter(AccessRightsFilter(flag_users=True))
 
+
 @user_router.message(F.text == '/start')
-async def cmd_start(msg: Message, msg_processor: MessageProcessor):
+async def cmd_start(msg: Message, msg_processor: MessageProcessor,
+                    stepik_courses_ids: list[int]) -> None:
+    """Handler for the /start command.
+
+    Sends a welcome message to the user and starts monitoring comments on the
+    courses specified in the `stepik_courses_ids` list.
+
+    Args:
+        msg (Message): The message object that triggered the /start command
+        msg_processor (MessageProcessor): An instance of the MessageProcessor
+            class for deleting messages
+        stepik_courses_ids (list[int]): A list of course IDs to monitor for
+            comments
+    Returns:
+        None
+    """
     logger.debug('Entry')
     await msg_processor.deletes_messages(msgs_for_del=True)
-    await msg.answer(f'Приветствую, {await get_username(msg)}!', reply_markup=kb_start)
+    value = await msg.answer(
+        f'Приветствую, {await get_username(msg)}!\n'
+        f'Бот отслеживает курсы Stepik:\n'
+        f'{stepik_courses_ids}\n'
+        f'Для быстрого понимания важности комментов:\n'
+        f'Зеленый кружок 🟢 - Вероятно информативный коммент.\n'
+        f'Красный кружок 🔴 - Предположительно неинформативный коммент.\n')
+    
+    await msg_processor.save_msg_id(value, msgs_for_del=True)
     logger.debug('Exit')
