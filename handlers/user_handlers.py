@@ -50,3 +50,15 @@ async def cmd_start(msg: Message,
     await msg_processor.save_msg_id(value, msgs_for_del=True)
 
     logger.debug('Exit')
+
+
+@user_router.callback_query(F.data.in_(['all_settings']))
+async def shut(clbk: CallbackQuery):
+    logger.debug('Entry')
+    await clbk.answer('Кнопка в разработке', show_alert=True)
+    logger.debug('Exit')
+
+
+
+
+
