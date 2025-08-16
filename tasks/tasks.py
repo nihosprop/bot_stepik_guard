@@ -68,11 +68,6 @@ class StepikTasks:
                 comment_time: datetime = datetime.strptime(
                     comment_time_str, '%Y-%m-%dT%H:%M:%SZ')
                 
-                # logger_tasks.debug(
-                #     f'Comment_time:{comment_time.strftime("%Y-%m-%d %H:%M:%S")}')
-                # logger_tasks.debug(
-                #     f'Time_last_comment{time_last_comment.strftime("%Y-%m-%d %H:%M:%S")}')
-                
                 if comment_time > time_last_comment:
                     new_comments.append(comment)
                     if comment_time > max_comments_time:
