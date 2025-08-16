@@ -4,7 +4,7 @@ from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 
 from filters.filters import AccessRightsFilter
-from keyboards.keyboards import kb_start, kb_user_start, kb_own_start
+from keyboards.keyboards import kb_user_start, kb_own_start
 from utils.utils import MessageProcessor, get_username
 
 logger = logging.getLogger(__name__)
