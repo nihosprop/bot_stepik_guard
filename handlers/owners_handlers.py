@@ -23,7 +23,9 @@ owners_router.message.filter(AccessRightsFilter())
 owners_router.callback_query.filter(AccessRightsFilter())
 
 
-@owners_router.callback_query(F.data == '/cancel', ~StateFilter(default_state))
+# TODO: перенести в users_handlers и добавить к /start
+@owners_router.callback_query(
+    F.data.in_(['cancel', '/exit']), ~StateFilter(default_state))
 async def cancel_callback(clbk: CallbackQuery,
                           state: FSMContext,
                           msg_processor: MessageProcessor,
