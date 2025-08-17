@@ -5,7 +5,6 @@ logger = logging.getLogger(__name__)
 
 class UsersSettingsStates(StatesGroup):
     settings_users = State()
-    add_user = State()
     fill_tg_user_id = State()
 
 class CoursesSettingsStates(StatesGroup):
