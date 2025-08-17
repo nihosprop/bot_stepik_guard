@@ -2,9 +2,6 @@ import logging
 from dataclasses import dataclass
 
 from aiogram.fsm.storage.redis import Redis
-from aiogram.types import CallbackQuery, Message
-
-from utils.utils import get_username
 
 logger = logging.getLogger(__name__)
 
@@ -22,33 +19,21 @@ class RedisService:
     users_list_set: str = 'bot:users'
     stepik_ids_set: str = 'bot:stepik_ids'
     
-    async def add_user(self, tg_user_id: int, event: Message | CallbackQuery):
+    async def add_user(self, tg_user_id: int):
         """
         Adds a user to the Redis database.
-        
-        This method adds a user to the Redis database. It creates a hash for
-        the user with the user's Telegram ID and username. The method uses a
-        pipeline to ensure atomic operations when setting the user's data in
-        Redis. The username is retrieved asynchronously using the provided
-        event object, which can be either a message or a callback query.
-        
         Args:
             tg_user_id (int): The unique identifier of the user to be added.
-            event (Message | CallbackQuery): The message or callback query
-            object that triggered the user addition.
         """
-
+        
         user_key = f'{self.user_tag}:{tg_user_id}'
         
         pipe = self.redis.pipeline(transaction=True)
         await pipe.hset(
-            name=user_key,
-            mapping={
-                self.tg_id: tg_user_id,
-                self.tg_username: await get_username(event)})
+            name=user_key, mapping={self.tg_id: tg_user_id})
         await pipe.sadd(self.users_list_set, str(tg_user_id))
         await pipe.execute()
-        logger.info('User added to Redis')
+        logger.info(f'User TG_ID:{tg_user_id} added to Redis')
     
     async def remove_user(self, tg_user_id: int):
         """
