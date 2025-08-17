@@ -19,3 +19,9 @@ async def in_development(clbk: CallbackQuery):
     logger_owners.debug('Entry')
     await clbk.answer('Кнопка в разработке', show_alert=True)
     logger_owners.debug('Exit')
+
+@owners_router.callback_query(F.data == 'settings_courses')
+async def settings_courses(clbk: CallbackQuery):
+    logger_owners.debug('Entry')
+    await clbk.answer('Кнопка в разработке', show_alert=True)
+    logger_owners.debug('Exit')
