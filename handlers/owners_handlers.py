@@ -40,8 +40,8 @@ async def cancel_callback(clbk: CallbackQuery,
     logger_owners.debug('Exit')
 
 
-@owners_router.callback_query(F.data == 'settings_users',
-                              StateFilter(default_state))
+@owners_router.callback_query(
+    F.data == 'settings_users', StateFilter(default_state))
 async def settings_users(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
