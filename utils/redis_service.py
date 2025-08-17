@@ -83,6 +83,35 @@ class RedisService:
         users = await self.redis.smembers(self.users_list_set)
         return [int(user) for user in users]
     
+    async def get_users_info(self) -> str:
+        """
+        Returns a list of all users in the Redis database.
+        Returns:
+            list[dict]: A list of dictionaries containing user information.
+        """
+        users_ids = await self.redis.smembers(self.users_list_set)
+        if not users_ids:
+            return []
+        
+        str_users_ids = [str(user_id) for user_id in users_ids]
+        keys = [f'{self.user_tag}:{user_id}' for user_id in str_users_ids]
+        
+        pipe = await self.redis.pipeline(transaction=True)
+        for key in keys:
+            await pipe.hgetall(key)
+        
+        users: list[dict] = await pipe.execute()
+
+        row_users = ''
+        
+        for user in users:
+            username = user.get(self.tg_username)
+            tg_id = int(user.get(self.tg_id))
+            row_users += (f'👨‍🎓 <a href="tg://user?id={tg_id}">'
+                          f'{username}:{tg_id}</a>\n')
+        
+        return row_users
+    
     async def add_stepik_id(self, tg_user_id: int, user_stepik_id: int) -> None:
         """
         Adds a Stepik ID to a user's hash.
