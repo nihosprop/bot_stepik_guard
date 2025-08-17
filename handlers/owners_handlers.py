@@ -102,8 +102,6 @@ async def back_from_add_user(clbk: CallbackQuery, state: FSMContext):
     
     logger_owners.debug('Exit')
 
-
-
 @owners_router.message(
     TgUserIDFilter(), StateFilter(UsersSettingsStates.add_user))
 async def fill_tg_user_id(msg: Message, state: FSMContext):
