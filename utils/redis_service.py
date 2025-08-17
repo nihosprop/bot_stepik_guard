@@ -74,7 +74,7 @@ class RedisService:
         return await self.redis.hexists(
             name=f'{self.user_tag}:{tg_user_id}', key=self.tg_id)
     
-    async def get_users(self) -> list[int]:
+    async def get_tg_users(self) -> list[int]:
         """
         Returns a list of all users in the Redis database.
         Returns:
