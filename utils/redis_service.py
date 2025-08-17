@@ -8,6 +8,7 @@ from utils.utils import get_username
 
 logger = logging.getLogger(__name__)
 
+
 @dataclass
 class RedisService:
     """
@@ -21,8 +22,7 @@ class RedisService:
     users_list_set: str = 'bot:users'
     stepik_ids_set: str = 'bot:stepik_ids'
     
-    async def add_user(self, tg_user_id: int,
-                       event: Message | CallbackQuery):
+    async def add_user(self, tg_user_id: int, event: Message | CallbackQuery):
         """
         Adds a user to the Redis database.
         Args:
@@ -34,8 +34,11 @@ class RedisService:
         if await self.check_user(tg_user_id):
             return
         
-        await self.redis.hset(name=user_key, mapping={self.tg_id: tg_user_id,
-            self.tg_username: str(await get_username(event))})
+        await self.redis.hset(
+            name=user_key,
+            mapping={
+                self.tg_id: tg_user_id,
+                self.tg_username: str(await get_username(event))})
         await self.redis.sadd(self.users_list_set, str(tg_user_id))
     
     async def remove_user(self, tg_user_id: int):
