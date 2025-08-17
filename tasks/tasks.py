@@ -5,7 +5,7 @@ from typing import Any
 from datetime import datetime, timedelta
 
 from aiogram import Bot
-from aiogram.exceptions import TelegramBadRequest
+from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 
 from filters.filters import ProfanityFilter
 from filters.toxicity_classifiers import RussianToxicityClassifier
