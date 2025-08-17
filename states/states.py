@@ -1,0 +1,16 @@
+import logging
+from aiogram.fsm.state import State, StatesGroup
+
+logger = logging.getLogger(__name__)
+
+class UsersSettingsStates(StatesGroup):
+    settings_users = State()
+    add_user = State()
+    fill_tg_user_id = State()
+
+class CoursesSettingsStates(StatesGroup):
+    settings_courses = State()
+    add_course = State()
+
+class AllStates(StatesGroup):
+    pass
