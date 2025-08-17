@@ -13,4 +13,3 @@ kb_add_user = create_static_kb(back=True, cancel_butt=True)
 
 kb_settings_courses = create_static_kb(
     **BUTTS_SETTINGS_COURSES, cancel_butt=False)
-kb_settings_users = create_static_kb(**BUTTS_SETTINGS_USERS, back=True)
