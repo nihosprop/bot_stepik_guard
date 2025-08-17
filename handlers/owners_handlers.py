@@ -129,11 +129,11 @@ async def fill_tg_user_id(msg: Message,
     Args:
         msg (Message): The message object that triggered the command.
         state (FSMContext): An instance of the FSMContext class for managing
-        state.
+            state.
         msg_processor (MessageProcessor): An instance of the MessageProcessor
-        class for deleting messages.
+            class for deleting messages.
         redis_service (RedisService): An instance of the RedisService class for
-        working with Redis.
+            working with Redis.
     """
     logger_owners.debug('Entry')
     
