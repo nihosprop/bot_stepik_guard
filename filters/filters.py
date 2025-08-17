@@ -11,6 +11,7 @@ from aiogram.types import CallbackQuery, Message
 
 from filters.patterns import DataProfanity
 from utils.redis_service import RedisService
+
 logger_filters = logging.getLogger(__name__)
 
 
