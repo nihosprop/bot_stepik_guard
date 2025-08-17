@@ -1,6 +1,7 @@
 import logging
 
 from aiogram import F, Router
+from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
 from filters.filters import AccessRightsFilter
@@ -19,7 +20,8 @@ user_router.callback_query.filter(AccessRightsFilter(flag_users=True))
 async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
                     owners: list[int],
-                    stepik_courses_ids: list[int]) -> None:
+                    stepik_courses_ids: list[int],
+                    state: FSMContext) -> None:
     """
     Handler for the /start command.
 
@@ -32,11 +34,15 @@ async def cmd_start(msg: Message,
         msg_processor (MessageProcessor): An instance of the MessageProcessor
             class for deleting messages
         stepik_courses_ids (list[int]): A list of course IDs to monitor for
-            comments
+            comments.
+        state (FSMContext): An instance of the FSMContext class for managing
+            state.
     Returns:
         None
     """
     logger.debug('Entry')
+    
+    await state.clear()
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
             f'Бот отслеживает курсы Stepik:\n'
