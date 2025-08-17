@@ -80,8 +80,9 @@ async def add_user(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Exit')
 
 @owners_router.callback_query(F.data == 'back', StateFilter(
-    UsersSettingsStates.add_user))
-async def back_from_add_user(clbk: CallbackQuery, state: FSMContext):
+    UsersSettingsStates.fill_tg_user_id))
+async def back_from_add_user(clbk: CallbackQuery, state: FSMContext,
+                             msg_processor: MessageProcessor):
     """
     Handler for the /back command.
     Returns to the main menu.
@@ -90,39 +91,35 @@ async def back_from_add_user(clbk: CallbackQuery, state: FSMContext):
         command.
         state (FSMContext): An instance of the FSMContext class for managing
         state.
+        msg_processor (MessageProcessor): An instance of the MessageProcessor
+        class for deleting messages.
     """
     
     logger_owners.debug('Entry')
     
-    await clbk.message.edit_text(
+    value = await clbk.message.edit_text(
         'Чтобы добавить / удалить юзера,'
         ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
         reply_markup=kb_settings_users)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     await state.set_state(UsersSettingsStates.settings_users)
     await clbk.answer()
     
     logger_owners.debug('Exit')
 
 @owners_router.message(
-    TgUserIDFilter(), StateFilter(UsersSettingsStates.add_user))
-async def fill_tg_user_id(msg: Message, state: FSMContext):
+    TgUserIDFilter(), StateFilter(UsersSettingsStates.fill_tg_user_id))
+async def fill_tg_user_id(msg: Message, state: FSMContext, msg_processor: MessageProcessor):
     logger_owners.debug('Entry')
     
-    await msg.answer('ID записан. Теперь отправьте мне никнейм юзера.')
-    await state.set_state(UsersSettingsStates.add_user_nickname)
+    tg_user_id = int(msg.text)
+    await msg.delete()
     
     logger_owners.debug('Exit')
 
 
-@owners_router.callback_query(F.data == 'del_user')
-async def del_user(clbk: CallbackQuery):
-    logger_owners.debug('Entry')
-    await clbk.answer('Кнопка в разработке', show_alert=True)
-    logger_owners.debug('Exit')
 
 
-@owners_router.callback_query(F.data == 'settings_courses')
-async def settings_courses(clbk: CallbackQuery):
-    logger_owners.debug('Entry')
-    await clbk.answer('Кнопка в разработке', show_alert=True)
-    logger_owners.debug('Exit')
+
+
+
