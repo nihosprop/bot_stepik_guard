@@ -25,7 +25,9 @@ async def cancel_callback(clbk: CallbackQuery,
                           msg_processor: MessageProcessor,
                           stepik_courses_ids: list[int]):
     logger_owners.debug('Entry')
-    
+
+    await state.clear()
+
     text = (f'<b>Приветствую, {await get_username(clbk)}!</b>\n'
             f'Бот отслеживает курсы Stepik:\n'
             f'{stepik_courses_ids}\n'
@@ -33,7 +35,6 @@ async def cancel_callback(clbk: CallbackQuery,
             f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
             f'Желтый кружок 🟡 - Вероятно НЕ информативный.</pre>\n'
             f'<b>Приятного полета</b> 🫡')
-    await state.clear()
     value = await clbk.message.edit_text(text=text, reply_markup=kb_own_start)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     await clbk.answer()
