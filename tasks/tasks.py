@@ -160,8 +160,20 @@ class StepikTasks:
             else:
                 user_info = res_text + user_info
             
-            for owner in self.owners:
-                await self.bot.send_message(
-                    chat_id=owner,
-                    text=f'{user_info}')
-                await asyncio.sleep(0.5)
+            for owner in all_users:
+                try:
+                    await self.bot.send_message(
+                        chat_id=owner, text=f'{user_info}')
+                    await asyncio.sleep(0.5)
+                
+                except TelegramBadRequest as err:
+                    
+                    if 'chat not found' in err.message.lower():
+                        logger_tasks.warning(
+                            f'Chat not found for: tg_id={owner}')
+                    elif 'message is too long' in err.message.lower():
+                        logger_tasks.warning(
+                            f'Message too long for: tg_id={owner}')
+                
+                except TelegramForbiddenError as err:
+                    logger_tasks.warning(f'Forbidden for tg_id={owner}: {err}')
