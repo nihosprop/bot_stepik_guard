@@ -2,6 +2,9 @@ import logging
 from dataclasses import dataclass
 
 from aiogram.fsm.storage.redis import Redis
+from aiogram.types import CallbackQuery, Message
+
+from utils.utils import get_username
 
 logger = logging.getLogger(__name__)
 
@@ -18,18 +21,21 @@ class RedisService:
     users_list_set: str = 'bot:users'
     stepik_ids_set: str = 'bot:stepik_ids'
     
-    async def add_user(self, tg_user_id: int):
+    async def add_user(self, tg_user_id: int,
+                       event: Message | CallbackQuery):
         """
         Adds a user to the Redis database.
         Args:
             tg_user_id (int): The unique identifier of the user to be added.
-            tg_username (str): The username of the user to be added.
+            event (Message | CallbackQuery): The event object that triggered the
+            command.
         """
         user_key = f'{self.user_tag}:{tg_user_id}'
         if await self.check_user(tg_user_id):
             return
         
-        await self.redis.hset(name=user_key, mapping={self.tg_id: tg_user_id})
+        await self.redis.hset(name=user_key, mapping={self.tg_id: tg_user_id,
+            self.tg_username: str(await get_username(event))})
         await self.redis.sadd(self.users_list_set, str(tg_user_id))
     
     async def remove_user(self, tg_user_id: int):
