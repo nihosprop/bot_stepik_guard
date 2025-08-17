@@ -25,6 +25,13 @@ class RedisService:
     async def add_user(self, tg_user_id: int, event: Message | CallbackQuery):
         """
         Adds a user to the Redis database.
+        
+        This method adds a user to the Redis database. It creates a hash for
+        the user with the user's Telegram ID and username. The method uses a
+        pipeline to ensure atomic operations when setting the user's data in
+        Redis. The username is retrieved asynchronously using the provided
+        event object, which can be either a message or a callback query.
+        
         Args:
             tg_user_id (int): The unique identifier of the user to be added.
             event (Message | CallbackQuery): The message or callback query
