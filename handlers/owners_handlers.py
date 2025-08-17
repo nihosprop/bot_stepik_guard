@@ -116,10 +116,3 @@ async def fill_tg_user_id(msg: Message, state: FSMContext, msg_processor: Messag
     await msg.delete()
     
     logger_owners.debug('Exit')
-
-
-
-
-
-
-
