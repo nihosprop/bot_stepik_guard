@@ -38,7 +38,7 @@ class RedisService:
             name=user_key,
             mapping={
                 self.tg_id: tg_user_id,
-                self.tg_username: str(await get_username(event))})
+                self.tg_username: await get_username(event)})
         await self.redis.sadd(self.users_list_set, str(tg_user_id))
     
     async def remove_user(self, tg_user_id: int):
