@@ -43,6 +43,7 @@ async def cmd_start(msg: Message,
     logger.debug('Entry')
     
     await state.clear()
+    await msg_processor.deletes_messages(msgs_for_del=True)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
             f'Бот отслеживает курсы Stepik:\n'
