@@ -123,6 +123,18 @@ async def fill_tg_user_id(msg: Message,
                           state: FSMContext,
                           msg_processor: MessageProcessor,
                           redis_service: RedisService):
+    """
+    Handler for filling in the user ID.
+    
+    Args:
+        msg (Message): The message object that triggered the command.
+        state (FSMContext): An instance of the FSMContext class for managing
+        state.
+        msg_processor (MessageProcessor): An instance of the MessageProcessor
+        class for deleting messages.
+        redis_service (RedisService): An instance of the RedisService class for
+        working with Redis.
+    """
     logger_owners.debug('Entry')
     
     tg_user_id = int(msg.text)
