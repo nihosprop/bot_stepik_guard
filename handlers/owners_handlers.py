@@ -57,6 +57,15 @@ async def settings_users(clbk: CallbackQuery, state: FSMContext):
 @owners_router.callback_query(
     F.data == 'add_user', StateFilter(UsersSettingsStates.settings_users))
 async def add_user(clbk: CallbackQuery, state: FSMContext):
+    """
+    Handler for the /add_user command.
+    Adds a user to the list of users to monitor for comments.
+    Args:
+        clbk (CallbackQuery): The callback query object that triggered the
+        command.
+        state (FSMContext): An instance of the FSMContext class for managing
+        state.
+    """
     logger_owners.debug('Entry')
     
     text = ('Отправьте мне ID юзера.\n'
