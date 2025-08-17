@@ -27,19 +27,21 @@ class RedisService:
         Adds a user to the Redis database.
         Args:
             tg_user_id (int): The unique identifier of the user to be added.
-            event (Message | CallbackQuery): The event object that triggered the
-            command.
+            event (Message | CallbackQuery): The message or callback query
+            object that triggered the user addition.
         """
+
         user_key = f'{self.user_tag}:{tg_user_id}'
-        if await self.check_user(tg_user_id):
-            return
         
-        await self.redis.hset(
+        pipe = self.redis.pipeline(transaction=True)
+        await pipe.hset(
             name=user_key,
             mapping={
                 self.tg_id: tg_user_id,
                 self.tg_username: await get_username(event)})
-        await self.redis.sadd(self.users_list_set, str(tg_user_id))
+        await pipe.sadd(self.users_list_set, str(tg_user_id))
+        await pipe.execute()
+        logger.info('User added to Redis')
     
     async def remove_user(self, tg_user_id: int):
         """
