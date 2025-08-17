@@ -6,8 +6,8 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
-from filters.filters import AccessRightsFilter
-from keyboards.keyboards import kb_own_start, kb_settings_users
+from filters.filters import AccessRightsFilter, TgUserIDFilter
+from keyboards.keyboards import kb_add_user, kb_own_start, kb_settings_users
 from states.states import UsersSettingsStates
 from utils.utils import MessageProcessor, get_username
 
