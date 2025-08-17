@@ -23,6 +23,8 @@ class RedisService:
         Adds a user to the Redis database.
         Args:
             tg_user_id (int): The unique identifier of the user to be added.
+            tg_username (str | None, optional): The username of the user to be
+                added.
         """
         user_key = f'{self.user_tag}:{tg_user_id}'
         if await self.check_user(tg_user_id):
