@@ -26,9 +26,9 @@ async def cancel_callback(clbk: CallbackQuery,
                           msg_processor: MessageProcessor,
                           stepik_courses_ids: list[int]):
     logger_owners.debug('Entry')
-
+    
     await state.clear()
-
+    
     text = (f'<b>Приветствую, {await get_username(clbk)}!</b>\n'
             f'Бот отслеживает курсы Stepik:\n'
             f'{stepik_courses_ids}\n'
@@ -80,9 +80,12 @@ async def add_user(clbk: CallbackQuery, state: FSMContext):
     
     logger_owners.debug('Exit')
 
-@owners_router.callback_query(F.data == 'back', StateFilter(
-    UsersSettingsStates.fill_tg_user_id))
-async def back_from_add_user(clbk: CallbackQuery, state: FSMContext,
+
+@owners_router.callback_query(
+    F.data == 'back', StateFilter(
+        UsersSettingsStates.fill_tg_user_id))
+async def back_from_add_user(clbk: CallbackQuery,
+                             state: FSMContext,
                              msg_processor: MessageProcessor):
     """
     Handler for the /back command.
@@ -108,12 +111,17 @@ async def back_from_add_user(clbk: CallbackQuery, state: FSMContext,
     
     logger_owners.debug('Exit')
 
+
 @owners_router.message(
     TgUserIDFilter(), StateFilter(UsersSettingsStates.fill_tg_user_id))
-async def fill_tg_user_id(msg: Message, state: FSMContext, msg_processor: MessageProcessor):
+async def fill_tg_user_id(msg: Message,
+                          state: FSMContext,
+                          msg_processor: MessageProcessor,
+                          redis_service: RedisService):
     logger_owners.debug('Entry')
     
     tg_user_id = int(msg.text)
     await msg.delete()
+    await redis_service.add_user(tg_user_id=tg_user_id, event=msg)
     
     logger_owners.debug('Exit')
