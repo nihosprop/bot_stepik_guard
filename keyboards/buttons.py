@@ -13,5 +13,3 @@ BUTTS_SETTINGS_USERS: dict[str, str] = {
     'add_user': 'Добавить юзера',
     'delete_user': 'Удалить юзера',
     'get_users_info': 'Информация о юзерах'}
-
-BUT_EXIT: dict[str, str] = {'exit': 'Выйти'}
