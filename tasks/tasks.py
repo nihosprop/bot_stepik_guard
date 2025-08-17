@@ -35,6 +35,9 @@ class StepikTasks:
             logger_tasks.info('Нет активных курсов')
             return
         
+        redis_users: list[int] = await self.redis_service.get_users()
+        all_users: set[int] = set(self.owners + redis_users)
+        
         for course_id in stepik_courses_ids:
             logger_tasks.debug(f'Поиск в {course_id=}')
             
