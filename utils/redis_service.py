@@ -98,7 +98,7 @@ class RedisService:
         str_users_ids = [str(user_id) for user_id in users_ids]
         keys = [f'{self.user_tag}:{user_id}' for user_id in str_users_ids]
         
-        pipe = await self.redis.pipeline(transaction=True)
+        pipe = self.redis.pipeline(transaction=False)
         for key in keys:
             await pipe.hgetall(key)
         
