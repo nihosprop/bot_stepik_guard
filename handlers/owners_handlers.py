@@ -7,7 +7,10 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 from filters.filters import AccessRightsFilter, TgUserIDFilter
-from keyboards.keyboards import kb_add_user, kb_own_start, kb_settings_users
+from keyboards.keyboards import (kb_add_user,
+                                 kb_own_start,
+                                 kb_settings_users,
+                                 kb_exit)
 from states.states import UsersSettingsStates
 from utils.redis_service import RedisService
 from utils.utils import MessageProcessor, get_username
