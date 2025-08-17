@@ -95,8 +95,7 @@ class ProfanityFilter:
                 self.bad_words = []
             except Exception as err:
                 logger_filters.error(
-                    f'🟢Ошибка чтения JSON: {err}',
-                    exc_info=True)
+                    f'🟢Ошибка чтения JSON: {err}', exc_info=True)
         
         # Загрузка технических терминов(слов)
         self.tech_keywords = []
