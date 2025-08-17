@@ -14,7 +14,7 @@ owners_router = Router()
 owners_router.message.filter(AccessRightsFilter())
 owners_router.callback_query.filter(AccessRightsFilter())
 
-@owners_router.callback_query(F.data.in_(['settings_courses', 'settings_users']))
+@owners_router.callback_query(F.data.in_(['settings_courses']))
 async def in_development(clbk: CallbackQuery):
     logger_owners.debug('Entry')
     await clbk.answer('Кнопка в разработке', show_alert=True)
