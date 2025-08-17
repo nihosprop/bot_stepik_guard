@@ -77,6 +77,32 @@ async def add_user(clbk: CallbackQuery, state: FSMContext):
     
     logger_owners.debug('Exit')
 
+@owners_router.callback_query(F.data == 'back', StateFilter(
+    UsersSettingsStates.add_user))
+async def back_from_add_user(clbk: CallbackQuery, state: FSMContext):
+    logger_owners.debug('Entry')
+    
+    await clbk.message.edit_text(
+        'Чтобы добавить / удалить юзера,'
+        ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
+        reply_markup=kb_settings_users)
+    await state.set_state(UsersSettingsStates.settings_users)
+    await clbk.answer()
+    
+    logger_owners.debug('Exit')
+
+
+
+@owners_router.message(
+    TgUserIDFilter(), StateFilter(UsersSettingsStates.add_user))
+async def fill_tg_user_id(msg: Message, state: FSMContext):
+    logger_owners.debug('Entry')
+    
+    await msg.answer('ID записан. Теперь отправьте мне никнейм юзера.')
+    await state.set_state(UsersSettingsStates.add_user_nickname)
+    
+    logger_owners.debug('Exit')
+
 
 @owners_router.callback_query(F.data == 'del_user')
 async def del_user(clbk: CallbackQuery):
