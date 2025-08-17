@@ -30,6 +30,34 @@ class AccessRightsFilter(BaseFilter):
         return user_tg_id in owners
 
 
+class TgUserIDFilter(BaseFilter):
+    """
+    Фильтр для сообщений с Telegram ID.
+    Пропускает сообщение, если текст — это положительное целое число
+    с длиной в разумном диапазоне (по умолчанию 5–15 цифр).
+    Используйте в хендлере ввода ID пользователя.
+    """
+    
+    def __init__(self, min_len: int = 5, max_len: int = 15):
+        self.min_len = min_len
+        self.max_len = max_len
+    
+    async def __call__(self, msg: Message) -> bool:
+        text = (msg.text or "").strip()
+        if not text.isdigit():
+            return False
+        try:
+            val = int(text)
+        except Exception:
+            return False
+        if val <= 0:
+            return False
+        length = len(text)
+        if length < self.min_len or length > self.max_len:
+            return False
+        return True
+
+
 class ProfanityFilter:
     
     BAD_WORDS_PATH = Path(__file__).parent.parent / "badwords.json"
