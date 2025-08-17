@@ -127,6 +127,10 @@ async def fill_tg_user_id(msg: Message,
     
     tg_user_id = int(msg.text)
     await msg.delete()
-    await redis_service.add_user(tg_user_id=tg_user_id, event=msg)
-    
+    await redis_service.add_user(tg_user_id=tg_user_id)
+    await state.clear()
+    value = await msg.answer(
+        f'Юзер TG_ID:{tg_user_id} успешно добавлен.\n'
+        f'Юзер может стартовать бота! 🚀🧑‍🚀\n\n', reply_markup=kb_exit)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     logger_owners.debug('Exit')
