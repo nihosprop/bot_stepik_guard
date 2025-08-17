@@ -80,6 +80,16 @@ async def add_user(clbk: CallbackQuery, state: FSMContext):
 @owners_router.callback_query(F.data == 'back', StateFilter(
     UsersSettingsStates.add_user))
 async def back_from_add_user(clbk: CallbackQuery, state: FSMContext):
+    """
+    Handler for the /back command.
+    Returns to the main menu.
+    Args:
+        clbk (CallbackQuery): The callback query object that triggered the
+        command.
+        state (FSMContext): An instance of the FSMContext class for managing
+        state.
+    """
+    
     logger_owners.debug('Entry')
     
     await clbk.message.edit_text(
