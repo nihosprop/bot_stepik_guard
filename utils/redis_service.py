@@ -85,9 +85,11 @@ class RedisService:
     
     async def get_users_info(self) -> str:
         """
-        Returns a list of all users in the Redis database.
+        Returns a string containing information about all users in the Redis
+            database.
         Returns:
-            list[dict]: A list of dictionaries containing user information.
+            str: A string containing information about all users in the Redis
+            database.
         """
         users_ids = await self.redis.smembers(self.users_list_set)
         if not users_ids:
