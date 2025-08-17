@@ -74,7 +74,7 @@ async def add_user(clbk: CallbackQuery, state: FSMContext):
             'Узнать ID можно в боте:\n'
             '<a href="https://t.me/username_to_id_bot">IDBot</a>')
     await clbk.message.edit_text(text=text, reply_markup=kb_add_user)
-    await state.set_state(UsersSettingsStates.add_user)
+    await state.set_state(UsersSettingsStates.fill_tg_user_id)
     await clbk.answer()
     
     logger_owners.debug('Exit')
