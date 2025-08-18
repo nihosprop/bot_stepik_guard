@@ -26,7 +26,7 @@ class AccessRightsFilter(BaseFilter):
         user_tg_id: int = msg.from_user.id
         
         if self.flag_users:
-            users: list[int] = await redis_service.get_users()
+            users: list[int] = await redis_service.get_tg_users()
             owners.extend(users)
         return user_tg_id in owners
 

@@ -143,6 +143,14 @@ async def fill_tg_user_id(msg: Message,
     await state.clear()
     value = await msg.answer(
         f'Юзер TG_ID:{tg_user_id} успешно добавлен.\n'
-        f'Юзер может стартовать бота! 🚀🧑‍🚀\n\n', reply_markup=kb_exit)
+        f'Если он еще не стартанул бота,то может начать! 🚀🧑‍🚀\n\n',
+        reply_markup=kb_exit)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     logger_owners.debug('Exit')
+
+@owners_router.message(StateFilter(UsersSettingsStates.settings_users))
+async def get_users_info(msg: Message,
+                         msg_processor: MessageProcessor,):
+    logger_owners.debug('Entry')
+    logger_owners.debug('Exit')
+
