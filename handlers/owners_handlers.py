@@ -23,6 +23,29 @@ owners_router.message.filter(AccessRightsFilter())
 owners_router.callback_query.filter(AccessRightsFilter())
 
 
+@owners_router.message(F.text == '/users_info', StateFilter(default_state))
+async def get_users_info_no_state(msg: Message,
+                         msg_processor: MessageProcessor,
+                         redis_service: RedisService):
+    logger_owners.debug('Entry')
+    
+    await msg.delete()
+    await msg_processor.deletes_messages(msgs_for_del=True)
+    users_info: str = await redis_service.get_users_info()
+    value = await msg.answer(text=users_info, reply_markup=kb_exit)
+    await msg_processor.save_msg_id(value, msgs_for_del=True)
+    
+    logger_owners.debug('Exit')
+
+@owners_router.message(F.text == '/users_info', ~StateFilter(default_state))
+async def get_users_info_in_state(msg: Message, msg_processor: MessageProcessor):
+    logger_owners.debug('Entry')
+    
+    await msg.delete()
+    value = await msg.answer(text='Завершите сначала действия')
+    await msg_processor.deletes_msg_a_delay(value, delay=4, indication=True)
+    logger_owners.debug('Exit')
+
 # TODO: перенести в users_handlers и добавить к /start
 @owners_router.callback_query(
     F.data.in_(['cancel', '/exit']), ~StateFilter(default_state))
