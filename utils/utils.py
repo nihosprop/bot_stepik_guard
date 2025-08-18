@@ -85,12 +85,24 @@ class MessageProcessor:
                                msgs_remove_kb=False) -> None:
         logger_utils.debug(f'Entry')
         
-        if hasattr(self._type_update, 'message') and self._type_update.message:
-            chat_id = self._type_update.message.chat.id
-        elif (hasattr(
-            self._type_update,
-            'callback_query') and self._type_update.callback_query):
-            chat_id = self._type_update.callback_query.message.chat.id
+        if isinstance(self._type_update, Message):
+            chat_id = self._type_update.chat.id
+        elif isinstance(self._type_update, CallbackQuery):
+            if self._type_update.message:
+                chat_id = self._type_update.message.chat.id
+            else:
+                logger_utils.error(
+                    "CallbackQuery does not contain a message.")
+                return
+        elif isinstance(self._type_update, Update):
+            if self._type_update.message:
+                chat_id = self._type_update.message.chat.id
+            elif self._type_update.callback_query and self._type_update.callback_query.message:
+                chat_id = self._type_update.callback_query.message.chat.id
+            else:
+                logger_utils.error(
+                    "Update does not contain a message.")
+                return
         else:
             logger_utils.error('Неподдерживаемый тип апдейта')
             return
@@ -163,7 +175,7 @@ class MessageProcessor:
                 if msg_id not in data:
                     data.append(msg_id)
                     
-                    logger_utils.debug(f'Msg ID to recorded')
+                    logger_utils.debug(f'Msg ID:{msg_id} to recorded')
                 await self._state.update_data({key: data})
         
         logger_utils.debug('Exit')
