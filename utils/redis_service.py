@@ -15,7 +15,7 @@ class RedisService:
     
     tg_id: str = 'tg_id'
     tg_username: str = 'tg_username'
-    stepik_id: str = 'stepik_id'
+    
     user_tag: str = 'bot:user'
     users_list_set: str = 'bot:users'
     stepik_ids_set: str = 'bot:stepik_ids'
