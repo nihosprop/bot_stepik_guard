@@ -11,5 +11,4 @@ BUTTS_SETTINGS_COURSES: dict[str, str] = {
 
 BUTTS_SETTINGS_USERS: dict[str, str] = {
     'add_user': 'Добавить юзера',
-    'delete_user': 'Удалить юзера',
-    'get_users_info': 'Информация о юзерах'}
+    'delete_user': 'Удалить юзера'}
