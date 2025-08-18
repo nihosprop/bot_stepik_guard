@@ -46,29 +46,6 @@ async def get_users_info_in_state(msg: Message, msg_processor: MessageProcessor)
     await msg_processor.deletes_msg_a_delay(value, delay=4, indication=True)
     logger_owners.debug('Exit')
 
-# TODO: перенести в users_handlers и добавить к /start
-@owners_router.callback_query(
-    F.data.in_(['cancel', '/exit']), ~StateFilter(default_state))
-async def cancel_callback(clbk: CallbackQuery,
-                          state: FSMContext,
-                          msg_processor: MessageProcessor,
-                          stepik_courses_ids: list[int]):
-    logger_owners.debug('Entry')
-    
-    await state.clear()
-    
-    text = (f'<b>Приветствую, {await get_username(clbk)}!</b>\n'
-            f'Бот отслеживает курсы Stepik:\n'
-            f'{stepik_courses_ids}\n'
-            f'<b>Важность комментов обозначена кружками:</b>\n'
-            f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
-            f'Желтый кружок 🟡 - Вероятно НЕ информативный.</pre>\n'
-            f'<b>Приятного полета</b> 🫡')
-    value = await clbk.message.edit_text(text=text, reply_markup=kb_own_start)
-    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
-    await clbk.answer()
-    logger_owners.debug('Exit')
-
 
 @owners_router.callback_query(
     F.data == 'settings_users', StateFilter(default_state))
