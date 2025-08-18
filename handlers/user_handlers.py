@@ -57,7 +57,6 @@ async def cmd_start(msg: Message,
             f'взаимодействие с ботом.\n\n'
             f'<b>Приятного полета</b> 🫡')
     
-    await msg_processor.deletes_messages(msgs_for_del=True)
     user_tg_id = msg.from_user.id
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
     value = await msg.answer(text=text, reply_markup=keyboard)
