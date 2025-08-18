@@ -29,6 +29,8 @@ async def cmd_start(msg: Message,
     courses specified in the `stepik_courses_ids` list.
 
     Args:
+        redis_service (RedisService): An instance of the RedisService class for
+            working with Redis.
         owners (list[int]): A list of owner IDs
         msg (Message): The message object that triggered the /start command
         msg_processor (MessageProcessor): An instance of the MessageProcessor
