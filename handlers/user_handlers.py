@@ -41,7 +41,7 @@ async def cmd_start(msg: Message,
         None
     """
     logger.debug('Entry')
-    
+    await msg.delete()
     await state.clear()
     logger.debug(f'State cleared: {await get_username(msg)}:{msg.from_user.id}')
     await msg_processor.deletes_messages(msgs_for_del=True)
