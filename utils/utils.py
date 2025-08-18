@@ -143,16 +143,24 @@ class MessageProcessor:
         
         for key, val in flags.items():
             logger_utils.debug('Start writing data to storage…')
+            
             if val:
                 
                 data: list = dict(await self._state.get_data()).get(key, [])
                 data = [int(msg_id) for msg_id in data]
                 
-                if value.message_id not in data:
-                    data.append(value.message_id)
+                msg_id = self._extract_message_id(value)
+                
+                if msg_id is None:
+                    logger_utils.info('No msg ID to record')
+                    return
+                
+                if msg_id not in data:
+                    data.append(msg_id)
+                    
                     logger_utils.debug(f'Msg ID to recorded')
-                logger_utils.debug('No msg ID to record')
                 await self._state.update_data({key: data})
+        
         logger_utils.debug('Exit')
     
     async def removes_inline_kb(self, key='msgs_remove_kb') -> None:
