@@ -198,6 +198,7 @@ class MessageProcessor:
                 chat_id=chat_id, message_id=data.get(key))
         except Exception as err:
             logger_utils.error(f'{err=}', exc_info=True)
+        
         logger_utils.debug('Exit')
     
     @staticmethod
