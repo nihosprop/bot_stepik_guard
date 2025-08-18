@@ -33,7 +33,7 @@ class RussianToxicityClassifier:
                     device="cpu",
                     framework="pt")
                 self.loaded_model_name = model_name
-                await asyncio.sleep(20)
+                await asyncio.sleep(10)
                 logger_classifier.info(f'Classifier loaded!')
                 return
             except Exception as e:
