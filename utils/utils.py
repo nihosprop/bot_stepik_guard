@@ -105,6 +105,11 @@ class MessageProcessor:
         if keys:
             for key in keys:
                 msgs_ids: list = dict(await self._state.get_data()).get(key, [])
+                msgs_ids = [int(msg_id) for msg_id in msgs_ids]
+                
+                if not msgs_ids:
+                    continue
+                
                 logger_utils.debug(f'Starting to delete messages…')
                 
                 for msg_id in set(msgs_ids):
