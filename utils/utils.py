@@ -130,9 +130,12 @@ class MessageProcessor:
         for key, val in flags.items():
             logger_utils.debug('Start writing data to storage…')
             if val:
+                
                 data: list = dict(await self._state.get_data()).get(key, [])
+                data = [int(msg_id) for msg_id in data]
+                
                 if value.message_id not in data:
-                    data.append(str(value.message_id))
+                    data.append(value.message_id)
                     logger_utils.debug(f'Msg ID to recorded')
                 logger_utils.debug('No msg ID to record')
                 await self._state.update_data({key: data})
