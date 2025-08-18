@@ -11,6 +11,9 @@ services:
       - "redis_fsm"
     networks:
       - stepik_guard_bot_net
+    volumes:
+      - ./:/app:ro
+      - ./logs:/app/logs
     environment:
       # Указываем, что работаем в режиме разработки
       - ENVIRONMENT=development
@@ -40,3 +43,4 @@ networks:
 volumes:
   redis_data:
   logs:
+  hf_cache:
