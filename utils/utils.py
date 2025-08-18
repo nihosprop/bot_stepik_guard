@@ -164,7 +164,7 @@ class MessageProcessor:
         logger_utils.debug('Exit')
     
     async def removes_inline_kb(self, key='msgs_remove_kb') -> None:
-
+        
         logger_utils.debug('Entry')
         
         msgs: list = dict(await self._state.get_data()).get(key, [])
@@ -199,10 +199,10 @@ class MessageProcessor:
         try:
             chat_id = None
             data = await self._state.get_data()
-
+            
             if isinstance(self._type_update, Message):
                 chat_id = self._type_update.chat.id
-
+            
             elif isinstance(self._type_update, CallbackQuery):
                 if self._type_update.message:
                     chat_id = self._type_update.message.chat.id
@@ -210,7 +210,7 @@ class MessageProcessor:
                     logger_utils.error(
                         "CallbackQuery does not contain a message.")
                     return
-
+            
             elif isinstance(self._type_update, Update):
                 if self._type_update.message:
                     chat_id = self._type_update.message.chat.id

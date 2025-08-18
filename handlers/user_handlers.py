@@ -16,7 +16,7 @@ user_router.message.filter(AccessRightsFilter(flag_users=True))
 user_router.callback_query.filter(AccessRightsFilter(flag_users=True))
 
 
-@user_router.message(F.text == '/start')
+@user_router.message(F.text.in_(['/start', '/cancel', 'exit']))
 async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
                     owners: list[int],
@@ -43,6 +43,7 @@ async def cmd_start(msg: Message,
     logger.debug('Entry')
     
     await state.clear()
+    logger.debug(f'State cleared: {await get_username(msg)}:{msg.from_user.id}')
     await msg_processor.deletes_messages(msgs_for_del=True)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
