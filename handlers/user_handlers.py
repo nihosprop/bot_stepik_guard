@@ -61,7 +61,7 @@ async def cmd_start(msg: Message,
     value = await msg.answer(text=text, reply_markup=keyboard)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     await state.set_state(None)
-    logger.debug(f'State cleared: {await get_username(msg)}:{msg.from_user.id}')
+    logger.debug(f'State clear: {await get_username(msg)}:{msg.from_user.id}')
 
     logger.debug('Exit')
 
