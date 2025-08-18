@@ -119,6 +119,20 @@ class MessageProcessor:
         
         logger_utils.debug('Exit')
     
+    @staticmethod
+    def _extract_message_id(value: Message | CallbackQuery | Update) -> (
+        int | None):
+        if isinstance(value, Message):
+            return int(value.message_id)
+        if isinstance(value, CallbackQuery) and value.message:
+            return int(value.message.message_id)
+        if isinstance(value, Update):
+            if value.message:
+                return int(value.message.message_id)
+            if value.callback_query and value.callback_query.message:
+                return int(value.callback_query.message.message_id)
+        return None
+    
     async def save_msg_id(self,
                           value: Message | CallbackQuery | Update,
                           msgs_for_del=False,
