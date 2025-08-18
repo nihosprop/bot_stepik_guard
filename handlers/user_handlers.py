@@ -41,9 +41,8 @@ async def cmd_start(msg: Message,
         None
     """
     logger.debug('Entry')
+    
     await msg.delete()
-    await state.clear()
-    logger.debug(f'State cleared: {await get_username(msg)}:{msg.from_user.id}')
     await msg_processor.deletes_messages(msgs_for_del=True)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
@@ -61,6 +60,8 @@ async def cmd_start(msg: Message,
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
     value = await msg.answer(text=text, reply_markup=keyboard)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
+    await state.set_state(None)
+    logger.debug(f'State cleared: {await get_username(msg)}:{msg.from_user.id}')
 
     logger.debug('Exit')
 
