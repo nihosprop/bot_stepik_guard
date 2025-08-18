@@ -211,14 +211,14 @@ class MessageProcessor:
                                   delay: int = 2,
                                   indication=False) -> None:
         """
-         Deletes a message after a specified time interval.
-         Arguments: value (types.Message): The message to delete.
-                    delay (int): Time in seconds before the message is deleted.
-                    returns: None
-        :param indication: Bool
-        :param type_update: Message
-        :param delay: int
-        :return: None
+        Удаляет сообщение с задержкой.
+        
+        Args:
+            type_update (Message): Объект апдейта.
+            delay (int): Задержка в секундах.
+            indication (bool): Флаг индикации удаления.
+        Returns:
+            None
         """
         logger_utils.debug('Entry')
         
