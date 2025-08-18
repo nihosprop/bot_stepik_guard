@@ -77,7 +77,7 @@ class MessageProcessor:
         await message_processor.removes_inline_kb(msgs_remove_kb=True)
     
     """
-    _type_update: Message | CallbackQuery
+    _type_update: Message | CallbackQuery | Update
     _state: FSMContext
     
     async def deletes_messages(self,
@@ -120,7 +120,7 @@ class MessageProcessor:
         logger_utils.debug('Exit')
     
     async def save_msg_id(self,
-                          value: Message | CallbackQuery,
+                          value: Message | CallbackQuery | Update,
                           msgs_for_del=False,
                           msgs_remove_kb=False) -> None:
         flags: dict = {
@@ -173,8 +173,10 @@ class MessageProcessor:
         try:
             chat_id = None
             data = await self._state.get_data()
+
             if isinstance(self._type_update, Message):
                 chat_id = self._type_update.chat.id
+
             elif isinstance(self._type_update, CallbackQuery):
                 if self._type_update.message:
                     chat_id = self._type_update.message.chat.id
@@ -182,6 +184,7 @@ class MessageProcessor:
                     logger_utils.error(
                         "CallbackQuery does not contain a message.")
                     return
+
             elif isinstance(self._type_update, Update):
                 if self._type_update.message:
                     chat_id = self._type_update.message.chat.id
