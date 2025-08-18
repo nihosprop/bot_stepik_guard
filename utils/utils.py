@@ -196,6 +196,7 @@ class MessageProcessor:
                     return
             await self._type_update.bot.delete_message(
                 chat_id=chat_id, message_id=data.get(key))
+        
         except Exception as err:
             logger_utils.error(f'{err=}', exc_info=True)
         
