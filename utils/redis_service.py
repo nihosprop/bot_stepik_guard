@@ -18,6 +18,11 @@ class RedisService:
     
     user_tag: str = 'bot:user'
     users_list_set: str = 'bot:users'
+
+    owner_tag: str = 'bot:owner'
+    owners_list_set: str = 'bot:owners'
+
+    stepik_id: str = 'stepik_id'
     stepik_ids_set: str = 'bot:stepik_ids'
     
     async def add_user(self, tg_user_id: int):
