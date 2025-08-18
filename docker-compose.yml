@@ -12,8 +12,9 @@ services:
     networks:
       - stepik_guard_bot_net
     volumes:
-      - ./:/app:ro
-      - ./logs:/app/logs
+      - ./:/app:ro                  # код из хоста (теперь rebuild не нужен)
+      - ./logs:/app/logs            # лог‑директория (rw)
+      - hf_cache:/root/.cache/huggingface  # опционально: кэш моделей
     environment:
       # Указываем, что работаем в режиме разработки
       - ENVIRONMENT=development
