@@ -89,7 +89,7 @@ class RedisService:
             await pipe.hgetall(key)
         
         users: list[dict] = await pipe.execute()
-
+        
         row_users = ''
         
         for user in users:
