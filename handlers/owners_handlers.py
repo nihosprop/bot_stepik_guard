@@ -147,10 +147,3 @@ async def fill_tg_user_id(msg: Message,
         reply_markup=kb_exit)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     logger_owners.debug('Exit')
-
-@owners_router.message(StateFilter(UsersSettingsStates.settings_users))
-async def get_users_info(msg: Message,
-                         msg_processor: MessageProcessor,):
-    logger_owners.debug('Entry')
-    logger_owners.debug('Exit')
-
