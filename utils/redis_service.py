@@ -12,6 +12,7 @@ class RedisService:
     A class for interacting with Redis database.
     """
     redis: Redis
+    
     tg_id: str = 'tg_id'
     tg_username: str = 'tg_username'
     stepik_id: str = 'stepik_id'
