@@ -170,7 +170,8 @@ class StepikTasks:
                 try:
                     await self.bot.send_message(
                         chat_id=owner,
-                        text=f'{light_user_info if flag_low_comment else full_user_info}')
+                        text=light_user_info if flag_low_comment
+                                else full_user_info)
                     await asyncio.sleep(0.5)
                 
                 except TelegramBadRequest as err:
