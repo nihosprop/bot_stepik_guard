@@ -41,8 +41,6 @@ async def cmd_start(msg: Message,
             comments.
         state (FSMContext): An instance of the FSMContext class for managing
             state.
-    Returns:
-        None
     """
     logger.debug('Entry')
     
