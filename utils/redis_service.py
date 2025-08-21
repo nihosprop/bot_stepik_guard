@@ -147,3 +147,84 @@ class RedisService:
         """
         stepik_ids = await self.redis.smembers(self.stepik_ids_set)
         return [int(stepik_id) for stepik_id in stepik_ids]
+
+    async def add_owner(self, tg_user_id: int,
+                        tg_nickname: str) -> None:
+        """
+        Adds an owner to the Redis database.
+        This method adds an owner to the Redis database with the specified
+        Telegram user ID and nickname.
+
+        Args:
+            tg_user_id (int): The unique identifier of the Telegram user.
+            tg_nickname (str): The nickname of the Telegram user.
+        Example:
+            await add_owner(tg_user_id=123456789, tg_nickname='username')
+        """
+        if tg_nickname and isinstance(tg_nickname, str) and tg_nickname.startswith('@'):
+            tg_link = f'https://t.me/{tg_nickname[1:]}'
+        else:
+            tg_link = f'tg://user?id={tg_user_id}'
+        
+        owner_key = f'{self.owner_tag}:{tg_user_id}'
+        pipe = self.redis.pipeline(transaction=True)
+        
+        await pipe.hset(name=owner_key, mapping={
+            self.tg_id: tg_user_id,
+            self.tg_username: tg_nickname,
+            'tg_link': tg_link})
+        
+        await pipe.sadd(self.owners_list_set, str(tg_user_id))
+        await pipe.execute()
+    
+    async def get_owners_info(self) -> str:
+        """
+        Returns a string containing information about all owners in the Redis
+            database.
+        Returns:
+            str: A string containing information about all owners in the Redis
+            database.
+        Example:
+            "👑 <a href="tg://user?id=123456789">123456789</a>\n"
+            "👑 <a href="tg://user?id=987654321">987654321</a>\n"
+    
+        """
+        owner_ids = await self.redis.smembers(self.owners_list_set)
+        
+        if not owner_ids:
+            return ''
+        
+        # Нормализуем элементы множества (bytes/int/str) к строковым ID
+        str_owner_ids = [
+            oid.decode() if isinstance(oid, (bytes, bytearray)) else str(oid)
+            for oid in owner_ids]
+        
+        keys = [f'{self.owner_tag} : {owner_id}' for owner_id in str_owner_ids]
+        
+        pipe = self.redis.pipeline(transaction=False)
+        for key in keys:
+            await pipe.hgetall(key)
+        
+        owners_hashes: list[dict] = await pipe.execute()
+        rows: list[str] = []
+        
+        for owner in owners_hashes:
+            username = owner.get(self.tg_username)
+            tg_id_raw = owner.get(self.tg_id)
+            link = owner.get('tg_link') or ''
+            
+            if not link:
+                if tg_id_raw:
+                    link = f'tg://user?id={tg_id_raw}'
+            
+            # Без id формировать строку не имеет смысла
+            if tg_id_raw and link:
+                try:
+                    tg_id_int = int(tg_id_raw)
+                except (TypeError, ValueError):
+                    tg_id_int = None
+                text = f'{username}:{tg_id_int}' if tg_id_int is not None else f'{username}:{tg_id_raw}'
+                rows.append(f'👑 <a href="{link}">{text}</a>')
+        
+        return '\n'.join(rows)
+    
