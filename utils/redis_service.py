@@ -225,7 +225,7 @@ class RedisService:
                     tg_id_int = int(tg_id_raw)
                 except (TypeError, ValueError):
                     tg_id_int = None
-                text = f'{username}:{tg_id_int}' if tg_id_int is not None else f'{username}:{tg_id_raw}'
+                text = f'{username}'
                 rows.append(f'👑 <a href="{link}">{text}</a>')
         
         return '\n'.join(rows)
