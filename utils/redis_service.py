@@ -201,7 +201,7 @@ class RedisService:
             oid.decode() if isinstance(oid, (bytes, bytearray)) else str(oid)
             for oid in owner_ids]
         
-        keys = [f'{self.owner_tag} : {owner_id}' for owner_id in str_owner_ids]
+        keys = [f'{self.owner_tag}:{owner_id}' for owner_id in str_owner_ids]
         
         pipe = self.redis.pipeline(transaction=False)
         for key in keys:
