@@ -125,7 +125,7 @@ class StepikTasks:
                          f'<b>Course ID:</b> {course_id}\n'
                          f'<b>Comment time:</b> {comment_time}\n'
                          f'<b>Comment ID:</b> {comment_id}\n'
-                         f'👉 <a href="{link_to_comment}">Link to Comment</a>\n\n'
+                         f'🔗 <a href="{link_to_comment}">Link to Comment</a>\n\n'
                          f'<b>Comment:</b> {comment_text}')
             
             result_profanity_filter: bool = await profanity_filter.is_profanity(
