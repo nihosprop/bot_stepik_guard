@@ -20,6 +20,7 @@ user_router.callback_query.filter(AccessRightsFilter(flag_users=True))
 @user_router.message(F.text.in_(['/start', '/cancel', 'exit']))
 async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
+                    redis_service: RedisService,
                     owners: list[int],
                     stepik_courses_ids: list[int],
                     state: FSMContext) -> None:
