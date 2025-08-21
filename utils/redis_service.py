@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from aiogram.fsm.storage.redis import Redis
 
+from utils.utils import get_username
+
 logger = logging.getLogger(__name__)
 
 
