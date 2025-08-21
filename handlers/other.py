@@ -27,7 +27,7 @@ async def other_handler(msg: Message,
         owners_links = '\n'.join(fallback_rows)
     
     text = (f'Для возможности отслеживания комментариев на Stepik, обратитесь '
-            f'к любому из админов:\n{owners_links}')
+            f'к любому из супер-админов:\n{owners_links}')
     
     await msg_processor.deletes_messages(msgs_for_del=True)
     value = await msg.answer(text)
