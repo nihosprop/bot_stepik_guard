@@ -116,17 +116,17 @@ class StepikTasks:
             comment_time = datetime.strptime(
                 comment.get('time'), '%Y-%m-%dT%H:%M:%SZ')
             
-            user_info = (f'\n<b>Course:</b> {course_title}\n'
-                         f'🧑‍🎓 <a href="{link_to_user_profile}">'
-                         f' {user_name}</a>\n'
-                         f'<b>Reputation:</b> {reputation}\n'
-                         f'<b>Reputation Rank:</b> {reputation_rank}\n'
-                         f'<b>Сount steps:</b> {count_steps}\n'
-                         f'<b>Course ID:</b> {course_id}\n'
-                         f'<b>Comment time:</b> {comment_time}\n'
-                         f'<b>Comment ID:</b> {comment_id}\n'
-                         f'🔗 <a href="{link_to_comment}">Link to Comment</a>\n\n'
-                         f'<b>Comment:</b> {comment_text}')
+            full_user_info = (f'\n<b>Course:</b> {course_title}\n'
+                              f'🧑‍🎓 <a href="{link_to_user_profile}">'
+                              f' {user_name}</a>\n'
+                              f'<b>Reputation:</b> {reputation}\n'
+                              f'<b>Reputation Rank:</b> {reputation_rank}\n'
+                              f'<b>Сount steps:</b> {count_steps}\n'
+                              f'<b>Course ID:</b> {course_id}\n'
+                              f'<b>Comment time:</b> {comment_time}\n'
+                              f'<b>Comment ID:</b> {comment_id}\n'
+                              f'🔗 <a href="{link_to_comment}">Link to Comment</a>\n\n'
+                              f'<b>Comment:</b> {comment_text}')
             
             result_profanity_filter: bool = await profanity_filter.is_profanity(
                 text=comment_text)
@@ -149,21 +149,21 @@ class StepikTasks:
                 logger_tasks.debug(f'{result_toxicity_classifier=}')
                 
                 if result_toxicity_classifier.get('is_toxic'):
-                    user_info = text_remove + user_info
-                    logger_tasks.warning(f'Toxicity filter: {user_info}')
+                    full_user_info = text_remove + full_user_info
+                    logger_tasks.warning(f'Toxicity filter: {full_user_info}')
                 else:
-                    user_info = res_text + user_info
-                    logger_tasks.debug(f'{user_info}')
+                    full_user_info = res_text + full_user_info
+                    logger_tasks.debug(f'{full_user_info}')
             elif result_profanity_filter:
-                user_info = text_remove + user_info
-                logger_tasks.warning(f'Profanity filter: {user_info}')
+                full_user_info = text_remove + full_user_info
+                logger_tasks.warning(f'Profanity filter: {full_user_info}')
             else:
-                user_info = res_text + user_info
+                full_user_info = res_text + full_user_info
             
             for owner in all_users:
                 try:
                     await self.bot.send_message(
-                        chat_id=owner, text=f'{user_info}')
+                        chat_id=owner, text=f'{full_user_info}')
                     await asyncio.sleep(0.5)
                 
                 except TelegramBadRequest as err:
