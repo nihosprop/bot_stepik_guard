@@ -11,6 +11,9 @@ from utils.utils import MessageProcessor
 logger = logging.getLogger(__name__)
 
 other_router = Router()
+other_router.message.filter(~and_f(AccessUsersFilter(),
+                                 AccessOwnersFilter()))
+
 
 @other_router.message()
 async def other_handler(msg: Message,
