@@ -3,8 +3,6 @@ from dataclasses import dataclass
 
 from aiogram.fsm.storage.redis import Redis
 
-from utils.utils import get_username
-
 logger = logging.getLogger(__name__)
 
 
@@ -33,10 +31,10 @@ class RedisService:
     
     user_tag: str = 'bot:user'
     users_list_set: str = 'bot:users'
-
+    
     owner_tag: str = 'bot:owner'
     owners_list_set: str = 'bot:owners'
-
+    
     stepik_id: str = 'stepik_id'
     stepik_ids_set: str = 'bot:stepik_ids'
     
@@ -64,6 +62,8 @@ class RedisService:
         Args:
             tg_user_id (int): The unique identifier of the user to be updated.
             tg_nickname (str | None): The new nickname of the user.
+        Returns:
+            None
         """
         
         if not await self.check_user(tg_user_id):
@@ -76,8 +76,8 @@ class RedisService:
         
         user_key = f'{self.user_tag}:{tg_user_id}'
         await self.redis.hset(
-            name=user_key, mapping={self.tg_username: tg_nickname,
-                                    'tg_link': tg_link})
+            name=user_key,
+            mapping={self.tg_username: tg_nickname, 'tg_link': tg_link})
     
     async def remove_user(self, tg_user_id: int):
         """
@@ -139,8 +139,18 @@ class RedisService:
         for user in users:
             username = user.get(self.tg_username)
             tg_id = int(user.get(self.tg_id))
-            row_users += (f'👨‍🎓 <a href="tg://user?id={tg_id}">'
-                          f'{username}:{tg_id}</a>\n')
+            
+            link = user.get('tg_link') or ''
+            
+            if not link and tg_id:
+                link = f'tg://user?id={tg_id}'
+            if not tg_id:
+                continue
+            
+            if link:
+                row_users += f'👨‍🎓 <a href="tg://user?id={tg_id}">'
+            else:
+                row_users += f'👨‍🎓 {username}\n'
         
         return row_users
     
@@ -185,9 +195,8 @@ class RedisService:
         """
         stepik_ids = await self.redis.smembers(self.stepik_ids_set)
         return [int(stepik_id) for stepik_id in stepik_ids]
-
-    async def add_owner(self, tg_user_id: int,
-                        tg_nickname: str) -> None:
+    
+    async def add_owner(self, tg_user_id: int, tg_nickname: str) -> None:
         """
         Adds an owner to the Redis database.
         This method adds an owner to the Redis database with the specified
@@ -199,7 +208,9 @@ class RedisService:
         Example:
             await add_owner(tg_user_id=123456789, tg_nickname='username')
         """
-        if tg_nickname and isinstance(tg_nickname, str) and tg_nickname.startswith('@'):
+        if tg_nickname and isinstance(
+            tg_nickname,
+            str) and tg_nickname.startswith('@'):
             tg_link = f'https://t.me/{tg_nickname[1:]}'
         else:
             tg_link = f'tg://user?id={tg_user_id}'
@@ -207,10 +218,12 @@ class RedisService:
         owner_key = f'{self.owner_tag}:{tg_user_id}'
         pipe = self.redis.pipeline(transaction=True)
         
-        await pipe.hset(name=owner_key, mapping={
-            self.tg_id: tg_user_id,
-            self.tg_username: tg_nickname,
-            'tg_link': tg_link})
+        await pipe.hset(
+            name=owner_key,
+            mapping={
+                self.tg_id: tg_user_id,
+                self.tg_username: tg_nickname,
+                'tg_link': tg_link})
         
         await pipe.sadd(self.owners_list_set, str(tg_user_id))
         await pipe.execute()
@@ -256,4 +269,3 @@ class RedisService:
                 rows.append(f'👑 <a href="{link}">{text}</a>')
         
         return '\n'.join(rows)
-    
