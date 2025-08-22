@@ -92,7 +92,7 @@ async def add_user(clbk: CallbackQuery,
 
 @owners_router.callback_query(
     F.data == 'back', StateFilter(
-        UsersSettingsStates.fill_tg_user_id))
+        UsersSettingsStates.fill_tg_user_id_add))
 async def back_from_add_user(clbk: CallbackQuery,
                              state: FSMContext,
                              msg_processor: MessageProcessor):
