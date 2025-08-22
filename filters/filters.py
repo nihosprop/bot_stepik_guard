@@ -25,6 +25,14 @@ class AccessOwnersFilter(BaseFilter):
         owner_tg_id = msg.from_user.id
         return owner_tg_id in owners
 
+class AccessUsersFilter(BaseFilter):
+    
+    async def __call__(self,
+                       msg: Message | CallbackQuery,
+                       redis_service: RedisService) -> bool:
+        user_tg_id = msg.from_user.id
+        users = await redis_service.get_tg_users()
+        return user_tg_id in users
 
 class TgUserIDFilter(BaseFilter):
     """
