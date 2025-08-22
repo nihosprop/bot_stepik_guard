@@ -63,7 +63,8 @@ async def settings_users(clbk: CallbackQuery, state: FSMContext):
 
 @owners_router.callback_query(
     F.data == 'add_user', StateFilter(UsersSettingsStates.settings_users))
-async def add_user(clbk: CallbackQuery, state: FSMContext,
+async def add_user(clbk: CallbackQuery,
+                   state: FSMContext,
                    msg_processor: MessageProcessor):
     """
     Handler for the /add_user command.
