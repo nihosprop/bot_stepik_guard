@@ -15,8 +15,12 @@ logger = logging.getLogger(__name__)
 
 user_router = Router()
 
-user_router.message.filter(AccessRightsFilter(flag_users=True))
-user_router.callback_query.filter(AccessRightsFilter(flag_users=True))
+user_router.message.filter(
+    or_f(
+        AccessOwnersFilter(), AccessUsersFilter()))
+user_router.callback_query.filter(
+    or_f(
+        AccessOwnersFilter(), AccessUsersFilter()))
 
 
 @user_router.callback_query(F.data.in_(['/cancel', '/exit']))
