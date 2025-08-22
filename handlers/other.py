@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import Router
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from utils.redis_service import RedisService
 from utils.utils import MessageProcessor
