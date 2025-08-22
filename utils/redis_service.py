@@ -12,6 +12,19 @@ logger = logging.getLogger(__name__)
 class RedisService:
     """
     A class for interacting with Redis database.
+    
+    Attributes:
+        redis (Redis): An instance of the Redis class for interacting with
+            Redis database.
+        tg_id (str): The key for the user's Telegram ID in the Redis database.
+        tg_username (str): The key for the user's Telegram username in the
+            Redis database.
+        user_tag (str): The tag for the user's hash in the Redis database.
+        users_list_set (str): The key for the set of users in the Redis database.
+        owner_tag (str): The tag for the owner's hash in the Redis database.
+        owners_list_set (str): The key for the set of owners in the Redis database.
+        stepik_id (str): The key for the user's Stepik ID in the Redis database.
+        stepik_ids_set (str): The key for the set of Stepik IDs in the Redis database.
     """
     redis: Redis
     
