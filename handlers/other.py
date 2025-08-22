@@ -18,6 +18,8 @@ async def other_handler(msg: Message,
     
     logger.debug('Entry')
     
+    await msg.delete()
+    
     owners_links = await redis_service.get_owners_info()
     
     if not owners_links:
