@@ -147,7 +147,7 @@ class RedisService:
             if not link:
                 link = f'tg://user?id={tg_id}'
             
-            row_users += f'👨‍🎓 <a href="{link}">{username}</a>\n'
+            row_users += f'👨‍🎓\n<a href="{link}">{username}:{tg_id}</a>\n'
         
         return row_users
     
