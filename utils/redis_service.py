@@ -56,6 +56,29 @@ class RedisService:
         await pipe.execute()
         logger.info(f'User TG_ID:{tg_user_id} added to Redis')
     
+    async def update_user_username(self,
+                                   tg_user_id: int,
+                                   tg_nickname: str | None) -> None:
+        """
+        Updates the username of a user in the Redis database.
+        Args:
+            tg_user_id (int): The unique identifier of the user to be updated.
+            tg_nickname (str | None): The new nickname of the user.
+        """
+        
+        if not await self.check_user(tg_user_id):
+            return
+        
+        if tg_nickname and tg_nickname.startswith('@'):
+            tg_link = f'https://t.me/{tg_nickname}'
+        else:
+            tg_link = f'tg://user?id={tg_user_id}'
+        
+        user_key = f'{self.user_tag}:{tg_user_id}'
+        await self.redis.hset(
+            name=user_key, mapping={self.tg_username: tg_nickname,
+                                    'tg_link': tg_link})
+    
     async def remove_user(self, tg_user_id: int):
         """
         Removes a user from the Redis database.
