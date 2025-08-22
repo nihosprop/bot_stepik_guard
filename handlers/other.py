@@ -13,6 +13,8 @@ logger = logging.getLogger(__name__)
 other_router = Router()
 other_router.message.filter(~and_f(AccessUsersFilter(),
                                  AccessOwnersFilter()))
+other_router.callback_query.filter(~and_f(AccessUsersFilter(),
+                                          AccessOwnersFilter()))
 
 
 @other_router.message()
