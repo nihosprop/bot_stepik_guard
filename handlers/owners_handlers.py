@@ -16,8 +16,8 @@ logger_owners = logging.getLogger(__name__)
 
 owners_router = Router()
 
-owners_router.message.filter(AccessRightsFilter())
-owners_router.callback_query.filter(AccessRightsFilter())
+owners_router.message.filter(AccessOwnersFilter())
+owners_router.callback_query.filter(AccessOwnersFilter())
 
 
 @owners_router.message(F.text == '/users_info', StateFilter(default_state))
