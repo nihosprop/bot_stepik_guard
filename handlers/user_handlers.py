@@ -122,3 +122,13 @@ async def shut(clbk: CallbackQuery):
     logger.debug('Entry')
     await clbk.answer('Кнопка в разработке', show_alert=True)
     logger.debug('Exit')
+
+
+@user_router.callback_query()
+async def clbk_other_handler(clbk: CallbackQuery):
+    logger.debug('Entry')
+    logger.debug(f'{clbk.data=}')
+    
+    await clbk.answer('Кнопка в разработке', show_alert=True)
+    
+    logger.debug('Exit')
