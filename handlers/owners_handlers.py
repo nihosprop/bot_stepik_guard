@@ -118,7 +118,6 @@ async def back_from_add_user(clbk: CallbackQuery,
 @owners_router.message(
     TgUserIDFilter(), StateFilter(UsersSettingsStates.fill_tg_user_id))
 async def fill_tg_user_id(msg: Message,
-                          state: FSMContext,
                           msg_processor: MessageProcessor,
                           redis_service: RedisService):
     """
@@ -126,8 +125,6 @@ async def fill_tg_user_id(msg: Message,
     
     Args:
         msg (Message): The message object that triggered the command.
-        state (FSMContext): An instance of the FSMContext class for managing
-            state.
         msg_processor (MessageProcessor): An instance of the MessageProcessor
             class for deleting messages.
         redis_service (RedisService): An instance of the RedisService class for
@@ -137,11 +134,19 @@ async def fill_tg_user_id(msg: Message,
     
     tg_user_id = int(msg.text)
     await msg.delete()
+    await msg_processor.deletes_messages(msgs_for_del=True)
+
+    if await redis_service.check_user(tg_user_id=tg_user_id):
+        value = await msg.answer(f'Юзер ID:{tg_user_id} уже есть в базе.',
+                                 reply_markup=kb_add_user)
+        await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+        return
+        
     await redis_service.add_user(tg_user_id=tg_user_id)
-    await state.clear()
     value = await msg.answer(
         f'Юзер TG_ID:{tg_user_id} успешно добавлен.\n'
         f'Может стартовать бота! 🚀🧑‍🚀\n\n',
         reply_markup=kb_exit)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    
     logger_owners.debug('Exit')
