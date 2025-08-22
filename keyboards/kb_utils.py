@@ -28,7 +28,7 @@ def create_static_kb(width: int = 1,
 
     Returns: InlineKeyboardMarkup
     """
-    BUTT_CANCEL: dict[str, str] = {'cancel': '❌ Отмена'}
+    BUTT_CANCEL: dict[str, str] = {'cancel': 'Отмена'}
     BUTT_BACK: dict[str, str] = {'back': '🔙 Назад'}
     BUTT_EXIT: dict[str, str] = {'exit': 'Выйти'}
     
