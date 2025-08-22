@@ -16,20 +16,14 @@ from utils.redis_service import RedisService
 logger_filters = logging.getLogger(__name__)
 
 
-class AccessRightsFilter(BaseFilter):
-    def __init__(self, flag_users: bool = False):
-        self.flag_users = flag_users
+class AccessOwnersFilter(BaseFilter):
     
     async def __call__(self,
                        msg: Message | CallbackQuery,
                        owners: list[int],
                        redis_service: RedisService) -> bool:
-        user_tg_id: int = msg.from_user.id
-        
-        if self.flag_users:
-            users: list[int] = await redis_service.get_tg_users()
-            owners.extend(users)
-        return user_tg_id in owners
+        owner_tg_id = msg.from_user.id
+        return owner_tg_id in owners
 
 
 class TgUserIDFilter(BaseFilter):
