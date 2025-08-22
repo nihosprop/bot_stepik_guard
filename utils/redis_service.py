@@ -216,10 +216,6 @@ class RedisService:
             
             # Без id формировать строку не имеет смысла
             if tg_id_raw and link:
-                try:
-                    tg_id_int = int(tg_id_raw)
-                except (TypeError, ValueError):
-                    tg_id_int = None
                 text = f'{username}'
                 rows.append(f'👑 <a href="{link}">{text}</a>')
         
