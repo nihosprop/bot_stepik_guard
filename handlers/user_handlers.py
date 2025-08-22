@@ -106,7 +106,7 @@ async def cmd_start(msg: Message,
                                       tg_nickname=await get_username(msg))
 
     await state.set_state(None)
-    logger.debug(f'State clear: {await get_username(msg)}:{msg.from_user.id}')
+    logger.debug(f'State clear:{await get_username(msg)}:{msg.from_user.id}')
 
     logger.debug('Exit')
 
