@@ -10,7 +10,6 @@ from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
 
 from filters.patterns import DataProfanity
-from handlers.owners_handlers import owners_router
 from utils.redis_service import RedisService
 
 logger_filters = logging.getLogger(__name__)
