@@ -120,7 +120,7 @@ async def back_from_add_user(clbk: CallbackQuery,
 
 
 @owners_router.message(
-    TgUserIDFilter(), StateFilter(UsersSettingsStates.fill_tg_user_id))
+    TgUserIDFilter(), StateFilter(UsersSettingsStates.fill_tg_user_id_add))
 async def fill_tg_user_id(msg: Message,
                           msg_processor: MessageProcessor,
                           redis_service: RedisService):
