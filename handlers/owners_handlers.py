@@ -128,7 +128,8 @@ async def back_from_add_user(clbk: CallbackQuery,
     TgUserIDFilter(), StateFilter(UsersSettingsStates.fill_tg_user_id_add))
 async def fill_tg_user_id(msg: Message,
                           msg_processor: MessageProcessor,
-                          redis_service: RedisService):
+                          redis_service: RedisService,
+                          state: FSMContext):
     """
     Handler for filling in the user ID.
     
@@ -138,26 +139,28 @@ async def fill_tg_user_id(msg: Message,
             class for deleting messages.
         redis_service (RedisService): An instance of the RedisService class for
             working with Redis.
+        state (FSMContext): An instance of the FSMContext class for managing
+            state.
     """
     logger_owners.debug('Entry')
     
     tg_user_id = int(msg.text)
     await msg.delete()
     await msg_processor.deletes_messages(msgs_for_del=True)
-
+    
     if await redis_service.check_user(tg_user_id=tg_user_id):
-        value = await msg.answer(f'Юзер ID:{tg_user_id} уже есть в базе.',
-                                 reply_markup=kb_add_user)
+        value = await msg.answer(
+            f'Юзер ID:{tg_user_id} уже есть в базе.',
+            reply_markup=kb_add_del_user)
         await msg_processor.save_msg_id(value=value, msgs_for_del=True)
         return
-        
+    
     await redis_service.add_user(tg_user_id=tg_user_id)
     value = await msg.answer(
         f'Юзер TG_ID:{tg_user_id} успешно добавлен.\n'
-        f'Может стартовать бота! 🚀🧑‍🚀\n\n',
-        reply_markup=kb_exit)
+        f'Может стартовать бота! 🚀🧑‍🚀\n\n', reply_markup=kb_own_start)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
-    
+    await state.set_state(state=None)
     logger_owners.debug('Exit')
 
 
@@ -193,3 +196,32 @@ async def clbk_delete_user(clbk: CallbackQuery,
     
     logger_owners.debug('Exit')
 
+
+@owners_router.message(
+    TgUserIDFilter(), StateFilter(UsersSettingsStates.fill_tg_user_id_delete))
+async def confirm_remove_user(msg: Message,
+                              msg_processor: MessageProcessor,
+                              redis_service: RedisService,
+                              state: FSMContext):
+    logger_owners.debug('Entry')
+    
+    tg_user_id = int(msg.text)
+    await msg.delete()
+    await msg_processor.deletes_messages(msgs_for_del=True)
+    
+    if not await redis_service.check_user(tg_user_id=tg_user_id):
+        value = await msg.answer(
+            f'Юзер ID:{tg_user_id} не найден в базе.',
+            reply_markup=kb_add_del_user)
+        await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+        return
+    
+    await redis_service.remove_user(tg_user_id=tg_user_id)
+
+    value = await msg.answer(
+        f'Юзер TG_ID:{tg_user_id} успешно удален из базы.\n',
+        reply_markup=kb_own_start)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    await state.set_state(state=None)
+
+    logger_owners.debug('Exit')
