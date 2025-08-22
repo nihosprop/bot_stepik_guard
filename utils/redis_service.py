@@ -70,7 +70,7 @@ class RedisService:
             return
         
         if tg_nickname and tg_nickname.startswith('@'):
-            tg_link = f'https://t.me/{tg_nickname}'
+            tg_link = f'https://t.me/{tg_nickname[1:]}'
         else:
             tg_link = f'tg://user?id={tg_user_id}'
         
@@ -142,15 +142,12 @@ class RedisService:
             
             link = user.get('tg_link') or ''
             
-            if not link and tg_id:
-                link = f'tg://user?id={tg_id}'
             if not tg_id:
                 continue
+            if not link:
+                link = f'tg://user?id={tg_id}'
             
-            if link:
-                row_users += f'👨‍🎓 <a href="tg://user?id={tg_id}">'
-            else:
-                row_users += f'👨‍🎓 {username}\n'
+            row_users += f'👨‍🎓 <a href="{link}">{username}</a>\n'
         
         return row_users
     
