@@ -50,7 +50,8 @@ class TgUserIDFilter(BaseFilter):
             return False
         try:
             val = int(text)
-        except Exception:
+        except Exception as err:
+            logger_filters.warning(f'{err=}')
             return False
         if val <= 0:
             return False
