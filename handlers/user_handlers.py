@@ -1,13 +1,12 @@
 import logging
 
 from aiogram import F, Router
-from aiogram.filters import StateFilter
+from aiogram.filters import or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message
 
-from filters.filters import AccessRightsFilter
-from keyboards.keyboards import kb_user_start, kb_own_start
-from states.states import UsersSettingsStates
+from filters.filters import AccessOwnersFilter, AccessUsersFilter
+from keyboards.keyboards import kb_own_start, kb_user_start
 from utils.redis_service import RedisService
 from utils.utils import MessageProcessor, get_username
 
