@@ -60,7 +60,7 @@ async def clbk_cancel(clbk: CallbackQuery,
     logger.debug('Exit')
 
 
-@user_router.message(F.text.in_(['/start']))
+@user_router.message(F.text == '/start')
 async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
                     redis_service: RedisService,
