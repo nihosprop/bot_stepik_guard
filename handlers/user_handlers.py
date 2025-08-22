@@ -3,7 +3,7 @@ import logging
 from aiogram import F, Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import CallbackQuery, Message
 
 from filters.filters import AccessRightsFilter
 from keyboards.keyboards import kb_user_start, kb_own_start
