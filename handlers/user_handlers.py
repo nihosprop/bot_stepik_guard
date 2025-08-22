@@ -43,7 +43,7 @@ async def clbk_cancel(clbk: CallbackQuery,
     
     await msg_processor.deletes_messages(msgs_for_del=True)
 
-    text = (f'<b>Отслеживаемые курсы Stepik:</b>\n'
+    text = (f'<b>Мониторю курсы Stepik:</b>\n'
             f'<pre>\n{'\n'.join(map(str, stepik_courses_ids))}</pre>\n')
     
     user_tg_id = clbk.from_user.id
