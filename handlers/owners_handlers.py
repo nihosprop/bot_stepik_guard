@@ -29,6 +29,7 @@ async def get_users_info_no_state(msg: Message,
     await msg.delete()
     await msg_processor.deletes_messages(msgs_for_del=True)
     users_info: str = await redis_service.get_users_info()
+    logger_owners.debug(f'{users_info=}')
     value = await msg.answer(text=users_info, reply_markup=kb_exit)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     
