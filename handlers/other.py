@@ -36,14 +36,5 @@ async def other_handler(msg: Message,
     await msg_processor.deletes_msg_a_delay(value, delay=20, indication=True)
     
     logger.debug('Exit')
-
-@other_router.callback_query()
-async def clbk_other_handler(clbk: CallbackQuery):
-    logger.debug('Entry')
-    logger.debug(f'{clbk.data=}')
-    
-    await clbk.answer('Кнопка в разработке', show_alert=True)
-    
-    logger.debug('Exit')
     
     
