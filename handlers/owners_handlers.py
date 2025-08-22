@@ -156,3 +156,37 @@ async def fill_tg_user_id(msg: Message,
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     
     logger_owners.debug('Exit')
+
+
+@owners_router.callback_query(
+    F.data == 'delete_user', StateFilter(UsersSettingsStates.settings_users))
+async def clbk_delete_user(clbk: CallbackQuery,
+                           state: FSMContext,
+                           msg_processor: MessageProcessor,
+                           redis_service: RedisService):
+    """
+    Handler for the /delete_user command.
+    Removes a user from the list of users to monitor for comments.
+    Args:
+        clbk (CallbackQuery): The callback query object that triggered the
+            command.
+        state (FSMContext): An instance of the FSMContext class for managing
+            state.
+        msg_processor (MessageProcessor): An instance of the MessageProcessor
+            class for deleting messages.
+        redis_service (RedisService): An instance of the RedisService class for
+            working with Redis.
+    """
+    logger_owners.debug('Entry')
+    
+    users = await redis_service.get_users_info()
+    
+    text = (f'Отправьте мне ID юзера для удаления.\n'
+            f'<code>\n{users}</code>')
+    value = await clbk.message.edit_text(text=text, reply_markup=kb_add_del_user)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    await state.set_state(UsersSettingsStates.fill_tg_user_id_delete)
+    await clbk.answer()
+    
+    logger_owners.debug('Exit')
+
