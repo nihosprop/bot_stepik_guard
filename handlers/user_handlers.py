@@ -17,7 +17,43 @@ user_router.message.filter(AccessRightsFilter(flag_users=True))
 user_router.callback_query.filter(AccessRightsFilter(flag_users=True))
 
 
-@user_router.message(F.text.in_(['/start', '/cancel', 'exit']))
+@user_router.callback_query(F.data.in_(['/cancel', '/exit']))
+async def clbk_cancel(clbk: CallbackQuery,
+                      stepik_courses_ids: list[int],
+                      owners: list[int],
+                      msg_processor: MessageProcessor,
+                      state: FSMContext) -> None:
+    """
+    Handler for the /cancel and /exit callback commands.
+    
+    Args:
+        stepik_courses_ids (list[int]): A list of course IDs to monitor for
+            comments.
+        clbk (CallbackQuery): The callback query object that triggered the
+            /cancel or /exit command
+        msg_processor (MessageProcessor): An instance of the MessageProcessor
+            class for deleting messages
+        state (FSMContext): An instance of the FSMContext class for managing
+            state.
+        owners (list[int]): A list of owner IDs.
+    """
+    logger.debug('Entry')
+
+    text = (f'<b>Отслеживаемые курсы Stepik:</b>\n'
+            f'<pre>{"".join(map(str, stepik_courses_ids))}</pre>\n')
+    
+    user_tg_id = clbk.from_user.id
+    keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
+    
+    await clbk.message.edit_text(text=text, reply_markup=keyboard)
+    await state.set_state(state=None)
+    await clbk.answer()
+    
+    logger.debug(f'State clear: {await get_username(clbk)}:{clbk.from_user.id}')
+    logger.debug('Exit')
+
+
+@user_router.message(F.text.in_(['/start']))
 async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
                     redis_service: RedisService,
