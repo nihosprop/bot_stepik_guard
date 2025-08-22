@@ -19,8 +19,7 @@ class AccessOwnersFilter(BaseFilter):
     
     async def __call__(self,
                        msg: Message | CallbackQuery,
-                       owners: list[int],
-                       redis_service: RedisService) -> bool:
+                       owners: list[int]) -> bool:
         owner_tg_id = msg.from_user.id
         return owner_tg_id in owners
 
