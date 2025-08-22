@@ -62,11 +62,14 @@ async def settings_users(clbk: CallbackQuery, state: FSMContext):
 
 @owners_router.callback_query(
     F.data == 'add_user', StateFilter(UsersSettingsStates.settings_users))
-async def add_user(clbk: CallbackQuery, state: FSMContext):
+async def add_user(clbk: CallbackQuery, state: FSMContext,
+                   msg_processor: MessageProcessor):
     """
     Handler for the /add_user command.
     Adds a user to the list of users to monitor for comments.
     Args:
+        msg_processor (MessageProcessor): An instance of the MessageProcessor
+        class for deleting messages.
         clbk (CallbackQuery): The callback query object that triggered the
         command.
         state (FSMContext): An instance of the FSMContext class for managing
@@ -77,7 +80,8 @@ async def add_user(clbk: CallbackQuery, state: FSMContext):
     text = ('Отправьте мне ID юзера.\n'
             'Узнать ID можно в боте:\n'
             '<a href="https://t.me/username_to_id_bot">IDBot</a>')
-    await clbk.message.edit_text(text=text, reply_markup=kb_add_user)
+    value = await clbk.message.edit_text(text=text, reply_markup=kb_add_user)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     await state.set_state(UsersSettingsStates.fill_tg_user_id)
     await clbk.answer()
     
