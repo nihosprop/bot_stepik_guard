@@ -7,13 +7,10 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 from filters.filters import AccessRightsFilter, TgUserIDFilter
-from keyboards.keyboards import (kb_add_user,
-                                 kb_exit,
-                                 kb_own_start,
-                                 kb_settings_users)
+from keyboards.keyboards import (kb_add_user, kb_exit, kb_settings_users)
 from states.states import UsersSettingsStates
 from utils.redis_service import RedisService
-from utils.utils import MessageProcessor, get_username
+from utils.utils import MessageProcessor
 
 logger_owners = logging.getLogger(__name__)
 
@@ -25,8 +22,8 @@ owners_router.callback_query.filter(AccessRightsFilter())
 
 @owners_router.message(F.text == '/users_info', StateFilter(default_state))
 async def get_users_info_no_state(msg: Message,
-                         msg_processor: MessageProcessor,
-                         redis_service: RedisService):
+                                  msg_processor: MessageProcessor,
+                                  redis_service: RedisService):
     logger_owners.debug('Entry')
     
     await msg.delete()
@@ -36,6 +33,7 @@ async def get_users_info_no_state(msg: Message,
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     
     logger_owners.debug('Exit')
+
 
 @owners_router.message(F.text == '/users_info', ~StateFilter(default_state))
 async def get_users_info_in_state(msg: Message, msg_processor: MessageProcessor):
@@ -53,7 +51,7 @@ async def settings_users(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
     await clbk.message.edit_text(
-        'Чтобы добавить / удалить юзера,'
+        'Чтобы <b>добавить / удалить</b> юзера,'
         ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
         reply_markup=kb_settings_users)
     await state.set_state(UsersSettingsStates.settings_users)
