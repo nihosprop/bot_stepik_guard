@@ -169,6 +169,7 @@ class StepikTasks:
             for owner in all_users:
                 try:
                     await self.bot.send_message(
+                        link_preview_options=None,
                         chat_id=owner,
                         text=light_user_info if flag_low_comment
                                 else full_user_info)
