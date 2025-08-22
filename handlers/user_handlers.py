@@ -131,3 +131,12 @@ async def clbk_other_handler(clbk: CallbackQuery):
     await clbk.answer('Кнопка в разработке', show_alert=True)
     
     logger.debug('Exit')
+
+@user_router.message()
+async def msg_other(msg: Message):
+    logger.debug('Entry')
+    
+    await msg.delete()
+    
+    logger.debug('Exit')
+    
