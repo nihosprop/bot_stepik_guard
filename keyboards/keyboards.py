@@ -10,7 +10,7 @@ kb_own_start = create_static_kb(**BUTTS_OWN_START, cancel_butt=False)
 kb_user_start = create_static_kb(**BUTTS_USER_START, cancel_butt=False)
 
 kb_settings_users = create_static_kb(**BUTTS_SETTINGS_USERS, cancel_butt=True)
-kb_add_user = create_static_kb(back=True, cancel_butt=True)
+kb_add_del_user = create_static_kb(back=True, cancel_butt=True)
 
 
 kb_settings_courses = create_static_kb(
