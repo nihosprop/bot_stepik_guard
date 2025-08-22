@@ -1,7 +1,7 @@
 import logging
 
 from aiogram import Router
-from aiogram.filters import or_f
+from aiogram.filters import and_f
 from aiogram.types import Message, CallbackQuery
 
 from filters.filters import AccessUsersFilter, AccessOwnersFilter
