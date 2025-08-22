@@ -26,7 +26,7 @@ async def other_handler(msg: Message,
             fallback_rows.append(f'👑 <a href="tg://user?id={own_id}">{own_id}</a>')
         owners_links = '\n'.join(fallback_rows)
     
-    text = (f'Для возможности отслеживания комментариев на Stepik, обратитесь '
+    text = (f'Для отслеживания комментариев на Stepik, обратитесь '
             f'к любому из супер-админов:\n{owners_links}')
     
     await msg_processor.deletes_messages(msgs_for_del=True)
