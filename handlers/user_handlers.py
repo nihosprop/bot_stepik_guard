@@ -102,17 +102,22 @@ async def cmd_start(msg: Message,
             f'<b>Приятного полета</b> 🫡')
     
     user_tg_id = msg.from_user.id
+    tg_nickname: str = await get_username(msg)
+
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
     value = await msg.answer(text=text, reply_markup=keyboard)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     
     if user_tg_id in owners:
         await redis_service.add_owner(
-            tg_user_id=user_tg_id, tg_nickname=await get_username(msg))
-
+            tg_user_id=user_tg_id, tg_nickname=tg_nickname)
+    
+    if await redis_service.check_user(tg_user_id=user_tg_id):
+        await redis_service.update_user_username(tg_user_id=user_tg_id,
+                                                 tg_nickname=tg_nickname)
     await state.set_state(None)
-    logger.debug(f'State clear:{await get_username(msg)}:{msg.from_user.id}')
 
+    logger.debug(f'State clear:{tg_nickname}:{user_tg_id}')
     logger.debug('Exit')
 
 @user_router.callback_query()
