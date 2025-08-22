@@ -40,6 +40,8 @@ async def clbk_cancel(clbk: CallbackQuery,
         owners (list[int]): A list of owner IDs.
     """
     logger.debug('Entry')
+    
+    await msg_processor.deletes_messages(msgs_for_del=True)
 
     text = (f'<b>Отслеживаемые курсы Stepik:</b>\n'
             f'<pre>\n{'\n'.join(map(str, stepik_courses_ids))}</pre>\n')
@@ -47,11 +49,13 @@ async def clbk_cancel(clbk: CallbackQuery,
     user_tg_id = clbk.from_user.id
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
     
-    await clbk.message.edit_text(text=text, reply_markup=keyboard)
+    value = await clbk.message.edit_text(text=text, reply_markup=keyboard)
+    await msg_processor.save_msg_id(value, msgs_for_del=True)
+
     await state.set_state(state=None)
     await clbk.answer()
     
-    logger.debug(f'State clear: {await get_username(clbk)}:{clbk.from_user.id}')
+    logger.debug(f'State clear:{await get_username(clbk)}:{clbk.from_user.id}')
     logger.debug('Exit')
 
 
