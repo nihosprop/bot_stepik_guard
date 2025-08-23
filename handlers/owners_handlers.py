@@ -188,7 +188,7 @@ async def clbk_delete_user(clbk: CallbackQuery,
     users = await redis_service.get_users_info()
     
     text = (f'Отправьте мне ID юзера для удаления.\n'
-            f'<code>\n{users}</code>')
+            f'<code>\n{users if users else 'Юзеров в базе нет.'}</code>')
     value = await clbk.message.edit_text(text=text, reply_markup=kb_add_del_user)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     await state.set_state(UsersSettingsStates.fill_tg_user_id_delete)
