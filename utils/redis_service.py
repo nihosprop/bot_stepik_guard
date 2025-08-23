@@ -21,8 +21,9 @@ class RedisService:
         users_list_set (str): The key for the set of users in the Redis database.
         owner_tag (str): The tag for the owner's hash in the Redis database.
         owners_list_set (str): The key for the set of owners in the Redis database.
-        stepik_course_id (str): The key for the user's Stepik ID in the Redis database.
-        stepik_ids_set (str): The key for the set of Stepik IDs in the Redis database.
+        stepik_course_id (str): The key for the Stepik course ID in the Redis database.
+        stepik_ids_set (str): The key for the set of Stepik course IDs in the Redis database.
+    
     """
     redis: Redis
     
