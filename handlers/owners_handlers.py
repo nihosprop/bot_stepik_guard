@@ -33,7 +33,8 @@ async def get_users_info_no_state(msg: Message,
     users_info: str = await redis_service.get_users_info()
     logger_owners.debug(f'{users_info=}')
     value = await msg.answer(text=users_info if users_info else 'База пуста',
-                             reply_markup=kb_exit)
+                             reply_markup=kb_exit,
+                             link_preview_options=LinkPreviewOptions(is_disabled=True))
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     
     logger_owners.debug('Exit')
