@@ -183,8 +183,6 @@ class RedisService:
             self.stepik_ids_set, str(course_id))
         return bool(result)
     
-    async def remove_stepik_course_id(self, tg_user_id: int) -> None:
-        pass
     async def add_stepik_course_id(self, course_id: int) -> bool:
         """
         Adds a Stepik course ID to the Redis database.
