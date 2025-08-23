@@ -223,7 +223,13 @@ class RedisService:
         return True
     
     async def get_stepik_course_ids(self) -> list[int]:
-        pass
+        """
+        Returns a list of all Stepik course IDs in the Redis database.
+        Returns:
+            list[int]: A list of unique course identifiers.
+        """
+        return [int(course_id) for course_id in
+            (await self.redis.smembers(self.stepik_ids_set))]
     
     async def add_owner(self, tg_user_id: int, tg_nickname: str) -> None:
         """
