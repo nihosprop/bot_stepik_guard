@@ -45,9 +45,10 @@ async def clbk_cancel(clbk: CallbackQuery,
     logger.debug('Entry')
 
     stepik_courses_ids = await redis_service.get_stepik_course_ids()
-    
+    str_stepik_courses_ids = '\n'.join(map(str, stepik_courses_ids))
     text = (f'<b>Мониторю курсы Stepik:</b>\n'
-            f'<pre>\n{'\n'.join(map(str, stepik_courses_ids))}</pre>\n')
+            f'<pre>\n{str_stepik_courses_ids if str_stepik_courses_ids else
+            '<i>Пока нет курсов для отслеживания</i>'}</pre>\n')
     
     user_tg_id = clbk.from_user.id
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
