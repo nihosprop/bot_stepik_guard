@@ -29,7 +29,7 @@ class AccessUsersFilter(BaseFilter):
                        msg: Message | CallbackQuery,
                        redis_service: RedisService) -> bool:
         user_tg_id = msg.from_user.id
-        users = await redis_service.get_tg_users()
+        users = await redis_service.get_tg_users_ids()
         return user_tg_id in users
 
 class TgUserIDFilter(BaseFilter):
