@@ -16,6 +16,8 @@ class RedisService:
     Attributes:
         redis (Redis): An instance of the Redis class for interacting with
             Redis database.
+        stepik_client (StepikAPIClient): An instance of the StepikAPIClient
+            class for interacting with Stepik API.
         tg_id (str): The key for the user's Telegram ID in the Redis database.
         tg_username (str): The key for the user's Telegram username in the
             Redis database.
