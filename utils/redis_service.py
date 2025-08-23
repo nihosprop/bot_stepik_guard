@@ -151,7 +151,7 @@ class RedisService:
         
         return row_users
     
-    async def add_stepik_id(self, tg_user_id: int, user_stepik_id: int) -> None:
+    async def add_stepik_course_id(self, tg_user_id: int, user_stepik_id: int) -> None:
         """
         Adds a Stepik ID to a user's hash.
         Args:
