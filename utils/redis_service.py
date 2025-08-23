@@ -157,14 +157,8 @@ class RedisService:
     async def remove_stepik_course_id(self, tg_user_id: int) -> None:
         pass
     
-    async def get_stepik_ids(self) -> list[int]:
-        """
-        Returns a list of all Stepik IDs in the Redis database.
-        Returns:
-            list[int]: A list of unique Stepik IDs.
-        """
-        stepik_ids = await self.redis.smembers(self.stepik_ids_set)
-        return [int(stepik_id) for stepik_id in stepik_ids]
+    async def get_stepik_course_ids(self) -> list[int]:
+        pass
     
     async def add_owner(self, tg_user_id: int, tg_nickname: str) -> None:
         """
