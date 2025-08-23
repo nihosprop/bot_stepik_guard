@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 
 from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
+from aiogram.types import LinkPreviewOptions
 
 from filters.filters import ProfanityFilter
 from filters.toxicity_classifiers import RussianToxicityClassifier
@@ -167,9 +168,13 @@ class StepikTasks:
             else:
                 full_user_info = res_text + full_user_info
             
+            lpw_options = LinkPreviewOptions(is_disabled=True)
+            if flag_low_comment:
+                lpw_options = None
             for owner in all_users:
                 try:
                     await self.bot.send_message(
+                        link_preview_options=lpw_options,
                         chat_id=owner,
                         text=light_user_info if flag_low_comment else full_user_info)
                     await asyncio.sleep(0.5)
