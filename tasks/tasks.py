@@ -171,6 +171,7 @@ class StepikTasks:
             lpw_options = LinkPreviewOptions(is_disabled=True)
             if flag_low_comment:
                 lpw_options = None
+            
             for owner in all_users:
                 try:
                     await self.bot.send_message(
