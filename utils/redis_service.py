@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class RedisService:
     """
-    A class for interacting with Redis database.
+    RedisService class for interacting with Redis database.
     
     Attributes:
         redis (Redis): An instance of the Redis class for interacting with
