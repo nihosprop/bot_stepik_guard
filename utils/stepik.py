@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
 
 import aiohttp
-from redis.asyncio import Redis
+from aiogram.fsm.storage.redis import Redis
 
 logger_stepik = logging.getLogger(__name__)
 
