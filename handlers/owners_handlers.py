@@ -102,7 +102,6 @@ async def back_from_add_del_user(clbk: CallbackQuery,
                              msg_processor: MessageProcessor):
     """
     Handler for the /back command.
-    Returns to the main menu.
     Args:
         clbk (CallbackQuery): The callback query object that triggered the
         command.
