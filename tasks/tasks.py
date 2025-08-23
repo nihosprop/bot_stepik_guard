@@ -116,7 +116,7 @@ class StepikTasks:
             comment_time = datetime.strptime(
                 comment.get('time'), '%Y-%m-%dT%H:%M:%SZ')
             
-            full_user_info = (f'\n<b>Course:</b> {course_title}\n'
+            full_user_info = (f'\n<b>{course_title}</b>\n'
                               f'🧑‍🎓 <a href="{link_to_user_profile}">'
                               f' {user_name}</a>\n'
                               f'<b>Reputation:</b> {reputation}\n'
@@ -126,13 +126,13 @@ class StepikTasks:
                               f'<b>Comment time:</b> {comment_time}\n'
                               f'<b>Comment ID:</b> {comment_id}\n'
                               f'🔗 <a href="{link_to_comment}">Link to Comment</a>\n\n'
-                              f'<b>Comment:</b> {comment_text}')
+                              f'<b>Comment:</b>\n{comment_text}')
             
-            light_user_info = (f'\n<b>Course:</b> {course_title}\n'
+            light_user_info = (f'\n<b>{course_title}</b>\n'
                                f'🧑‍🎓 <a href="{link_to_user_profile}">'
                                f' {user_name}</a>\n'
                                f'🔗 <a href="{link_to_comment}">Link to Comment</a>\n\n'
-                               f'<b>Comment:</b> {comment_text}')
+                               f'<b>Comment:</b>{comment_text}')
             
             result_profanity_filter: bool = await profanity_filter.is_profanity(
                 text=comment_text)
@@ -140,8 +140,8 @@ class StepikTasks:
             
             text_solution_low = 'Решения 🟡\n'
             text_solution_high = 'Решения 🟢\n'
-            text_comment_low = 'Коммент 🟡\n'
-            text_comment_high = 'Коммент 🟢\n'
+            text_comment_low = 'Статус 🟡\n'
+            text_comment_high = 'Статус 🟢\n'
             text_remove = f"🚨 Удалить! 🚨\n"
             
             flag_low_comment: bool = (len(set(comment_text)) <= 2) or (len(
