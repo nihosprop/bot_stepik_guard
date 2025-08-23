@@ -44,3 +44,8 @@ async def msg_other_handler(msg: Message,
     await msg_processor.deletes_msg_a_delay(value, delay=20, indication=True)
     
     logger.debug('Exit')
+
+@other_router.callback_query()
+async def clbk_other_handler(clbk: CallbackQuery):
+    await clbk.answer('Упс…\n У вас нет прав нажимать эту кнопку 😁',
+                      show_alert=True)
