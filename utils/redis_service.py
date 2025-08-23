@@ -199,8 +199,9 @@ class RedisService:
             if not data or not data.get('courses'):
                 return False
         except Exception as e:
-            logger.error(f'Error adding course ID:{course_id} to Redis: {e}',
-                         exc_info=True)
+            logger.error(
+                f'Error adding course ID:{course_id} to Redis: {e}',
+                exc_info=True)
             return False
         
         await self.redis.sadd(self.stepik_ids_set, str(course_id))
@@ -217,7 +218,7 @@ class RedisService:
         """
         if not await self.check_stepik_course_id(course_id):
             return False
-
+        
         await self.redis.srem(self.stepik_ids_set, str(course_id))
         logger.info(f'Course ID:{course_id} removed from Redis')
         return True
@@ -244,8 +245,7 @@ class RedisService:
             await add_owner(tg_user_id=123456789, tg_nickname='username')
         """
         if tg_nickname and isinstance(
-            tg_nickname,
-            str) and tg_nickname.startswith('@'):
+            tg_nickname, str) and tg_nickname.startswith('@'):
             tg_link = f'https://t.me/{tg_nickname[1:]}'
         else:
             tg_link = f'tg://user?id={tg_user_id}'
