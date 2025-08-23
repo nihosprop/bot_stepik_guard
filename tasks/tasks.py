@@ -29,7 +29,8 @@ class StepikTasks:
         logger_tasks.debug("🟢Начало проверки комментариев")
         
         all_comments = []
-        stepik_courses_ids: list[int] = await self.redis_service.get_stepik_course_ids()
+        stepik_courses_ids: list[
+            int] = await self.redis_service.get_stepik_course_ids()
         
         if not stepik_courses_ids:
             logger_tasks.info('Нет активных курсов')
@@ -170,8 +171,7 @@ class StepikTasks:
                 try:
                     await self.bot.send_message(
                         chat_id=owner,
-                        text=light_user_info if flag_low_comment
-                                else full_user_info)
+                        text=light_user_info if flag_low_comment else full_user_info)
                     await asyncio.sleep(0.5)
                 
                 except TelegramBadRequest as err:
