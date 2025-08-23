@@ -1,7 +1,7 @@
 import logging
 from dataclasses import dataclass
 
-from aiogram.fsm.storage.redis import Redis
+from redis.asyncio import Redis
 
 from utils.stepik import StepikAPIClient
 
