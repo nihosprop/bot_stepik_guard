@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from aiogram.fsm.storage.redis import Redis
 
+from utils.stepik import StepikAPIClient
+
 logger = logging.getLogger(__name__)
 
 
@@ -26,6 +28,7 @@ class RedisService:
     
     """
     redis: Redis
+    stepik_client: StepikAPIClient
     
     tg_id: str = 'tg_id'
     tg_username: str = 'tg_username'

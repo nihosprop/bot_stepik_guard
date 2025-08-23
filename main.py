@@ -89,7 +89,8 @@ async def main():
     
     storage = RedisStorage(redis=redis_fsm)
     
-    redis_service = RedisService(redis=redis_data)
+    redis_service = RedisService(redis=redis_data,
+                                 stepik_client=stepik_client)
     logger_main.info('=== STEPIK SERVICE INITIALIZATION SUCCEEDED ===')
     
     dp = Dispatcher(storage=storage)
