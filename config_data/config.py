@@ -32,7 +32,6 @@ def load_config(path: str | None = None) -> Config:
     redis_password = env.str("REDIS_PASSWORD", "")
     stepik_client_id = env.str("STEPIK_CLIENT_ID", "")
     stepik_client_secret = env.str("STEPIK_CLIENT_SECRET", "")
-    stepic_courses_ids = [*map(int, env("STEPIK_COURSES_IDS", "").split())]
     
     return Config(
         tg_bot=TgBot(
