@@ -207,6 +207,20 @@ class RedisService:
         logger.info(f'Course ID:{course_id} added to Redis')
         return True
     
+    async def remove_stepik_course_id(self, course_id: int) -> bool:
+        """
+        Removes a Stepik course ID from the Redis database.
+        Args:
+            course_id (int): The unique identifier of the Stepik course.
+        Returns:
+            bool: True if the course ID was removed, False otherwise.
+        """
+        if not await self.check_stepik_course_id(course_id):
+            return False
+
+        await self.redis.srem(self.stepik_ids_set, str(course_id))
+        logger.info(f'Course ID:{course_id} removed from Redis')
+        return True
     
     async def get_stepik_course_ids(self) -> list[int]:
         pass
