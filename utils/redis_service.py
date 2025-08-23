@@ -185,6 +185,30 @@ class RedisService:
     
     async def remove_stepik_course_id(self, tg_user_id: int) -> None:
         pass
+    async def add_stepik_course_id(self, course_id: int) -> bool:
+        """
+        Adds a Stepik course ID to the Redis database.
+        Args:
+            course_id (int): The unique identifier of the Stepik course.
+        Returns:
+            bool: True if the course ID was added, False otherwise.
+        """
+        if await self.check_stepik_course_id(course_id):
+            return False
+        
+        try:
+            data = await self.stepik_client.get_course(course_id)
+            if not data or not data.get('courses'):
+                return False
+        except Exception as e:
+            logger.error(f'Error adding course ID:{course_id} to Redis: {e}',
+                         exc_info=True)
+            return False
+        
+        await self.redis.sadd(self.stepik_ids_set, str(course_id))
+        logger.info(f'Course ID:{course_id} added to Redis')
+        return True
+    
     
     async def get_stepik_course_ids(self) -> list[int]:
         pass
