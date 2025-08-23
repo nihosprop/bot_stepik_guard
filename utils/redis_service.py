@@ -28,6 +28,20 @@ class RedisService:
         stepik_course_id (str): The key for the Stepik course ID in the Redis database.
         stepik_ids_set (str): The key for the set of Stepik course IDs in the Redis database.
     
+    Methods:
+        add_user(self, tg_user_id: int): Adds a user to the Redis database.
+        update_user_username(self, tg_user_id: int, tg_nickname: str): Updates the username of a user in the Redis database.
+        add_owner(self, tg_user_id: int, tg_nickname: str): Adds an owner to the Redis database.
+        remove_user(self, tg_user_id: int): Removes a user from the Redis database.
+        check_user(self, tg_user_id: int): Checks if a user exists in the Redis database.
+        get_tg_users_ids(self): Returns a list of all users in the Redis database.
+        get_users_info(self): Returns a string containing information about all users in the Redis database.
+        get_owners_info(self): Returns a string containing information about all owners in the Redis database.
+        check_stepik_course_id(self, course_id: int): Checks if a Stepik course ID exists in the Redis database.
+        add_stepik_course_id(self, course_id: int): Adds a Stepik course ID to the Redis database.
+        remove_stepik_course_id(self, course_id: int): Removes a Stepik course ID from the Redis database.
+        get_stepik_course_ids(self): Returns a list of all Stepik course IDs in the Redis database.
+        
     """
     redis: Redis
     stepik_client: StepikAPIClient
