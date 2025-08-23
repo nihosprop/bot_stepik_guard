@@ -152,8 +152,17 @@ class RedisService:
         
         return row_users
     
-    async def add_stepik_course_id(self, tg_user_id: int, user_stepik_id: int) -> None:
-        pass
+    async def check_stepik_course_id(self, course_id: int) -> bool:
+        """
+        Checks if a Stepik course ID exists in the Redis database.
+        Args:
+            course_id (int): The unique identifier of the Stepik course.
+        Returns:
+            bool: True if the course ID exists, False otherwise.
+        """
+        result: int = await self.redis.sismember(
+            self.stepik_ids_set, str(course_id))
+        return bool(result)
     
     async def remove_stepik_course_id(self, tg_user_id: int) -> None:
         pass
