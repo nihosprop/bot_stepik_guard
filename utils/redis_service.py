@@ -154,7 +154,7 @@ class RedisService:
     async def add_stepik_course_id(self, tg_user_id: int, user_stepik_id: int) -> None:
         pass
     
-    async def remove_stepik_id(self, tg_user_id: int) -> None:
+    async def remove_stepik_course_id(self, tg_user_id: int) -> None:
         """
         Removes the Stepik ID associated with a Telegram user from Redis.
         This method deletes the Stepik ID from the user's hash and removes it
