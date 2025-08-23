@@ -155,24 +155,7 @@ class RedisService:
         pass
     
     async def remove_stepik_course_id(self, tg_user_id: int) -> None:
-        """
-        Removes the Stepik ID associated with a Telegram user from Redis.
-        This method deletes the Stepik ID from the user's hash and removes it
-        from the global set of Stepik IDs.
-        
-        Args:
-            tg_user_id (int): The unique identifier of the Telegram user.
-        """
-        user_stepik_id = await self.redis.hget(
-            f'{self.user_tag}:{tg_user_id}', self.stepik_id)
-        
-        if user_stepik_id is None:
-            return
-        
-        pipe = self.redis.pipeline(transaction=True)
-        await pipe.hdel(f'{self.user_tag}:{tg_user_id}', self.stepik_id)
-        await pipe.srem(self.stepik_ids_set, str(user_stepik_id))
-        await pipe.execute()
+        pass
     
     async def get_stepik_ids(self) -> list[int]:
         """
