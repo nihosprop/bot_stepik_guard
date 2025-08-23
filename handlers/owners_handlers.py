@@ -4,7 +4,7 @@ from aiogram import F, Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import CallbackQuery, Message
+from aiogram.types import CallbackQuery, Message, LinkPreviewOptions
 
 from filters.filters import AccessOwnersFilter, TgUserIDFilter
 from keyboards.keyboards import (kb_add_del_user,
