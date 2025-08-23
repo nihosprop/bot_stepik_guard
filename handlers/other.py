@@ -18,7 +18,7 @@ other_router.callback_query.filter(
 
 
 @other_router.message()
-async def other_handler(msg: Message,
+async def msg_other_handler(msg: Message,
                         owners: list[int],
                         msg_processor: MessageProcessor,
                         redis_service: RedisService) -> None:
