@@ -14,7 +14,6 @@ class TgBot:
 class Stepik:
     client_id: str
     client_secret: str
-    stepic_courses_ids: list[int]
 
 @dataclass
 class Config:
@@ -40,8 +39,7 @@ def load_config(path: str | None = None) -> Config:
             token=env('BOT_TOKEN'),
             id_owners=[*map(int, env('TG_IDS_OWNERS').split())]),
         stepik=Stepik(client_id=stepik_client_id,
-                      client_secret=stepik_client_secret,
-                      stepic_courses_ids=stepic_courses_ids),
+                      client_secret=stepik_client_secret),
         redis_host=redis_host,
         redis_password=redis_password,
         level_log=level_log)

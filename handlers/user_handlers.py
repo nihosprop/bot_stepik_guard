@@ -24,25 +24,27 @@ user_router.callback_query.filter(
 
 @user_router.callback_query(F.data.in_(['/cancel', '/exit']))
 async def clbk_cancel(clbk: CallbackQuery,
-                      stepik_courses_ids: list[int],
                       owners: list[int],
                       msg_processor: MessageProcessor,
+                      redis_service: RedisService,
                       state: FSMContext) -> None:
     """
     Handler for the /cancel and /exit callback commands.
     
     Args:
-        stepik_courses_ids (list[int]): A list of course IDs to monitor for
-            comments.
         clbk (CallbackQuery): The callback query object that triggered the
             /cancel or /exit command
         msg_processor (MessageProcessor): An instance of the MessageProcessor
-            class for deleting messages
+            class for deleting messages.
+        redis_service (RedisService): An instance of the RedisService class for
+            working with Redis.
         state (FSMContext): An instance of the FSMContext class for managing
             state.
         owners (list[int]): A list of owner IDs.
     """
     logger.debug('Entry')
+
+    stepik_courses_ids = await redis_service.get_stepik_course_ids()
     
     text = (f'<b>Мониторю курсы Stepik:</b>\n'
             f'<pre>\n{'\n'.join(map(str, stepik_courses_ids))}</pre>\n')
@@ -65,7 +67,6 @@ async def cmd_start(msg: Message,
                     msg_processor: MessageProcessor,
                     redis_service: RedisService,
                     owners: list[int],
-                    stepik_courses_ids: list[int],
                     state: FSMContext) -> None:
     """
     Handler for the /start command.
@@ -80,14 +81,14 @@ async def cmd_start(msg: Message,
         msg (Message): The message object that triggered the /start command
         msg_processor (MessageProcessor): An instance of the MessageProcessor
             class for deleting messages
-        stepik_courses_ids (list[int]): A list of course IDs to monitor for
-            comments.
         state (FSMContext): An instance of the FSMContext class for managing
             state.
     """
     logger.debug('Entry')
     
     await msg_processor.deletes_messages(msgs_for_del=True)
+    
+    stepik_courses_ids = await redis_service.get_stepik_course_ids()
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
             f'Бот отслеживает курсы Stepik:\n'

@@ -75,7 +75,6 @@ async def main():
     
     stepik_client_id: str = config.stepik.client_id
     stepik_client_secret: str = config.stepik.client_secret
-    stepik_courses_ids: list[int] = config.stepik.stepic_courses_ids
     redis_fsm, redis_data = await setup_redis(config)
     
     stepik_client = StepikAPIClient(
@@ -137,7 +136,6 @@ async def main():
                 redis_fsm=redis_fsm,
                 redis_data=redis_data,
                 stepik_client=stepik_client,
-                stepik_courses_ids=stepik_courses_ids,
                 redis_service=redis_service))
     
     except Exception as err:
