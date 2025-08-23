@@ -2,7 +2,7 @@ import logging
 
 from aiogram import Router
 from aiogram.filters import or_f
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from filters.filters import AccessOwnersFilter, AccessUsersFilter
 from utils.redis_service import RedisService
