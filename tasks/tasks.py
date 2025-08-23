@@ -29,13 +29,13 @@ class StepikTasks:
         logger_tasks.debug("🟢Начало проверки комментариев")
         
         all_comments = []
-        stepik_courses_ids: list[int] = await self.redis_service.get_stepik_ids()
+        stepik_courses_ids: list[int] = await self.redis_service.get_stepik_course_ids()
         
         if not stepik_courses_ids:
             logger_tasks.info('Нет активных курсов')
             return
         
-        redis_tg_users: list[int] = await self.redis_service.get_tg_users()
+        redis_tg_users: list[int] = await self.redis_service.get_tg_users_ids()
         all_users: set[int] = set(self.owners + redis_tg_users)
         
         for course_id in stepik_courses_ids:
