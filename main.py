@@ -6,7 +6,8 @@ import yaml
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from environs import Env
-from aiogram.fsm.storage.redis import Redis, RedisStorage
+from redis.asyncio import Redis
+from aiogram.fsm.storage.redis import RedisStorage
 from aiogram import Bot, Dispatcher
 
 from config_data.config import Config, load_config
