@@ -152,17 +152,7 @@ class RedisService:
         return row_users
     
     async def add_stepik_course_id(self, tg_user_id: int, user_stepik_id: int) -> None:
-        """
-        Adds a Stepik ID to a user's hash.
-        Args:
-            tg_user_id (int): The unique identifier of the Telegram user.
-            user_stepik_id (int): The Stepik ID to be added.
-        """
-        if not await self.check_user(tg_user_id):
-            await self.add_user(tg_user_id)
-        await self.redis.hset(
-            f'{self.user_tag}:{tg_user_id}', self.stepik_id, str(user_stepik_id))
-        await self.redis.sadd(self.stepik_ids_set, str(user_stepik_id))
+        pass
     
     async def remove_stepik_id(self, tg_user_id: int) -> None:
         """
