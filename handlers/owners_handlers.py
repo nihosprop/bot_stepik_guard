@@ -98,13 +98,13 @@ async def add_user(clbk: CallbackQuery,
 
 
 @owners_router.callback_query(
-    F.data == 'back', or_f(StateFilter(
-        UsersSettingsStates.fill_tg_user_id_add),
+    F.data == 'back', or_f(
         StateFilter(
+            UsersSettingsStates.fill_tg_user_id_add), StateFilter(
             UsersSettingsStates.fill_tg_user_id_delete)))
 async def back_from_add_del_user(clbk: CallbackQuery,
-                             state: FSMContext,
-                             msg_processor: MessageProcessor):
+                                 state: FSMContext,
+                                 msg_processor: MessageProcessor):
     """
     Handler for the /back command.
     Args:
