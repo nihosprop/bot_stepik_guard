@@ -15,7 +15,7 @@ from keyboards.keyboards import (kb_add_del_course,
                                  kb_settings_users)
 from states.states import CoursesSettingsStates, UsersSettingsStates
 from utils.redis_service import RedisService
-from utils.utils import MessageProcessor
+from utils.utils import MessageProcessor, get_username
 
 logger_owners = logging.getLogger(__name__)
 
@@ -59,7 +59,7 @@ async def settings_users(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
     await clbk.message.edit_text(
-        'Чтобы <b>добавить / удалить</b> юзера,'
+        '📵\nЧтобы <b>добавить / удалить</b> юзера,'
         ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
         reply_markup=kb_settings_users)
     await state.set_state(UsersSettingsStates.settings_users)
@@ -86,7 +86,7 @@ async def add_user(clbk: CallbackQuery,
     """
     logger_owners.debug('Entry')
     
-    text = ('Отправьте мне ID юзера.\n'
+    text = ('📵\nОтправьте мне ID юзера.\n'
             'Узнать ID можно в боте:\n'
             '<a href="https://t.me/username_to_id_bot">IDBot</a>')
     value = await clbk.message.edit_text(text=text, reply_markup=kb_add_del_user)
@@ -119,7 +119,7 @@ async def back_from_add_del_user(clbk: CallbackQuery,
     logger_owners.debug('Entry')
     
     value = await clbk.message.edit_text(
-        'Чтобы добавить / удалить юзера,'
+        '📵\nЧтобы добавить / удалить юзера,'
         ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
         reply_markup=kb_settings_users)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
@@ -155,7 +155,7 @@ async def fill_tg_user_id(msg: Message,
     
     if await redis_service.check_user(tg_user_id=tg_user_id):
         value = await msg.answer(
-            f'Юзер ID:{tg_user_id} уже есть в базе.',
+            f'📵\nЮзер ID:{tg_user_id} уже есть в базе.',
             reply_markup=kb_add_del_user)
         await msg_processor.save_msg_id(value=value, msgs_for_del=True)
         return
@@ -192,7 +192,7 @@ async def clbk_delete_user(clbk: CallbackQuery,
     
     users = await redis_service.get_users_info()
     
-    text = (f'Отправьте мне ID юзера для удаления.\n'
+    text = (f'📵\nОтправьте мне ID юзера для удаления.\n'
             f'<code>\n{users if users else 'Юзеров в базе нет.'}</code>')
     value = await clbk.message.edit_text(text=text, reply_markup=kb_add_del_user)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
@@ -216,7 +216,7 @@ async def confirm_remove_user(msg: Message,
     
     if not await redis_service.check_user(tg_user_id=tg_user_id):
         value = await msg.answer(
-            f'Юзер ID:{tg_user_id} не найден в базе.',
+            f'📵\nЮзер ID:{tg_user_id} не найден в базе.',
             reply_markup=kb_add_del_user)
         await msg_processor.save_msg_id(value=value, msgs_for_del=True)
         return
@@ -226,6 +226,8 @@ async def confirm_remove_user(msg: Message,
     value = await msg.answer(
         f'Юзер TG_ID:{tg_user_id} успешно удален из базы.\n',
         reply_markup=kb_own_start)
+    await msg.bot.send_message(chat_id=tg_user_id,
+                               text=f'{await get_username(msg)} Вас кикнул 😞')
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     await state.set_state(state=None)
 
@@ -238,7 +240,7 @@ async def settings_courses(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
     await clbk.message.edit_text(
-        'Чтобы <b>добавить / удалить</b> курс,'
+        '📵\nЧтобы <b>добавить / удалить</b> курс,'
         ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
         reply_markup=kb_settings_courses)
     await state.set_state(CoursesSettingsStates.settings_courses)
@@ -255,7 +257,7 @@ async def add_stepik_course(clbk: CallbackQuery,
                             msg_processor: MessageProcessor):
     logger_owners.debug('Entry')
     
-    text = 'Отправьте мне ID курса.'
+    text = '📵\nОтправьте мне ID курса.'
     value = await clbk.message.edit_text(
         text=text, reply_markup=kb_add_del_course)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
@@ -282,11 +284,12 @@ async def fill_course_stepik_id(msg: Message,
     if result == 'added':
         course_title = await redis_service.stepik_client.get_course_title(
             course_id=course_id)
-        await msg.answer(f'Курс ID {course_id}:\n<b>{course_title}</b> добавлен'
-                     f' для отслеживания.', reply_markup=kb_add_del_course)
+        await msg.answer(f'📵\nКурс ID {course_id}:\n<b>{course_title}</b> '
+                         f'добавлен для отслеживания.',
+                         reply_markup=kb_add_del_course)
         return
     
-    value = await msg.answer(text=result, reply_markup=kb_add_del_course)
+    value = await msg.answer(text='📵\n' + result, reply_markup=kb_add_del_course)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     
     logger_owners.debug('Exit')
@@ -298,7 +301,7 @@ async def back_from_add_del_course(clbk: CallbackQuery,
     logger_owners.debug('Entry')
     
     await clbk.message.edit_text(
-        'Чтобы <b>добавить / удалить</b> курс,'
+        '📵\nЧтобы <b>добавить / удалить</b> курс,'
         ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
         reply_markup=kb_settings_courses)
     await state.set_state(CoursesSettingsStates.settings_courses)
