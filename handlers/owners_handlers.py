@@ -276,21 +276,22 @@ async def fill_course_stepik_id(msg: Message,
     course_id = int(msg.text)
     await msg.delete()
     
-    data = await redis_service.add_stepik_course_id(course_id=course_id)
+    await msg_processor.deletes_messages(msgs_for_del=True)
     
-    if not data:
-        value = await msg.answer(
-            'Проверьте корректность ID курса:\n'
-            'Курс отсутствует на Stepik или ID не корректен.')
-        await msg_processor.deletes_msg_a_delay(value, delay=5, indication=True)
-        logger_owners.debug('Exit')
-        return
-    
-    course_title = await redis_service.stepik_client.get_course_title(
-        course_id=course_id)
-    await msg.answer(f'Курс ID {course_id}:\n<b>{course_title}</b> добавлен'
+    result: str = await redis_service.add_stepik_course_id(course_id=course_id)
+    if result == 'added':
+        course_title = await redis_service.stepik_client.get_course_title(
+            course_id=course_id)
+        await msg.answer(f'Курс ID {course_id}:\n<b>{course_title}</b> добавлен'
                      f' для отслеживания.', reply_markup=kb_add_del_user)
     await state.set_state(CoursesSettingsStates.fill_course_id_add)
+        return
+    
+    value = await msg.answer(text=result, reply_markup=kb_add_del_course)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    
+    logger_owners.debug('Exit')
+
     
     logger_owners.debug('Exit')
 
