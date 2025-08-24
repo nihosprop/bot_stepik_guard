@@ -246,3 +246,21 @@ async def settings_users(clbk: CallbackQuery, state: FSMContext):
     
     logger_owners.debug('Exit')
 
+
+@owners_router.callback_query(
+    F.data == 'add_course', StateFilter(
+        CoursesSettingsStates.settings_courses))
+async def add_stepik_course(clbk: CallbackQuery,
+                            state: FSMContext,
+                            msg_processor: MessageProcessor):
+    logger_owners.debug('Entry')
+    
+    text = 'Отправьте мне ID курса.'
+    value = await clbk.message.edit_text(
+        text=text, reply_markup=kb_add_del_course)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    await state.set_state(CoursesSettingsStates.fill_course_id_add)
+    await clbk.answer()
+    
+    logger_owners.debug('Exit')
+
