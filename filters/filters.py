@@ -32,6 +32,33 @@ class AccessUsersFilter(BaseFilter):
         users = await redis_service.get_tg_users_ids()
         return user_tg_id in users
 
+class StepikIDFilter(BaseFilter):
+    """
+    Filter for messages from STEPIK ID.
+    Passes a message if the text is a positive integer.
+    Use in the input of the ID course.
+    """
+    
+    async def __call__(self, msg: Message) -> bool:
+        """
+        Args:
+            msg: Message
+        Returns:
+            bool: True if the message is a positive integer, False otherwise.
+        """
+        text = (msg.text or "").strip()
+        if not text.isdigit():
+            return False
+        try:
+            val = int(text)
+        except Exception as err:
+            logger_filters.warning(f'{err=}')
+            return False
+        if val <= 0:
+            return False
+
+        return True
+
 class TgUserIDFilter(BaseFilter):
     """
     Фильтр для сообщений с Telegram ID.
