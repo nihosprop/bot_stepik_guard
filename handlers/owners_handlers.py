@@ -4,14 +4,16 @@ from aiogram import F, Router
 from aiogram.filters import StateFilter, or_f
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
-from aiogram.types import CallbackQuery, Message, LinkPreviewOptions
+from aiogram.types import CallbackQuery, LinkPreviewOptions, Message
 
-from filters.filters import AccessOwnersFilter, TgUserIDFilter
-from keyboards.keyboards import (kb_add_del_user,
+from filters.filters import AccessOwnersFilter, TgUserIDFilter, StepikIDFilter
+from keyboards.keyboards import (kb_add_del_course,
+                                 kb_add_del_user,
                                  kb_exit,
-                                 kb_settings_users,
-                                 kb_own_start)
-from states.states import UsersSettingsStates
+                                 kb_own_start,
+                                 kb_settings_courses,
+                                 kb_settings_users)
+from states.states import CoursesSettingsStates, UsersSettingsStates
 from utils.redis_service import RedisService
 from utils.utils import MessageProcessor
 
