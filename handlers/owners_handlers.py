@@ -227,3 +227,19 @@ async def confirm_remove_user(msg: Message,
     await state.set_state(state=None)
 
     logger_owners.debug('Exit')
+
+
+@owners_router.callback_query(
+    F.data == 'settings_courses', StateFilter(default_state))
+async def settings_users(clbk: CallbackQuery, state: FSMContext):
+    logger_owners.debug('Entry')
+    
+    await clbk.message.edit_text(
+        'Чтобы <b>добавить / удалить</b> курс,'
+        ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
+        reply_markup=kb_settings_courses)
+    await state.set_state(CoursesSettingsStates.settings_courses)
+    await clbk.answer()
+    
+    logger_owners.debug('Exit')
+
