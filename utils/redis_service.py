@@ -195,6 +195,7 @@ class RedisService:
         if await self.check_stepik_course_id(course_id):
             return False
         
+        # check if course_id in Stepik API
         try:
             data = await self.stepik_client.get_course(course_id)
             if not data or not data.get('courses'):
