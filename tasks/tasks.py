@@ -134,7 +134,7 @@ class StepikTasks:
                                f'🧑‍🎓 <a href="{link_to_user_profile}">'
                                f' {user_name}</a>\n'
                                f'🔗 <a href="{link_to_comment}">Link to Comment</a>\n\n'
-                               f'<b>Comment:</b>{comment_text}')
+                               f'<b>Comment:</b> {comment_text}')
             
             result_profanity_filter: bool = await profanity_filter.is_profanity(
                 text=comment_text)
