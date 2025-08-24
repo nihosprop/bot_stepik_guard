@@ -12,6 +12,3 @@ class CoursesSettingsStates(StatesGroup):
     settings_courses = State()
     fill_course_id_add = State()
     fill_course_id_delete = State()
-
-class AllStates(StatesGroup):
-    pass
