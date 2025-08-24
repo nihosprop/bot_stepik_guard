@@ -126,8 +126,7 @@ class StepikTasks:
                               f'<b>Сount steps:</b> {count_steps}\n'
                               f'<b>Course ID:</b> {course_id}\n'
                               f'<b>Comment time:</b> {comment_time}\n'
-                              f'<b>Comment ID:</b> {comment_id}\n'
-                              f'🔗 <a href="{link_to_comment}">Link to Comment</a>\n\n'
+                              f'🔗 <a href="{link_to_comment}">Comment ID: {comment_id}</a>\n\n'
                               f'<b>Comment:</b>\n{comment_text}')
             
             light_user_info = (f'\n<b>{course_title}</b>\n'
