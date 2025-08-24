@@ -264,3 +264,32 @@ async def add_stepik_course(clbk: CallbackQuery,
     
     logger_owners.debug('Exit')
 
+
+@owners_router.message(StepikIDFilter(),
+                       StateFilter(CoursesSettingsStates.fill_course_id_add))
+async def fill_course_stepik_id(msg: Message,
+                                state: FSMContext,
+                                redis_service: RedisService,
+                                msg_processor: MessageProcessor):
+    logger_owners.debug('Entry')
+    
+    course_id = int(msg.text)
+    await msg.delete()
+    
+    data = await redis_service.add_stepik_course_id(course_id=course_id)
+    
+    if not data:
+        value = await msg.answer(
+            'Курс не найден на Stepik.\n'
+            'Проверьте корректность ID курса.')
+        await msg_processor.deletes_msg_a_delay(value, delay=5, indication=True)
+        return
+    
+    course_title = await redis_service.stepik_client.get_course_title(
+        course_id=course_id)
+    await msg.answer(f'Курс ID {course_id}:\n<b>{course_title}</b> добавлен'
+                     f' для отслеживания.', reply_markup=kb_add_del_user)
+    await state.set_state(CoursesSettingsStates.fill_course_id_add)
+    
+    logger_owners.debug('Exit')
+
