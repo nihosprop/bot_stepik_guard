@@ -95,6 +95,29 @@ class StepikAPIClient:
                 json=json_data) as response:
                 if response.status == 200:
                     return await response.json()
+                
+                # Попробуем прочитать тело для диагностики
+                try:
+                    body_text = await response.text()
+                except Exception:
+                    body_text = "<no-body>"
+                
+                # Точное различение статусов
+                if response.status == 404:
+                    logger_stepik.info(
+                        f"Stepik API 404 on {method} {url}. Body: {body_text}")
+                    raise ValueError("not_found")
+                if response.status in (401, 403):
+                    logger_stepik.warning(
+                        f"Stepik API {response.status} on {method} {url}. Body: {body_text}")
+                    raise PermissionError(f"forbidden:{response.status}")
+                if response.status == 429:
+                    logger_stepik.warning(
+                        f"Stepik API 429 on {method} {url}. Body: {body_text}")
+                    raise Exception("too_many_requests")
+                
+                logger_stepik.error(
+                    f"API request failed: {response.status}. Body: {body_text}")
                 raise Exception(f"API request failed: {response.status}")
     
     @staticmethod
