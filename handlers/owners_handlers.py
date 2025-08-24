@@ -234,7 +234,7 @@ async def confirm_remove_user(msg: Message,
 
 @owners_router.callback_query(
     F.data == 'settings_courses', StateFilter(default_state))
-async def settings_users(clbk: CallbackQuery, state: FSMContext):
+async def settings_courses(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
     await clbk.message.edit_text(
