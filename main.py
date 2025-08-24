@@ -111,7 +111,8 @@ async def main():
         stepik_client=stepik_client,
         redis_service=redis_service,
         bot=bot,
-        owners=config.tg_bot.id_owners)
+        owners=config.tg_bot.id_owners,
+        storage=storage)
     logger_main.info('=== STEPIK TASKS INITIALIZATION SUCCEEDED ===')
     
     await start_scheduler(

@@ -7,6 +7,7 @@ from datetime import datetime, timedelta
 from aiogram import Bot
 from aiogram.exceptions import TelegramBadRequest, TelegramForbiddenError
 from aiogram.types import LinkPreviewOptions
+from aiogram.fsm.storage.base import StorageKey, BaseStorage
 
 from filters.filters import ProfanityFilter
 from filters.toxicity_classifiers import RussianToxicityClassifier
@@ -23,6 +24,7 @@ class StepikTasks:
     stepik_client: StepikAPIClient
     redis_service: RedisService
     owners: list[int] = field(default_factory=list)
+    storage: BaseStorage | None = None
     
     async def check_comments(self,
                              profanity_filter: ProfanityFilter,
@@ -175,6 +177,21 @@ class StepikTasks:
                 light_user_info = res_text + light_user_info
             
             for owner in all_users:
+                # Если у пользователя активно любое FSM-состояние — пропускаем отправку
+                try:
+                    if self.storage is not None:
+                        key = StorageKey(
+                            bot_id=self.bot.id,
+                            chat_id=owner,
+                            user_id=owner)
+                        state = await self.storage.get_state(key)
+                        if state:
+                            logger_tasks.debug(
+                                f"Skip notify tg_id={owner} due to active FSM state: {state}")
+                            continue
+                except Exception as e:
+                    logger_tasks.debug(
+                        f"FSM state check failed for tg_id={owner}: {e}")
                 try:
                     await self.bot.send_message(
                         link_preview_options=lpw_options,
