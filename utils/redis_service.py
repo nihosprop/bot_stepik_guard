@@ -189,7 +189,7 @@ class RedisService:
         Args:
             course_id (int): The unique identifier of the Stepik course.
         Returns:
-            bool: True if the course ID was added, False otherwise.
+            bool | str: True if the course ID was added, False otherwise.
         """
         # check if course_id in Redis
         if await self.check_stepik_course_id(course_id):
