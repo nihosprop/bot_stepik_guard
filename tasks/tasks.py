@@ -171,6 +171,8 @@ class StepikTasks:
             
             if not flag_low_comment:
                 lpw_options = None
+            else:
+                light_user_info = res_text + light_user_info
             
             for owner in all_users:
                 try:
