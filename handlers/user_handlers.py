@@ -1,4 +1,5 @@
 import logging
+from itertools import batched
 
 from aiogram import F, Router
 from aiogram.filters import or_f
@@ -43,11 +44,13 @@ async def clbk_cancel(clbk: CallbackQuery,
         owners (list[int]): A list of owner IDs.
     """
     logger.debug('Entry')
-
-    stepik_courses_ids = await redis_service.get_stepik_course_ids()
-    str_stepik_courses_ids = '\n'.join(map(str, stepik_courses_ids))
+    
+    data = await redis_service.get_stepik_course_ids()
+    _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
+    stepik_courses_ids = '\n'.join(_bat)
+    
     text = (f'<b>Мониторю курсы Stepik:</b>\n'
-            f'<pre>\n{str_stepik_courses_ids if str_stepik_courses_ids else
+            f'<pre>\n{stepik_courses_ids if stepik_courses_ids else
             '<i>Пока нет курсов для отслеживания</i>'}</pre>\n')
     
     user_tg_id = clbk.from_user.id
@@ -89,12 +92,14 @@ async def cmd_start(msg: Message,
     
     await msg_processor.deletes_messages(msgs_for_del=True)
     
-    stepik_courses_ids = await redis_service.get_stepik_course_ids()
+    data = await redis_service.get_stepik_course_ids()
+    _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
+    stepik_courses_ids = '\n'.join(_bat)
     
     text = (f'<b>Приветствую, {await get_username(msg)} !</b>\n'
-            f'Бот отслеживает курсы Stepik:\n'
-            f'{stepik_courses_ids if stepik_courses_ids else
-                '\n<i>Пока нет курсов для отслеживания</i>\n'}\n'
+            f'Мониторю курсы Stepik:\n'
+            f'<pre>\n{stepik_courses_ids if stepik_courses_ids else
+                '\n<i>Пока нет курсов для отслеживания</i>\n'}</pre>\n\n'
             f'<b>Важность комментов обозначена кружками:</b>\n'
             f'<pre><b>Зеленый кружок</b> 🟢 - Вероятно информативный.\n\n'
             f'<b>Желтый кружок</b> 🟡  - Вероятно НЕ информативный.</pre>\n'
