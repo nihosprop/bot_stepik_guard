@@ -168,6 +168,7 @@ class StepikTasks:
                 full_user_info = res_text + full_user_info
             
             lpw_options = LinkPreviewOptions(is_disabled=True)
+            
             if not flag_low_comment:
                 lpw_options = None
             
