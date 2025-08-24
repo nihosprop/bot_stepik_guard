@@ -283,8 +283,7 @@ async def fill_course_stepik_id(msg: Message,
         course_title = await redis_service.stepik_client.get_course_title(
             course_id=course_id)
         await msg.answer(f'Курс ID {course_id}:\n<b>{course_title}</b> добавлен'
-                     f' для отслеживания.', reply_markup=kb_add_del_user)
-    await state.set_state(CoursesSettingsStates.fill_course_id_add)
+                     f' для отслеживания.', reply_markup=kb_add_del_course)
         return
     
     value = await msg.answer(text=result, reply_markup=kb_add_del_course)
@@ -292,6 +291,14 @@ async def fill_course_stepik_id(msg: Message,
     
     logger_owners.debug('Exit')
 
+@owners_router.callback_query()
+async def back_from_add_del_course(clbk: CallbackQuery):
+    logger_owners.debug('Entry')
     
     logger_owners.debug('Exit')
 
+@owners_router.callback_query(F.data == 'delete_course')
+async def delete_stepik_course(clbk: CallbackQuery, state: FSMContext):
+    logger_owners.debug('Entry')
+    
+    logger_owners.debug('Exit')
