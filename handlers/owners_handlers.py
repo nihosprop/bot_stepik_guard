@@ -291,9 +291,18 @@ async def fill_course_stepik_id(msg: Message,
     
     logger_owners.debug('Exit')
 
-@owners_router.callback_query()
-async def back_from_add_del_course(clbk: CallbackQuery):
+@owners_router.callback_query(F.data == 'back',
+                              StateFilter(CoursesSettingsStates.fill_course_id_add))
+async def back_from_add_del_course(clbk: CallbackQuery,
+                                   state: FSMContext):
     logger_owners.debug('Entry')
+    
+    await clbk.message.edit_text(
+        'Чтобы <b>добавить / удалить</b> курс,'
+        ' нажмите соответствующую кнопку и следуйте инструкциям.\n',
+        reply_markup=kb_settings_courses)
+    await state.set_state(CoursesSettingsStates.settings_courses)
+    await clbk.answer()
     
     logger_owners.debug('Exit')
 
