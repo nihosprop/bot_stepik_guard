@@ -283,6 +283,7 @@ async def fill_course_stepik_id(msg: Message,
             'Проверьте корректность ID курса:\n'
             'Курс отсутствует на Stepik или ID не корректен.')
         await msg_processor.deletes_msg_a_delay(value, delay=5, indication=True)
+        logger_owners.debug('Exit')
         return
     
     course_title = await redis_service.stepik_client.get_course_title(
