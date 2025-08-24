@@ -183,7 +183,7 @@ class RedisService:
             self.stepik_ids_set, str(course_id))
         return bool(result)
     
-    async def add_stepik_course_id(self, course_id: int) -> bool:
+    async def add_stepik_course_id(self, course_id: int) -> bool | str:
         """
         Adds a Stepik course ID to the Redis database.
         Args:
@@ -193,23 +193,45 @@ class RedisService:
         """
         # check if course_id in Redis
         if await self.check_stepik_course_id(course_id):
-            return False
+            logger.info(f'Course ID:{course_id} already exists in Redis')
+            return 'Курс уже добавлен'
         
         # check if course_id in Stepik API
         try:
             data = await self.stepik_client.get_course(course_id)
             logger.debug(f'Checked in Stepik API:{data}')
             if not data or not data.get('courses'):
-                return False
+                logger.info(f'Course ID:{course_id} not found in Stepik API')
+                return 'Курс не найден на Stepik'
+        
+        except ValueError as e:
+            # Специальная метка из StepikAPIClient.make_api_request
+            if str(e) == 'not_found':
+                logger.info(f'Course ID:{course_id} not found (404) in Stepik API')
+                return 'Курс не найден на Stepik'
+            logger.error(
+                f'Unexpected ValueError while adding course ID:{course_id}: {e}',
+                exc_info=True)
+            return 'Ошибка проверки курса на Stepik.'
+        
+        except PermissionError as e:
+            logger.warning(
+                f'Permission error (401/403) for course ID:{course_id}: {e}')
+            return 'Нет доступа к курсу на Stepik (приватный или недостаточные права).'
+        
         except Exception as e:
+            if str(e) == 'too_many_requests':
+                logger.warning(
+                    f'Too many requests to Stepik while adding course ID:{course_id}')
+                return 'Слишком много запросов к Stepik. Повторите позже.'
             logger.error(
                 f'Error adding course ID:{course_id} to Redis: {e}',
                 exc_info=True)
-            return False
+            return 'Ошибка добавления курса, обратитесь к разработчику.'
         
         await self.redis.sadd(self.stepik_ids_set, str(course_id))
         logger.info(f'Course ID:{course_id} added to Redis')
-        return True
+        return 'added'
     
     async def remove_stepik_course_id(self, course_id: int) -> bool:
         """
