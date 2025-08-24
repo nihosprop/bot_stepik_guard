@@ -191,6 +191,7 @@ class RedisService:
         Returns:
             bool | str: True if the course ID was added, False otherwise.
         """
+        
         # check if course_id in Redis
         if await self.check_stepik_course_id(course_id):
             logger.info(f'Course ID:{course_id} already exists in Redis')
