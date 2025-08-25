@@ -270,7 +270,6 @@ async def add_stepik_course(clbk: CallbackQuery,
 @owners_router.message(StepikIDFilter(),
                        StateFilter(CoursesSettingsStates.fill_course_id_add))
 async def fill_course_stepik_id(msg: Message,
-                                state: FSMContext,
                                 redis_service: RedisService,
                                 msg_processor: MessageProcessor):
     logger_owners.debug('Entry')
