@@ -223,15 +223,15 @@ async def confirm_remove_user(msg: Message,
         return
     
     await redis_service.remove_user(tg_user_id=tg_user_id)
-
+    
     value = await msg.answer(
         f'Юзер TG_ID:{tg_user_id} успешно удален из базы.\n',
         reply_markup=kb_own_start)
-    await msg.bot.send_message(chat_id=tg_user_id,
-                               text=f'{await get_username(msg)} Вас кикнул 😞')
+    await msg.bot.send_message(
+        chat_id=tg_user_id, text=f'{await get_username(msg)} Вас кикнул 😞')
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     await state.set_state(state=None)
-
+    
     logger_owners.debug('Exit')
 
 
@@ -284,9 +284,9 @@ async def fill_course_stepik_id(msg: Message,
     if result == 'added':
         course_title = await redis_service.stepik_client.get_course_title(
             course_id=course_id)
-        await msg.answer(f'📵\nКурс ID {course_id}:\n<b>{course_title}</b> '
-                         f'добавлен для отслеживания.',
-                         reply_markup=kb_add_del_course)
+        await msg.answer(
+            f'📵\nКурс ID {course_id}:\n<b>{course_title}</b> '
+            f'добавлен для отслеживания.', reply_markup=kb_add_del_course)
         return
     
     value = await msg.answer(text='📵\n' + result, reply_markup=kb_add_del_course)
@@ -294,10 +294,11 @@ async def fill_course_stepik_id(msg: Message,
     
     logger_owners.debug('Exit')
 
-@owners_router.callback_query(F.data == 'back',
-                              StateFilter(CoursesSettingsStates.fill_course_id_add))
-async def back_from_add_del_course(clbk: CallbackQuery,
-                                   state: FSMContext):
+
+@owners_router.callback_query(
+    F.data == 'back', StateFilter(
+        CoursesSettingsStates.fill_course_id_add))
+async def back_from_add_del_course(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
     await clbk.message.edit_text(
