@@ -33,7 +33,7 @@ class StepikTasks:
         
         all_comments = []
         stepik_courses_ids: list[
-            int] = await self.redis_service.get_stepik_course_ids()
+            int] = await self.redis_service.get_courses_ids()
         
         if not stepik_courses_ids:
             logger_tasks.info('Нет активных курсов')
