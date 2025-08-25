@@ -354,10 +354,12 @@ async def clbk_confirm_remove_course(msg: Message,
             reply_markup=kb_own_start)
         await msg_processor.save_msg_id(value=value, msgs_for_del=True)
         await state.set_state(state=None)
+        logger_owners.debug('Exit')
         return
     
     value = await msg.answer(
         f'📵\nКурс ID:{course_id} не найден в базе.',
         reply_markup=kb_add_del_course)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    logger_owners.debug('Exit')
     return
