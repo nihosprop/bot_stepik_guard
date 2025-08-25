@@ -346,6 +346,10 @@ async def clbk_confirm_remove_course(msg: Message,
     course_id = int(msg.text)
     await msg.delete()
     
+    data = await redis_service.get_courses_ids()
+    _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
+    stepik_courses_ids = '\n'.join(_bat)
+    
     await msg_processor.deletes_messages(msgs_for_del=True)
     
     if await redis_service.remove_stepik_course_id(course_id=course_id):
@@ -358,7 +362,9 @@ async def clbk_confirm_remove_course(msg: Message,
         return
     
     value = await msg.answer(
-        f'📵\nКурс ID:{course_id} не найден в базе.',
+        f'📵\nКурс ID:{course_id} не найден в базе.\n'
+        f'Попробуй еще разок 🤓:\n'
+        f'<code>\n{stepik_courses_ids}</code>',
         reply_markup=kb_add_del_course)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     logger_owners.debug('Exit')
