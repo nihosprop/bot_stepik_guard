@@ -92,7 +92,7 @@ async def cmd_start(msg: Message,
     
     await msg_processor.deletes_messages(msgs_for_del=True)
     
-    data = await redis_service.get_stepik_courses_ids()
+    data = await redis_service.get_courses_ids()
     _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
     stepik_courses_ids = '\n'.join(_bat)
     
