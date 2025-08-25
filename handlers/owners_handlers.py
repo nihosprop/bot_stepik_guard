@@ -296,8 +296,9 @@ async def fill_course_stepik_id(msg: Message,
 
 
 @owners_router.callback_query(
-    F.data == 'back', StateFilter(
-        CoursesSettingsStates.fill_course_id_add))
+    F.data == 'back', or_f(StateFilter(
+        CoursesSettingsStates.fill_course_id_add,
+        CoursesSettingsStates.fill_course_id_delete)))
 async def back_from_add_del_course(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
