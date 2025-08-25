@@ -310,8 +310,26 @@ async def back_from_add_del_course(clbk: CallbackQuery, state: FSMContext):
     
     logger_owners.debug('Exit')
 
-@owners_router.callback_query(F.data == 'delete_course')
-async def delete_stepik_course(clbk: CallbackQuery, state: FSMContext):
+
+@owners_router.callback_query(
+    F.data == 'delete_course', StateFilter(
+        CoursesSettingsStates.settings_courses))
+async def clbk_delete_course(clbk: CallbackQuery,
+                             state: FSMContext,
+                             redis_service: RedisService,
+                             msg_processor: MessageProcessor):
     logger_owners.debug('Entry')
     
+    data = await redis_service.get_courses_ids()
+    _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
+    stepik_courses_ids = '\n'.join(_bat)
+    
+    text = (f'📵\nОтправьте мне ID курса для удаления.\n'
+            f'<code>\n{stepik_courses_ids if stepik_courses_ids else 'Курсов в базе нет.'}</code>')
+    
+    value = await clbk.message.edit_text(
+        text=text, reply_markup=kb_add_del_course)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    await state.set_state(CoursesSettingsStates.fill_course_id_delete)
+    await clbk.answer()
     logger_owners.debug('Exit')
