@@ -333,3 +333,30 @@ async def clbk_delete_course(clbk: CallbackQuery,
     await state.set_state(CoursesSettingsStates.fill_course_id_delete)
     await clbk.answer()
     logger_owners.debug('Exit')
+
+
+@owners_router.message(StateFilter(CoursesSettingsStates.fill_course_id_delete))
+async def clbk_confirm_remove_course(msg: Message,
+                                     state: FSMContext,
+                                     msg_processor: MessageProcessor,
+                                     redis_service: RedisService):
+    logger_owners.debug('Entry')
+    
+    course_id = int(msg.text)
+    await msg.delete()
+    
+    await msg_processor.deletes_messages(msgs_for_del=True)
+    
+    if await redis_service.remove_stepik_course_id(course_id=course_id):
+        value = await msg.answer(
+            f'Курс TG_ID:{course_id} успешно удален из базы.\n',
+            reply_markup=kb_own_start)
+        await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+        await state.set_state(state=None)
+        return
+    
+    value = await msg.answer(
+        f'📵\nКурс ID:{course_id} не найден в базе.',
+        reply_markup=kb_add_del_course)
+    await msg_processor.save_msg_id(value=value, msgs_for_del=True)
+    return
