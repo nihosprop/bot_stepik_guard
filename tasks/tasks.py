@@ -128,14 +128,16 @@ class StepikTasks:
                               f'<b>Сount steps:</b> {count_steps}\n'
                               f'<b>Course ID:</b> {course_id}\n'
                               f'<b>Comment time:</b> {comment_time}\n'
-                              f'🔗 <a href="{link_to_comment}">Comment ID: {comment_id}</a>\n\n'
-                              f'<b>Comment:</b>\n{comment_text}')
+                              f'🔗 <a href="{link_to_comment}">Comment ID'
+                              f'[{comment_id}]</a>\n\n'
+                              f'{comment_text}')
             
             light_user_info = (f'\n<b>{course_title}</b>\n'
                                f'🧑‍🎓 <a href="{link_to_user_profile}">'
                                f' {user_name}</a>\n'
-                               f'🔗 <a href="{link_to_comment}">Comment ID: {comment_id}</a>\n\n'
-                               f'<b>Comment:</b> {comment_text}')
+                               f'🔗 <a href="{link_to_comment}">Comment ID'
+                               f'[{comment_id}]</a>\n\n'
+                               f'{comment_text}')
             
             result_profanity_filter: bool = await profanity_filter.is_profanity(
                 text=comment_text)
