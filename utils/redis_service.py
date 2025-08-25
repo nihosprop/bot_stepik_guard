@@ -249,7 +249,7 @@ class RedisService:
         logger.info(f'Course ID:{course_id} removed from Redis')
         return True
     
-    async def get_stepik_courses_ids(self) -> list[int]:
+    async def get_courses_ids(self) -> list[int]:
         """
         Returns a list of all Stepik course IDs in the Redis database.
         Returns:
