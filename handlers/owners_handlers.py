@@ -1,4 +1,5 @@
 import logging
+from itertools import batched
 
 from aiogram import F, Router
 from aiogram.filters import StateFilter, or_f
@@ -6,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, LinkPreviewOptions, Message
 
-from filters.filters import AccessOwnersFilter, TgUserIDFilter, StepikIDFilter
+from filters.filters import AccessOwnersFilter, StepikIDFilter, TgUserIDFilter
 from keyboards.keyboards import (kb_add_del_course,
                                  kb_add_del_user,
                                  kb_exit,
