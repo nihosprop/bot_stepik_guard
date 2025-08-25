@@ -61,10 +61,10 @@ class StepikIDFilter(BaseFilter):
 
 class TgUserIDFilter(BaseFilter):
     """
-    Фильтр для сообщений с Telegram ID.
-    Пропускает сообщение, если текст — это положительное целое число
-    с длиной в разумном диапазоне (по умолчанию 5–15 цифр).
-    Используйте в хендлере ввода ID пользователя.
+    Filter for messages with Telegram ID.
+    Misses a message if the text is a positive integer
+    With a length in a reasonable range (by default 5-15 digits).
+    Use user ID input handler.
     """
     
     def __init__(self, min_len: int = 5, max_len: int = 15):
