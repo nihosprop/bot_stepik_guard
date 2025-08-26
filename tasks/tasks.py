@@ -53,13 +53,13 @@ class StepikTasks:
                 redis_key)
             
             if time_last_comment_str is None:
-                time_last_comment = datetime.now() - timedelta(hours=1)
+                time_last_comment = datetime.now() - timedelta(hours=2)
             else:
                 try:
                     time_last_comment: datetime = datetime.strptime(
                         time_last_comment_str, '%Y-%m-%dT%H:%M:%SZ')
                 except ValueError:
-                    time_last_comment = datetime.now() - timedelta(hours=1)
+                    time_last_comment = datetime.now() - timedelta(hours=2)
             
             comments_data: dict[str, Any] = await (
                 self.stepik_client.get_comments(
