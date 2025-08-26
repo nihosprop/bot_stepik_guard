@@ -143,8 +143,7 @@ class StepikAPIClient:
     
     async def get_username(self, user_id: int) -> str | None:
         user = await self.get_user(user_id)
-        full_name = user['full_name']
-        return full_name if full_name else None
+        return (user or {}).get('full_name') or None
     
     async def get_course(self, course_id: int):
         course = await self.make_api_request('GET', f'courses/{course_id}')
