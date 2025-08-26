@@ -87,7 +87,7 @@ async def add_user(clbk: CallbackQuery,
     """
     logger_owners.debug('Entry')
     
-    text = ('📵\nОтправьте мне ID юзера.\n'
+    text = ('📵\nОтправьте мне Telegram ID юзера.\n'
             'Узнать ID можно в боте:\n'
             '<a href="https://t.me/username_to_id_bot">IDBot</a>')
     value = await clbk.message.edit_text(text=text, reply_markup=kb_add_del_user)
@@ -156,7 +156,7 @@ async def fill_tg_user_id(msg: Message,
     
     if await redis_service.check_user(tg_user_id=tg_user_id):
         value = await msg.answer(
-            f'📵\nЮзер ID:{tg_user_id} уже есть в базе.',
+            f'📵\nЮзер Telegram ID:{tg_user_id} уже есть в базе.',
             reply_markup=kb_add_del_user)
         await msg_processor.save_msg_id(value=value, msgs_for_del=True)
         return
@@ -193,7 +193,7 @@ async def clbk_delete_user(clbk: CallbackQuery,
     
     users = await redis_service.get_users_info()
     
-    text = (f'📵\nОтправьте мне ID юзера для удаления.\n'
+    text = (f'📵\nОтправьте мне Telegram ID юзера для удаления.\n'
             f'<code>\n{users if users else 'Юзеров в базе нет.'}</code>')
     value = await clbk.message.edit_text(text=text, reply_markup=kb_add_del_user)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
@@ -258,7 +258,7 @@ async def add_stepik_course(clbk: CallbackQuery,
                             msg_processor: MessageProcessor):
     logger_owners.debug('Entry')
     
-    text = '📵\nОтправьте мне ID курса.'
+    text = '📵\nОтправьте мне ID курса Stepik.'
     value = await clbk.message.edit_text(
         text=text, reply_markup=kb_add_del_course)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
@@ -325,7 +325,7 @@ async def clbk_delete_course(clbk: CallbackQuery,
     _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
     stepik_courses_ids = '\n'.join(_bat)
     
-    text = (f'📵\nОтправьте мне ID курса для удаления.\n'
+    text = (f'📵\nОтправьте мне ID курса Stepik для удаления.\n'
             f'<code>\n{stepik_courses_ids if stepik_courses_ids else 'Курсов в базе нет.'}</code>')
     
     value = await clbk.message.edit_text(
@@ -354,7 +354,7 @@ async def clbk_confirm_remove_course(msg: Message,
     
     if await redis_service.remove_stepik_course_id(course_id=course_id):
         value = await msg.answer(
-            f'Курс TG_ID:{course_id} успешно удален из базы.\n',
+            f'Курс ID:{course_id} успешно удален из базы.\n',
             reply_markup=kb_own_start)
         await msg_processor.save_msg_id(value=value, msgs_for_del=True)
         await state.set_state(state=None)
