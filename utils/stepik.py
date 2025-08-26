@@ -120,14 +120,26 @@ class StepikAPIClient:
                     f"API request failed: {response.status}. Body: {body_text}")
                 raise Exception(f"API request failed: {response.status}")
     
-    @staticmethod
-    async def get_user(user_id: int) -> Dict[str, Any] | None:
-        url = f"https://stepik.org/api/users/{user_id}"
-        async with aiohttp.ClientSession() as session:
-            async with session.get(url) as resp:
-                if resp.status == 200:
-                    data = await resp.json()
-                    return data['users'][0]
+    async def get_user(self, user_id: int) -> Dict[str, Any] | None:
+        """
+        Get user data through a common client with retrays.
+        Returns a user dictionary or None with an error/absence.
+        
+        """
+        try:
+            data = await self.make_api_request('GET', f'users/{user_id}')
+            users = data.get('users') or []
+            return users[0] if users else None
+        except ValueError:
+            # not_found
+            logger_stepik.info(f"User not found: id={user_id}")
+            return None
+        except PermissionError as e:
+            logger_stepik.warning(f"Forbidden while fetching user id={user_id}: {e}")
+            return None
+        except Exception as e:
+            logger_stepik.error(f"Failed to fetch user id={user_id}: {e}")
+            return None
     
     async def get_username(self, user_id: int) -> str | None:
         user = await self.get_user(user_id)
