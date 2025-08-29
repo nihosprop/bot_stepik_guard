@@ -178,7 +178,7 @@ class StepikTasks:
                               f'<b>Reputation Rank:</b> {reputation_rank}\n'
                               f'<b>Сount steps:</b> {count_steps}\n'
                               f'<b>Course ID:</b> {course_id}\n'
-                              f'<b>Comment time:</b> {comment_time}\n'
+                              f'<b>Comment time:</b> {comment_time}UTC\n'
                               f'🔗 <a href="{link_to_comment}">Comment ID'
                               f'[{comment_id}]</a>\n\n'
                               f'{comment_text}')
