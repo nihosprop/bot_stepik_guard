@@ -1,7 +1,7 @@
 # PROD
 services:
   main:
-    image: niwibonihs/bot_stepik_guard:tag
+    image: niwibonihs/bot_stepik_guard:tag # Добавить нужный тэг(последний)
     container_name: YourNameBot
     restart: unless-stopped
     env_file: .env
