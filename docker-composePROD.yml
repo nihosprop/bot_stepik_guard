@@ -18,7 +18,8 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 1024M  # Максимальная память(После превышения OOM killer убьет контейнер)
+          memory: 1548M  # Максимальная память(После превышения OOM killer убьет
+            контейнер)
         reservations:
           memory: 512M   # Гарантированная память
   redis_fsm:
