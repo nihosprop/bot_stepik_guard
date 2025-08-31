@@ -8,6 +8,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 # Системные зависимости для сборки (если нужны для компиляции)
 RUN apt-get update \
  && apt-get install -y --no-install-recommends gcc python3-dev \
+ && apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -18,7 +19,7 @@ COPY pyproject.toml uv.lock ./
 # Устанавливаем зависимость torch и остальные
 RUN uv pip install --system --no-cache-dir torch --index-url \
                 https://download.pytorch.org/whl/cpu \
- && uv pip install --system . \
+ && uv pip install --system --no-cache-dir . \
  && apt-get purge -y gcc python3-dev \
  && apt-get autoremove -y \
  && rm -rf /var/lib/apt/lists/*
