@@ -1,9 +1,9 @@
 # === Builder stage ===
 FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-ENV UV_LINK_MODE=copy
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    UV_LINK_MODE=copy
 
 # Системные зависимости для сборки (если нужны для компиляции)
 RUN apt-get update \
