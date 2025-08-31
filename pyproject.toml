@@ -1,0 +1,20 @@
+[project]
+name = "bot-stepik-guard"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.13.*"
+dependencies = [
+    "aiogram==3.21.0",
+    "aiohttp==3.12.14",
+    "apscheduler==3.11.0",
+    "better-profanity==0.7.0",
+    "environs==14.2.0",
+    "huggingface-hub==0.34.4",
+    "levenshtein==0.27.1",
+    "pymorphy3==2.0.4",
+    "pymorphy3-dicts-ru==2.4.417150.4580142",
+    "pyyaml==6.0.2",
+    "redis==6.2.0",
+    "transformers==4.55.0",
+]

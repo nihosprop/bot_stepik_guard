@@ -84,3 +84,5 @@ kubernetes/
 secrets/
 config/secrets.yml
 config/database.yml
+
+.pytest_cache

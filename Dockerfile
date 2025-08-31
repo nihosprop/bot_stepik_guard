@@ -13,13 +13,15 @@ RUN apt-get update \
 
 WORKDIR /app
 
+# Устанавливаем зависимость torch ДО копирования pyproject.toml
+RUN uv pip install --system --no-cache-dir torch --index-url \
+    https://download.pytorch.org/whl/cpu
+
 # Копируем файлы конфигурации uv и зависимости
 COPY pyproject.toml uv.lock ./
 
 # Устанавливаем зависимость torch и остальные
-RUN uv pip install --system --no-cache-dir torch --index-url \
-                https://download.pytorch.org/whl/cpu \
- && uv pip install --system --no-cache-dir . \
+RUN uv pip install --system --no-cache-dir . \
  && apt-get purge -y gcc python3-dev \
  && apt-get autoremove -y \
  && rm -rf /var/lib/apt/lists/*
