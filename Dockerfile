@@ -33,8 +33,7 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Копируем зависимости из builder-стадии
-COPY --from=builder /usr/local/lib/python3.13/site-packages \
-                    /usr/local/lib/python3.13/site-packages
+COPY --from=builder /usr/local /usr/local
 
 # Копируем код приложения
 COPY . /app
