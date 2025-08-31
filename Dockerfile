@@ -18,7 +18,10 @@ COPY pyproject.toml uv.lock ./
 # Устанавливаем зависимость torch и остальные
 RUN uv pip install --system --no-cache-dir torch --index-url \
                 https://download.pytorch.org/whl/cpu \
- && uv pip install --system .
+ && uv pip install --system . \
+ && apt-get purge -y gcc python3-dev \
+ && apt-get autoremove -y \
+ && rm -rf /var/lib/apt/lists/*
 
 # === Runtime stage ===
 FROM python:3.13-slim-bookworm
