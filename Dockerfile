@@ -4,7 +4,6 @@ FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim AS builder
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 ENV UV_LINK_MODE=copy
-ENV UV_PYTHON=/usr/local/bin/python
 
 # Системные зависимости для сборки (если нужны для компиляции)
 RUN apt-get update \
