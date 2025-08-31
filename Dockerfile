@@ -35,12 +35,6 @@ COPY --from=builder /usr/local/lib/python3.13/site-packages \
 # Копируем код приложения
 COPY . /app
 
-# Затем создаем пользователя и устанавливаем права
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app && \
-    chmod -R 755 /app
-
-# Переключаемся на пользователя
-USER appuser
+# TODO: Создать пользователя и перключиься на него(права?)
 
 CMD ["python", "main.py"]
