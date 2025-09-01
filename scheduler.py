@@ -15,7 +15,7 @@ async def start_scheduler(stepik_tasks: StepikTasks,
     
     scheduler = AsyncIOScheduler()
     
-    logger_scheduler.info("🟢=== PLANNER INITIALIZATION STARTED ===")
+    logger_scheduler.info("🟢=== PLANNER INITIALIZATION STARTED... ===")
     
     scheduler.add_job(
         stepik_tasks.check_comments,
