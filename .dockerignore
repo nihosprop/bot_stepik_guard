@@ -85,4 +85,7 @@ secrets/
 config/secrets.yml
 config/database.yml
 
+# CI/CD
+.github/workflows/
+
 .pytest_cache
