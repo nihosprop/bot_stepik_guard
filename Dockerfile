@@ -7,13 +7,13 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Системные зависимости для сборки (если нужны для компиляции) и torch
 RUN apt-get update \
- && apt-get install -y --no-install-recommends gcc python3-dev \
- && uv pip install --system --no-cache-dir torch --index-url \
+  && apt-get install -y --no-install-recommends gcc python3-dev \
+  && uv pip install --system --no-cache-dir torch --index-url \
                          https://download.pytorch.org/whl/cpu \
- && apt-get purge -y gcc python3-dev \
- && apt-get autoremove -y \
- && apt-get clean \
- && rm -rf /var/lib/apt/lists/*
+  && apt-get purge -y gcc python3-dev \
+  && apt-get autoremove -y \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
