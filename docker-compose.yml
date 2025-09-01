@@ -21,7 +21,7 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.5'
 
   redis_fsm:
     image: redis:7-alpine
