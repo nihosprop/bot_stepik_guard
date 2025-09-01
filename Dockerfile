@@ -20,7 +20,7 @@ RUN uv pip install --system --no-cache-dir torch --index-url \
 # Копируем файлы конфигурации uv и зависимости
 COPY pyproject.toml uv.lock ./
 
-# Устанавливаем зависимость torch и остальные
+# Установка остальных зависимостей и чистка
 RUN uv pip install --system --no-cache-dir . \
  && apt-get purge -y gcc python3-dev \
  && apt-get autoremove -y \
