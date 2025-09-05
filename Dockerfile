@@ -10,7 +10,6 @@ RUN apt-get update \
   && apt-get install -y --no-install-recommends \
              gcc \
              python3-dev \
-             gosu \
   && uv pip install --system --no-cache-dir torch --index-url \
                          https://download.pytorch.org/whl/cpu \
   && apt-get purge -y gcc python3-dev \
@@ -32,6 +31,11 @@ FROM python:3.13-slim-bookworm AS runtime
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     HF_HOME=/app/.cache/huggingface
+
+# Устанавливаем gosu в финальный образ
+RUN apt-get update  \
+ && apt-get install -y --no-install-recommends gosu \
+ && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
