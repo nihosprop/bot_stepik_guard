@@ -3,6 +3,7 @@ services:
   main:
     image: niwibonihs/bot_stepik_guard:tag # Добавить нужный тэг(последний)
     container_name: YourNameBot
+    user: "1000:1000"
     restart: unless-stopped
     env_file: .env
     depends_on:
@@ -11,17 +12,23 @@ services:
     networks:
       your_bot_net:
         aliases: [ bot ]
+    logging:
+      driver: json-file
+      options:
+        max-size: "7m"
+        max-file: "3"
     volumes:
-      - logs:/app/logs
+      - ./logs:/app/logs
       - /etc/localtime:/etc/localtime:ro
     deploy:
       resources:
         limits:
-          cpus: '1'
+          cpus: '0.5'
           memory: 1548M  # Максимальная память(После превышения OOM killer убьет
             контейнер)
         reservations:
           memory: 512M   # Гарантированная память
+
   redis_fsm:
     image: redis:7-alpine
     container_name: YourRedisFSM
@@ -43,7 +50,7 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 64M
+          memory: 32M
 
 networks:
   your_bot_net:
@@ -52,4 +59,3 @@ networks:
 
 volumes:
   redis_data:
-  logs:

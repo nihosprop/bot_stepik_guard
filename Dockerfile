@@ -38,7 +38,7 @@ COPY --from=builder /usr/local/lib/python3.13/site-packages \
 # Копируем код приложения
 COPY . /app
 
-RUN rm -rf  \
+RUN rm -rf $(which pip) $(which pip3) \
     /usr/local/bin/pip \
     /usr/local/bin/pip3 \
     /usr/local/bin/idle* \
@@ -58,11 +58,11 @@ RUN rm -rf  \
     /var/lib/apt/lists/* \
  && find /usr/local/lib/python3.13/site-packages -type d -name '__pycache__' \
     -exec rm -rf {} + \
- && addgroup --system appuser \
- && adduser --system --ingroup appuser appuser \
+ && addgroup -S appuser \
+ && adduser -S appuser -G appuser \
+ && mkdir -p /app/logs \
  && chown -R appuser:appuser /app
 
 USER appuser
-
 
 CMD ["python", "main.py"]
