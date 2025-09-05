@@ -64,7 +64,7 @@ RUN rm -rf \
        /app/.cache \
  && chown \
     -R appuser:appuser /app \
-       appuser:appuser /app/.cache
+                       /app/.cache
 
 ENV TRANSFORMERS_CACHE=/app/.cache
 USER appuser
