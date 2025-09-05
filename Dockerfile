@@ -66,7 +66,7 @@ RUN rm -rf \
     -R appuser:appuser /app \
                        /app/.cache
 
-ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
+#ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
 
 USER appuser
 
