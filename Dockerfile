@@ -38,7 +38,7 @@ COPY --from=builder /usr/local/lib/python3.13/site-packages \
 # Копируем код приложения
 COPY . /app
 
-RUN rm -rf $(which pip) $(which pip3) \
+RUN rm -rf \
     /usr/local/bin/pip \
     /usr/local/bin/pip3 \
     /usr/local/bin/idle* \
