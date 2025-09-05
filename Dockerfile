@@ -7,7 +7,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Системные зависимости для сборки (если нужны для компиляции) и torch
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends gcc python3-dev \
+  && apt-get install -y --no-install-recommends \
+             gcc \
+             python3-dev \
+             gosu \
   && uv pip install --system --no-cache-dir torch --index-url \
                          https://download.pytorch.org/whl/cpu \
   && apt-get purge -y gcc python3-dev \
@@ -26,14 +29,21 @@ RUN uv pip install --system --no-cache-dir .
 # === Runtime stage ===
 FROM python:3.13-slim-bookworm AS runtime
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    HF_HOME=/app/.cache/huggingface
 
 WORKDIR /app
 
 # Копируем зависимости из builder-стадии
 COPY --from=builder /usr/local/lib/python3.13/site-packages \
                     /usr/local/lib/python3.13/site-packages
+
+# Копируем entrypoint
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh \
+ && addgroup --system appuser \
+ && adduser --system --ingroup appuser appuser
 
 # Копируем код приложения
 COPY . /app
@@ -56,18 +66,8 @@ RUN rm -rf \
     /var/cache/debconf/* \
     /var/cache/man/* \
     /var/lib/apt/lists/* \
- && find /usr/local/lib/python3.13/site-packages -type d -name '__pycache__' -exec rm -rf {} + \
- && addgroup --system appuser \
- && adduser --system --ingroup appuser appuser \
- && mkdir \
-    -p /app/logs \
-       /app/.cache/huggingface \
- && chown \
-    -R appuser:appuser /app \
-                       /app/.cache
+ && find /usr/local/lib/python3.13/site-packages -type d -name '__pycache__' -exec rm -rf {} +
 
-#ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
-
-USER appuser
-
+# Указываем точку входа
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["python", "main.py"]

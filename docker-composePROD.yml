@@ -3,7 +3,6 @@ services:
   main:
     image: niwibonihs/bot_stepik_guard:tag # Добавить нужный тэг(последний)
     container_name: YourNameBot
-    user: "1000:1000"
     restart: unless-stopped
     env_file: .env
     depends_on:
@@ -18,9 +17,9 @@ services:
         max-size: "7m"
         max-file: "3"
     volumes:
-      - ./logs:/app/logs
-      - ./cache:/app/.cache
-      - /etc/localtime:/etc/localtime:ro
+      - ./logs:/app/logs                    # Монтируем папку для логов
+      - hf-cache:/app/.cache/huggingface
+      - /etc/localtime:/etc/localtime:ro  # Синхронизация времени
     deploy:
       resources:
         limits:
@@ -60,3 +59,4 @@ networks:
 
 volumes:
   redis_data:
+  hf-cache:
