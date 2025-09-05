@@ -61,12 +61,13 @@ RUN rm -rf \
  && adduser --system --ingroup appuser appuser \
  && mkdir \
     -p /app/logs \
-       /app/.cache \
+       /app/.cache/huggingface \
  && chown \
     -R appuser:appuser /app \
                        /app/.cache
 
-ENV TRANSFORMERS_CACHE=/app/.cache
+ENV TRANSFORMERS_CACHE=/app/.cache/huggingface
+
 USER appuser
 
 CMD ["python", "main.py"]
