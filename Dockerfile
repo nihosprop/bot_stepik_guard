@@ -47,19 +47,18 @@ RUN rm -rf \
     /usr/local/bin/easy_install* \
     /usr/local/lib/python3.13/site-packages/pip* \
     /usr/local/lib/python3.13/site-packages/setuptools* \
-    /usr/local/lib/python3.13/ensurepip	\
+    /usr/local/lib/python3.13/ensurepip \
     /usr/share/doc \
     /usr/share/man \
-    /usr/share/info	\
+    /usr/share/info \
     /usr/share/lintian \
     /var/cache/apt/* \
     /var/cache/debconf/* \
     /var/cache/man/* \
     /var/lib/apt/lists/* \
- && find /usr/local/lib/python3.13/site-packages -type d -name '__pycache__' \
-    -exec rm -rf {} + \
- && addgroup -S appuser \
- && adduser -S appuser -G appuser \
+ && find /usr/local/lib/python3.13/site-packages -type d -name '__pycache__' -exec rm -rf {} + \
+ && addgroup --system appuser \
+ && adduser --system --ingroup appuser appuser \
  && mkdir -p /app/logs \
  && chown -R appuser:appuser /app
 
