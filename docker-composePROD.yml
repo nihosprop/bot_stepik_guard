@@ -19,6 +19,7 @@ services:
         max-file: "3"
     volumes:
       - ./logs:/app/logs
+      - ./cache:/app/.cache
       - /etc/localtime:/etc/localtime:ro
     deploy:
       resources:

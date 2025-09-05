@@ -59,9 +59,14 @@ RUN rm -rf \
  && find /usr/local/lib/python3.13/site-packages -type d -name '__pycache__' -exec rm -rf {} + \
  && addgroup --system appuser \
  && adduser --system --ingroup appuser appuser \
- && mkdir -p /app/logs \
- && chown -R appuser:appuser /app
+ && mkdir \
+    -p /app/logs \
+    -p /app/.cache \
+ && chown \
+    -R appuser:appuser /app \
+    -R appuser:appuser /app/.cache
 
+ENV TRANSFORMERS_CACHE=/app/.cache
 USER appuser
 
 CMD ["python", "main.py"]
