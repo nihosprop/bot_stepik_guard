@@ -61,7 +61,7 @@ RUN rm -rf \
  && adduser --system --ingroup appuser appuser \
  && mkdir \
     -p /app/logs \
-    -p /app/.cache \
+       /app/.cache \
  && chown \
     -R appuser:appuser /app \
        appuser:appuser /app/.cache
