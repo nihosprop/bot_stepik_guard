@@ -32,11 +32,37 @@ ENV PYTHONUNBUFFERED=1
 WORKDIR /app
 
 # Копируем зависимости из builder-стадии
-COPY --from=builder /usr/local /usr/local
+COPY --from=builder /usr/local/lib/python3.13/site-packages \
+                    /usr/local/lib/python3.13/site-packages
 
 # Копируем код приложения
 COPY . /app
 
-# TODO: Создать пользователя и перключиься на него(права?)
+RUN rm -rf  \
+    /usr/local/bin/pip \
+    /usr/local/bin/pip3 \
+    /usr/local/bin/idle* \
+    /usr/local/bin/pydoc* \
+    /usr/local/bin/2to3* \
+    /usr/local/bin/easy_install* \
+    /usr/local/lib/python3.13/site-packages/pip* \
+    /usr/local/lib/python3.13/site-packages/setuptools* \
+    /usr/local/lib/python3.13/ensurepip	\
+    /usr/share/doc \
+    /usr/share/man \
+    /usr/share/info	\
+    /usr/share/lintian \
+    /var/cache/apt/* \
+    /var/cache/debconf/* \
+    /var/cache/man/* \
+    /var/lib/apt/lists/* \
+ && find /usr/local/lib/python3.13/site-packages -type d -name '__pycache__' \
+    -exec rm -rf {} + \
+ && addgroup --system appuser \
+ && adduser --system --ingroup appuser appuser \
+ && chown -R appuser:appuser /app
+
+USER appuser
+
 
 CMD ["python", "main.py"]
