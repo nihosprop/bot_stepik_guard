@@ -224,7 +224,7 @@ class StepikAPIClient:
                     params.append(f"discussion={comment_id}")
                 params.append("thread=solutions")
                 
-                # Обработка обычных комментариев
+            # Обработка обычных комментариев
             else:
                 discussion_param = parent_id if parent_id else comment_id
                 params.append(f"discussion={discussion_param}")
