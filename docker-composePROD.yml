@@ -1,21 +1,21 @@
-# PROD
+# PROD_COMPOSE
 services:
   main:
-    image: niwibonihs/bot_stepik_guard:tag # Добавить нужный тэг(последний)
-    container_name: YourNameBot
-    restart: unless-stopped
+    image: niwibonihs/bot_stepik_guard:<tag>
+    container_name: BotStepikGuard
+    restart: no # unless-stopped
     env_file: .env
     depends_on:
       redis_fsm:
         condition: service_healthy
-    networks:
-      your_bot_net:
-        aliases: [ bot ]
     logging:
       driver: json-file
       options:
         max-size: "7m"
         max-file: "3"
+    networks:
+      stepik_guard_bot_net:
+        aliases: [bot]
     volumes:
       - ./logs:/app/logs                    # Монтируем папку для логов
       - hf-cache:/app/.cache/huggingface
@@ -24,39 +24,39 @@ services:
       resources:
         limits:
           cpus: '0.5'
-          memory: 1548M  # Максимальная память(После превышения OOM killer убьет
-            контейнер)
+          memory: 1548M  # Максимальная память(После превышения OOM killer убьет контейнер)
         reservations:
           memory: 512M   # Гарантированная память
 
   redis_fsm:
     image: redis:7-alpine
-    container_name: YourRedisFSM
+    container_name: StepikGuardRedisFSM
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "$$REDIS_PASSWORD", "ping"]
+      test: [ "CMD", "redis-cli", "-a", "$$REDIS_PASSWORD", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 3
     env_file: .env
     volumes:
       - redis_data:/data
-      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf  # Конфиг Redis
     command: redis-server /usr/local/etc/redis/redis.conf
     networks:
-      your_bot_net:
+      stepik_guard_bot_net:
         aliases: [ redis ]
     deploy:
       resources:
         limits:
-          cpus: '0.5'
+          cpus: '1'
           memory: 32M
 
 networks:
-  your_bot_net:
-    driver: bridge
-    name: your_bot_net
+  stepik_guard_bot_net:
+      driver: bridge
+      name: stepik_guard_bot_net
 
 volumes:
   redis_data:
   hf-cache:
+
