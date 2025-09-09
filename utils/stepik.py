@@ -185,6 +185,11 @@ class StepikAPIClient:
         target_id = comment['comments'][0]['target']
         return target_id
     
+    async def get_lessons_data(self, lesson_id):
+        lesson_data = await self.make_api_request(
+            'GET', f'lessons/{lesson_id}')
+        return lesson_data
+    
     async def get_lesson_id(self, unit_id: int) -> Optional[int]:
         lesson_data = await self.make_api_request('GET', f'units/{unit_id}')
         lesson_id = lesson_data['units'][0]['lesson']
