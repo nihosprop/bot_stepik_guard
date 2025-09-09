@@ -298,3 +298,23 @@ class StepikAPIClient:
                 logger_stepik.error(
                     f"Ошибка удаления: {response.status} {await response.text()}")
                 return False
+    
+    async def get_lesson_and_step_title_by_comment(self, comment_id: int):
+        comment_data = await self.get_comment_data(comment_id)
+        comment = comment_data.get('comments')[0]
+        
+        step_id = comment.get('target')
+        if not step_id:
+            return None, None  # комментарий не привязан к шагу
+        
+        step_data = await self.get_step_data(target_id=step_id)
+        step = step_data['steps'][0]
+        step_position = step.get('position', 1)
+        lesson_id = step.get('lesson')
+        lesson_title = None
+
+        if lesson_id:
+            lesson_data = await self.get_lessons_data(lesson_id)
+            lesson_title = lesson_data['lessons'][0]['title']
+        
+        return lesson_title, step_position
