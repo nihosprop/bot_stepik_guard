@@ -221,9 +221,6 @@ class StepikAPIClient:
             step_position = step.get('position', 1)
             unit_id = step.get('unit')
             
-            logger_stepik.debug(f'{step=}:{lesson_id=}:{step_position=}:'
-                                f'{unit_id=}')
-            
             # Базовые параметры URL
             base_url = f'https://stepik.org/lesson/{lesson_id}/step/{step_position}?'
             
