@@ -135,7 +135,8 @@ class StepikAPIClient:
             logger_stepik.info(f"User not found: id={user_id}")
             return None
         except PermissionError as e:
-            logger_stepik.warning(f"Forbidden while fetching user id={user_id}: {e}")
+            logger_stepik.warning(
+                f"Forbidden while fetching user id={user_id}: {e}")
             return None
         except Exception as e:
             logger_stepik.error(f"Failed to fetch user id={user_id}: {e}")
