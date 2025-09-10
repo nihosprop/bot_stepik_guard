@@ -260,6 +260,47 @@ class StepikAPIClient:
                 exc_info=True)
             return f"https://stepik.org/discussion/comments/{comment_id}/"
     
+    async def get_comment_context(self, comment_id: int) -> tuple:
+        
+        # 1. Получаем step_id из комментария
+        comment_data = await self.get_comment_data(comment_id)
+        comment = comment_data['comments'][0]
+        step_id = comment.get('target')
+        if not step_id:
+            return ()
+        
+        # 2. Получаем шаг
+        step_data = await self.get_step_data(step_id)
+        step = step_data['steps'][0]
+        step_position = step.get('position')
+        lesson_id = step.get('lesson')
+        
+        # 3. Получаем юнит по уроку
+        unit_data = await self.make_api_request(
+            'GET',
+            f'units?lesson={lesson_id}')
+        unit = unit_data['units'][0]
+        section_id = unit.get('section')
+        
+        # 4. Получаем урок
+        unit_id = unit_data['units'][0]['id']
+        unit_data = await self.make_api_request('GET', f'units/{unit_id}')
+        lesson_position = unit_data['units'][0].get('position')
+        
+        # 5. Получаем модуль (section)
+        section_data = await self.make_api_request(
+            'GET',
+            f'sections/{section_id}')
+        section_position = section_data['sections'][0].get('position')
+        
+        # 6. Ссылка на шаг
+        step_url = f"https://stepik.org/lesson/{lesson_id}/step/{step.get('position')}?discussion={comment_id}"
+        
+        logger_stepik.debug(f'{section_position=}:{lesson_position=}:'
+                            f'{step_position=}')
+    
+        return section_position, lesson_position, step_position
+    
     async def get_comments(self, course_id: int, limit: int = 100) -> Dict[
         str, Any]:
         """
