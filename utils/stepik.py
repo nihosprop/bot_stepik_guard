@@ -146,6 +146,15 @@ class StepikAPIClient:
         user = await self.get_user(user_id)
         return (user or {}).get('full_name') or None
     
+    async def check_user_avatar(self, stepik_user_id) -> bool:
+        """
+        Checks whether the user has an avatar on Stepik.
+        Returns True if the field 'Avatar' is non -empty, otherwise false.
+        """
+        if user := await self.get_user(stepik_user_id):
+            return bool(user.get('avatar'))
+        return False
+    
     async def get_course(self, course_id: int):
         course_data = await self.make_api_request('GET', f'courses/{course_id}')
         return course_data
