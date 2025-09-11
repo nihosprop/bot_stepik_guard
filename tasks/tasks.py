@@ -168,6 +168,7 @@ class StepikTasks:
             link_to_comment: str = await self.stepik_client.get_comment_url(
                 comment_id=comment_id)
             comment_text = clean_html_tags(comment.get('text'))
+            
             user_name = user.get('full_name')
             reputation: int | str = user.get('reputation')
             count_steps: int | str = user.get('solved_steps_count')

@@ -27,7 +27,7 @@ async def get_username(_type_update: Message | CallbackQuery | ChatFullInfo) -> 
     return 'Anonymous'
 
 
-def clean_html_tags(raw_html: str) -> str:
+async def clean_html_tags(raw_html: str) -> str:
     """Удаляет HTML-теги из строки, оставляя только текст.
     
     Args:
