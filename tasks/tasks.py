@@ -190,7 +190,7 @@ class StepikTasks:
                               f'>{course_title}</a></b>\n'
                               f'🧑‍🎓 <a href="{link_to_user_profile}">'
                               f' {user_name}</a>\n'
-                              f'<b>Progress:</b>    {count_steps}\n'
+                              f'<b>Progress:</b> {count_steps}\n'
                               f'<b>Reputation:</b> {reputation}\n'
                               f'🕘 <b>Comment time</b>: {comment_time}UTC\n'
                               f'🔗 <a href="{link_to_comment}">Comment ID'
