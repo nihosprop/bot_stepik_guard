@@ -217,8 +217,14 @@ class StepikTasks:
             
             flag_low_comment: bool = (len(set(comment_text)) <= 2) or (len(
                 comment_text) <= 3)
-            res_text: str = (text_comment_high, text_comment_low)[
-                flag_low_comment]
+            flag_solution_comment: bool = 'thread=solutions' in link_to_comment
+            
+            if not flag_solution_comment:
+                res_text: str = (text_comment_high, text_comment_low)[
+                    flag_low_comment]
+            else:
+                res_text: str = (text_solution_high, text_solution_low)[
+                    flag_low_comment]
             
             if result_profanity_filter and len(comment_text) >= 12:
                 result_toxicity_classifier = await toxicity_filter.predict(
