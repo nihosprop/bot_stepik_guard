@@ -47,6 +47,10 @@ class StepikTasks:
             try:
                 logger_tasks.debug(f'Поиск в {course_id=}')
                 
+                # TODO: Object course!
+                # course_obj = await self.stepik_client.get_course(course_id)
+                # logger_tasks.debug(pformat(course_obj, indent=2))
+                
                 course_title = await self.stepik_client.get_course_title(
                     course_id=course_id)
                 comments_data: dict[str, Any] = await (
