@@ -344,4 +344,3 @@ class StepikAPIClient:
                 logger_stepik.error(
                     f"Ошибка удаления: {response.status} {await response.text()}")
                 return False
-    
