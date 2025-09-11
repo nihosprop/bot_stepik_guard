@@ -150,9 +150,12 @@ class StepikAPIClient:
         course_data = await self.make_api_request('GET', f'courses/{course_id}')
         return course_data
     
-    async def get_link_to_course(self, course_id) -> str:
+    async def get_link_to_course(self, course_id) -> str | None:
         course_data = await self.get_course(course_id)
-        return course_data.get('canonical_url')
+        courses = course_data.get('courses') or []
+        if not courses:
+            return None
+        return courses[0].get('canonical_url')
     
     async def get_course_title(self, course_id: int) -> str | None:
         course_data = await self.get_course(course_id)
