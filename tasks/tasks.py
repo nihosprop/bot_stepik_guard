@@ -160,35 +160,45 @@ class StepikTasks:
                     'reputation': '?',
                     'solved_steps_count': '?',
                     'reputation_rank': '?'}
+            logger_tasks.debug(f'{user=}')
             
             link_to_user_profile: str = f'{users_url}{user_stepik_id}/profile'
             course_title: str = comment.get('course_title')
             course_id = comment.get('course_id')
+            
+            link_to_course: str = await self.stepik_client.get_link_to_course(
+                course_id=course_id)
+            
             comment_id = comment.get('id')
+            
+            section_position, lesson_position, step_position = await (
+                self.stepik_client.get_comment_context(comment_id))
+            
+            lesson_position = f'{section_position}.{lesson_position}'
+            
             link_to_comment: str = await self.stepik_client.get_comment_url(
                 comment_id=comment_id)
-            comment_text = clean_html_tags(comment.get('text'))
             
+            comment_text = await clean_html_tags(comment.get('text'))
             user_name = user.get('full_name')
             reputation: int | str = user.get('reputation')
             count_steps: int | str = user.get('solved_steps_count')
-            reputation_rank: int | str = user.get('reputation_rank')
             comment_time = datetime.strptime(
                 comment.get('time'), '%Y-%m-%dT%H:%M:%SZ')
             
-            full_user_info = (f'\n<b>{course_title}</b>\n'
+            full_user_info = (f'<b><a href="{link_to_course}"'
+                              f'>{course_title}</a></b>\n'
                               f'🧑‍🎓 <a href="{link_to_user_profile}">'
                               f' {user_name}</a>\n'
+                              f'<b>Progress:</b>   {count_steps}\n'
                               f'<b>Reputation:</b> {reputation}\n'
-                              f'<b>Reputation Rank:</b> {reputation_rank}\n'
-                              f'<b>Сount steps:</b> {count_steps}\n'
-                              f'<b>Course ID:</b> {course_id}\n'
-                              f'<b>Comment time:</b> {comment_time}UTC\n'
+                              f'🕘 <b>Comment time</b>: {comment_time}UTC\n'
                               f'🔗 <a href="{link_to_comment}">Comment ID'
-                              f'[{comment_id}]</a>\n\n'
+                              f'[{comment_id}]</a>\n'
+                              f'({lesson_position} шаг {step_position})\n\n'
                               f'{comment_text}')
             
-            light_user_info = (f'\n<b>{course_title}</b>\n'
+            light_user_info = (f'<b>{course_title}</b>\n'
                                f'🧑‍🎓 <a href="{link_to_user_profile}">'
                                f' {user_name}</a>\n'
                                f'🔗 <a href="{link_to_comment}">Comment ID'
@@ -228,9 +238,13 @@ class StepikTasks:
                 full_user_info = res_text + full_user_info
             
             lpw_options = LinkPreviewOptions(is_disabled=True)
-            
+            have_avatar = await self.stepik_client.check_user_avatar(
+                user_stepik_id)
+
             if not flag_low_comment:
-                lpw_options = None
+                if have_avatar:
+                    lpw_options = LinkPreviewOptions(
+                        is_disabled=False, url=link_to_user_profile)
             else:
                 light_user_info = res_text + light_user_info
             
