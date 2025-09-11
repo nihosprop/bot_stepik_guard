@@ -146,13 +146,21 @@ class StepikAPIClient:
         user = await self.get_user(user_id)
         return (user or {}).get('full_name') or None
     
-    async def check_user_avatar(self, stepik_user_id) -> bool:
+    async def check_user_avatar(self, stepik_user_id: int) -> bool:
         """
-        Checks whether the user has an avatar on Stepik.
-        Returns True if the field 'Avatar' is non -empty, otherwise false.
+        Checks whether the user has a custom avatar on the user Stepik.
+        Returns True if there is an avatar and it is not default, otherwise False.
+        
+        Stepik default avatars are always on the main domain:
+            https://stepik.org/users/
+        Caste avatars are always on the domain:
+            https://cdn.stepik.net/media/users/
         """
         if user := await self.get_user(stepik_user_id):
-            return bool(user.get('avatar'))
+            avatar_url = user.get('avatar')
+            if not avatar_url or avatar_url.startswith('https://stepik.org/'):
+                return False
+            return True
         return False
     
     async def get_course(self, course_id: int):
