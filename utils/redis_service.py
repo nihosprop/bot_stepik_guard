@@ -191,7 +191,7 @@ class RedisService:
             return True
         return False
     
-    async def get_notif_flag(self, tg_user_id: int) -> bool | dict[str, bool]:
+    async def get_user_notif(self, tg_user_id: int) -> bool | dict[str, bool]:
         """
         Returns the notification flags for a user in the Redis database.
         Args:
