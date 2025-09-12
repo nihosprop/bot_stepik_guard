@@ -259,7 +259,7 @@ class StepikTasks:
                     comment_statuses.append('toxic')
                     logger_tasks.warning(f'Toxicity filter: {full_user_info}')
                 else:
-                    full_user_info = res_text + full_user_info
+                    full_user_info = res_text + middle_user_info
                     logger_tasks.debug(f'{full_user_info}')
             elif result_profanity_filter:
                 full_user_info = text_remove + full_user_info
