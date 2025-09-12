@@ -139,10 +139,10 @@ class RedisService:
         users = await self.redis.smembers(self.USERS_LIST_SET)
         return [int(user) for user in users]
     
-    async def update_notification_flag(self,
-                                       tg_user_id: int,
-                                       is_notif_solution: bool = None,
-                                       is_notif_uninformative: bool = None) -> bool:
+    async def update_notif_flag(self,
+                                tg_user_id: int,
+                                is_notif_solution: bool = None,
+                                is_notif_uninformative: bool = None) -> bool:
         """
         Updates the notification flags for a user in the Redis database.
         
@@ -189,6 +189,12 @@ class RedisService:
                 f'Updated notification flags for user {tg_user_id}: {updates}')
             return True
         return False
+    
+    async def check_notif_flag(self,
+                               tg_user_id: int,
+                               is_notif_solution: bool = None,
+                               is_notif_uninformative: bool = None) -> bool:
+        pass
     
     async def get_users_info(self) -> str:
         """
