@@ -48,6 +48,7 @@ class RedisService:
     
     TG_ID: str = 'tg_id'
     TG_USERNAME: str = 'tg_username'
+    
     IS_NOTIF_SOLUTION: str = 'is_notif_solution'
     IS_NOTIF_UNINFORMATIVE: str = 'is_notif_uninformative'
     
@@ -137,6 +138,57 @@ class RedisService:
         """
         users = await self.redis.smembers(self.USERS_LIST_SET)
         return [int(user) for user in users]
+    
+    async def update_notification_flag(self,
+                                       tg_user_id: int,
+                                       is_notif_solution: bool = None,
+                                       is_notif_uninformative: bool = None) -> bool:
+        """
+        Updates the notification flags for a user in the Redis database.
+        
+        Args:
+            tg_user_id (int): The unique identifier of the user to be updated.
+            is_notif_solution (bool): The new value of the is_notif_solution flag.
+            is_notif_uninformative (bool): The new value of the is_notif_uninformative flag.
+        Returns:
+            bool: True if the update was successful, False otherwise.
+        Example:
+            await update_notification_flag(tg_user_id=123456789,
+                                          is_notif_solution=True,
+                                          is_notif_uninformative=False)
+        """
+        if not await self.check_user(tg_user_id):
+            logger.warning(
+                f'User {tg_user_id} not found when updating notification flags')
+            return False
+        
+        # Check that at least one flag has been transferred
+        if all(f is None for f in [is_notif_solution, is_notif_uninformative]):
+            logger.warning('No flags provided for update')
+            return False
+        user_key = f'{self.USER_TAG}:{tg_user_id}'
+        
+        updates = {}
+        
+        # Updates only for the transferred flags
+        if is_notif_solution is not None:
+            updates[self.IS_NOTIF_SOLUTION] = '1' if is_notif_solution else '0'
+            logger.debug(
+                f'Updating {self.IS_NOTIF_SOLUTION} to {is_notif_solution}')
+        
+        if is_notif_uninformative is not None:
+            updates[
+                self.IS_NOTIF_UNINFORMATIVE] = '1' if is_notif_uninformative else '0'
+            logger.debug(
+                f'Updating {self.IS_NOTIF_UNINFORMATIVE} to {is_notif_uninformative}')
+        
+        # Update all flags
+        if updates:
+            await self.redis.hset(user_key, mapping=updates)
+            logger.info(
+                f'Updated notification flags for user {tg_user_id}: {updates}')
+            return True
+        return False
     
     async def get_users_info(self) -> str:
         """
