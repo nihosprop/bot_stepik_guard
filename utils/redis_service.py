@@ -41,7 +41,8 @@ class RedisService:
         add_stepik_course_id(self, course_id: int): Adds a Stepik course ID to the Redis database.
         remove_stepik_course_id(self, course_id: int): Removes a Stepik course ID from the Redis database.
         get_stepik_course_ids(self): Returns a list of all Stepik course IDs in the Redis database.
-        
+        update_notification_flag(self, tg_user_id: int, is_notif_solution: bool = None, is_notif_uninformative: bool = None): Updates the notification flags for a user in the Redis database.
+        get_notif_flag(self, tg_user_id: int): Returns the notification flags for a user in the Redis database.
     """
     redis: Redis
     stepik_client: StepikAPIClient
