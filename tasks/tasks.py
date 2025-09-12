@@ -209,8 +209,7 @@ class StepikTasks:
                 text=comment_text)
             logger_tasks.debug(f'{result_profanity_filter=}')
             
-            text_solution_low = 'Решение 🟡\n'
-            text_solution_high = 'Решение 🟢\n'
+            text_solution = 'Решение ⚪\n'
             text_comment_low = 'Комментарий 🟡\n'
             text_comment_high = 'Комментарий 🟢\n'
             text_remove = f"🚨 Удалить! 🚨\n"
