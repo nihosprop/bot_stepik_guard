@@ -231,8 +231,7 @@ class StepikTasks:
                 res_text: str = (text_comment_high, text_comment_low)[
                     flag_low_comment]
             else:
-                res_text: str = (text_solution_high, text_solution_low)[
-                    flag_low_comment]
+                res_text: str = text_solution
             
             lpw_options = LinkPreviewOptions(is_disabled=True)
             have_avatar = await self.stepik_client.check_user_avatar(
