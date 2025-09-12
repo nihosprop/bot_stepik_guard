@@ -289,12 +289,12 @@ class StepikTasks:
                 if 'toxic' in comment_statuses:
                     pass
                 else:
-                    if ('solution' in comment_statuses
-                        and not user_notifications.get(
-                            'is_notif_solution', True)):
+                    if (
+                        'solution' in comment_statuses and not user_notifications.get(
+                        'is_notif_solution', True)):
                         continue
-                    if ('uninformative' in comment_statuses
-                        and not user_notifications.get(
+                    if (
+                        'uninformative' in comment_statuses and not user_notifications.get(
                         'is_notif_uninformative', True)):
                         continue
                 
