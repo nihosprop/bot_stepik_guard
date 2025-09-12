@@ -262,7 +262,7 @@ class StepikTasks:
                             bot_id=self.bot.id, chat_id=owner, user_id=owner)
                         state = await self.storage.get_state(key)
                         if state:
-                            logger_tasks.debug(
+                            logger_tasks.info(
                                 f"Skip notify tg_id={owner} due to active FSM state: {state}")
                             continue
                 except Exception as e:
