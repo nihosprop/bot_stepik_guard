@@ -191,7 +191,7 @@ class RedisService:
             return True
         return False
     
-    async def get_user_notif(self, tg_user_id: int) -> bool | dict[str, bool]:
+    async def get_user_notif(self, tg_user_id: int) -> dict[str, bool]:
         """
         Returns the notification flags for a user in the Redis database.
         Args:
@@ -202,7 +202,7 @@ class RedisService:
         if not await self.check_user(tg_user_id):
             logger.warning(
                 f'User {tg_user_id} was not found when receiving notifications settings')
-            return False
+            return {}
         
         user_key = f'{self.USER_TAG}:{tg_user_id}'
         
