@@ -198,6 +198,15 @@ class StepikTasks:
                               f'({lesson_position} шаг {step_position})\n\n'
                               f'{comment_text}')
             
+            middle_user_info = (f'<b><a href="{link_to_course}"'
+                                f'>{course_title}</a></b>\n'
+                                f'🧑‍🎓 <a href="{link_to_user_profile}">'
+                                f' {user_name}</a>\n'
+                                f'🔗 <a href="{link_to_comment}">Comment ID'
+                                f'[{comment_id}]</a>\n'
+                                f'({lesson_position} шаг {step_position})\n\n'
+                                f'{comment_text}')
+            
             light_user_info = (f'<b>{course_title}</b>\n'
                                f'🧑‍🎓 <a href="{link_to_user_profile}">'
                                f' {user_name}</a>\n'
