@@ -217,14 +217,30 @@ class StepikTasks:
             
             flag_low_comment: bool = (len(set(comment_text)) <= 2) or (len(
                 comment_text) <= 3)
-            flag_solution_comment: bool = 'thread=solutions' in link_to_comment
             
+            flag_solution_comment: bool = 'thread=solutions' in link_to_comment
             if not flag_solution_comment:
                 res_text: str = (text_comment_high, text_comment_low)[
                     flag_low_comment]
             else:
                 res_text: str = (text_solution_high, text_solution_low)[
                     flag_low_comment]
+            
+            lpw_options = LinkPreviewOptions(is_disabled=True)
+            have_avatar = await self.stepik_client.check_user_avatar(
+                user_stepik_id)
+            
+            comment_statuses: list[str] = []
+            if flag_low_comment:
+                comment_statuses.append('solution')
+            if not flag_low_comment:
+                comment_statuses.append('informative')
+                if have_avatar:
+                    lpw_options = LinkPreviewOptions(
+                        is_disabled=False, url=link_to_user_profile)
+            else:
+                comment_statuses.append('uninformative')
+                light_user_info = res_text + light_user_info
             
             if result_profanity_filter and len(comment_text) >= 12:
                 result_toxicity_classifier = await toxicity_filter.predict(
@@ -233,45 +249,52 @@ class StepikTasks:
                 
                 if result_toxicity_classifier.get('is_toxic'):
                     full_user_info = text_remove + full_user_info
+                    comment_statuses.append('toxic')
                     logger_tasks.warning(f'Toxicity filter: {full_user_info}')
                 else:
                     full_user_info = res_text + full_user_info
                     logger_tasks.debug(f'{full_user_info}')
             elif result_profanity_filter:
                 full_user_info = text_remove + full_user_info
+                comment_statuses.append('toxic')
                 logger_tasks.warning(f'Profanity filter: {full_user_info}')
             else:
                 full_user_info = res_text + full_user_info
             
-            lpw_options = LinkPreviewOptions(is_disabled=True)
-            have_avatar = await self.stepik_client.check_user_avatar(
-                user_stepik_id)
-
-            if not flag_low_comment:
-                if have_avatar:
-                    lpw_options = LinkPreviewOptions(
-                        is_disabled=False, url=link_to_user_profile)
-            else:
-                light_user_info = res_text + light_user_info
-            
-            for owner in all_users:
+            for user in all_users:
                 # Если у пользователя активно любое FSM-состояние — пропускаем отправку
                 try:
                     if self.storage is not None:
                         key = StorageKey(
-                            bot_id=self.bot.id, chat_id=owner, user_id=owner)
+                            bot_id=self.bot.id, chat_id=user, user_id=user)
                         state = await self.storage.get_state(key)
                         if state:
                             logger_tasks.info(
-                                f"Skip notify tg_id={owner} due to active FSM state: {state}")
+                                f"Skip notify tg_id={user} due to active FSM state: {state}")
                             continue
                 except Exception as e:
                     logger_tasks.debug(
-                        f"FSM state check failed for tg_id={owner}: {e}")
+                        f"FSM state check failed for tg_id={user}: {e}")
+                
+                user_notifications: dict[str, bool] = await (
+                    self.redis_service.get_user_notif(tg_user_id=user))
+                
+                if 'toxic' in comment_statuses:
+                    pass
+                else:
+                    if ('solution' in comment_statuses
+                        and not user_notifications.get(
+                            'is_notif_solution', True)):
+                        continue
+                    if ('uninformative' in comment_statuses
+                        and not user_notifications.get(
+                        'is_notif_uninformative', True)):
+                        continue
+                
                 try:
                     await self.bot.send_message(
                         link_preview_options=lpw_options,
-                        chat_id=owner,
+                        chat_id=user,
                         text=light_user_info if flag_low_comment else full_user_info)
                     await asyncio.sleep(0.5)
                 
@@ -279,10 +302,10 @@ class StepikTasks:
                     
                     if 'chat not found' in err.message.lower():
                         logger_tasks.warning(
-                            f'Chat not found for: tg_id={owner}')
+                            f'Chat not found for: tg_id={user}')
                     elif 'message is too long' in err.message.lower():
                         logger_tasks.warning(
-                            f'Message too long for: tg_id={owner}')
+                            f'Message too long for: tg_id={user}')
                 
                 except TelegramForbiddenError as err:
-                    logger_tasks.warning(f'Forbidden for tg_id={owner}: {err}')
+                    logger_tasks.warning(f'Forbidden for tg_id={user}: {err}')
