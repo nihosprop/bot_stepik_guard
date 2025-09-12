@@ -190,11 +190,29 @@ class RedisService:
             return True
         return False
     
-    async def check_notif_flag(self,
-                               tg_user_id: int,
-                               is_notif_solution: bool = None,
-                               is_notif_uninformative: bool = None) -> bool:
-        pass
+    async def get_notif_flag(self, tg_user_id: int) -> bool | dict[str, bool]:
+        """
+        Returns the notification flags for a user in the Redis database.
+        Args:
+            tg_user_id (int): The unique identifier of the user to be checked.
+        Returns:
+            bool | dict[str, bool]: The notification flags for the user.
+        """
+        if not await self.check_user(tg_user_id):
+            logger.warning(
+                f'User {tg_user_id} was not found when receiving notifications settings')
+            return False
+        
+        user_key = f'{self.USER_TAG}:{tg_user_id}'
+        
+        flags = await self.redis.hmget(
+            name=user_key, keys=[
+                self.IS_NOTIF_SOLUTION, self.IS_NOTIF_UNINFORMATIVE])
+        return {
+            'is_notif_solution':
+                flags[0] == '1' if flags[0] is not None else True,
+            'is_notif_uninformative':
+                flags[1] == '1' if flags[1] is not None else True}
     
     async def get_users_info(self) -> str:
         """
