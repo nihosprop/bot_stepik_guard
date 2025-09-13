@@ -156,4 +156,3 @@ async def msg_other(msg: Message):
     await msg.delete()
     
     logger.debug('Exit')
-    
