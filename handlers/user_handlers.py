@@ -50,8 +50,7 @@ async def clbk_cancel(clbk: CallbackQuery,
     stepik_courses_ids = '\n'.join(_bat)
     
     text = (f'<b>Мониторю курсы Stepik:</b>\n'
-            f'<pre>\n{stepik_courses_ids if stepik_courses_ids else
-            '<i>Пока нет курсов для отслеживания</i>'}</pre>\n')
+            f'<pre>\n{stepik_courses_ids if stepik_courses_ids else '<i>Пока нет курсов для отслеживания</i>'}</pre>\n')
     
     user_tg_id = clbk.from_user.id
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
