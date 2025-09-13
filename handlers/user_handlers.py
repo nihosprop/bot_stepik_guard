@@ -132,6 +132,13 @@ async def cmd_start(msg: Message,
     logger.debug(f'State clear:{tg_nickname}:{user_tg_id}')
     logger.debug('Exit')
 
+@user_router.callback_query(F.data == 'all_settings',
+                            StateFilter(default_state))
+async def clbk_settings(clbk: CallbackQuery):
+    await clbk.message.edit_text('📵 <b>Выберите действие:</b>',
+                                 reply_markup=kb_all_settings)
+    await clbk.answer()
+
 @user_router.callback_query()
 async def clbk_other_handler(clbk: CallbackQuery):
     logger.debug('Entry')
