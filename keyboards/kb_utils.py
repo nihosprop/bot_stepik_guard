@@ -77,3 +77,26 @@ def create_static_kb(width: int = 1,
         kb_builder.row(
             InlineKeyboardButton(text=BUTT_BACK['back'], callback_data='back'))
     return kb_builder.as_markup()
+
+
+async def create_notification_settings_kb(user_data_notif: dict):
+    # Формируем текст и callback_data для кнопок
+    solution_text = '🔴 Отключить уведомления о решениях' if user_data_notif.get(
+        'is_notif_solution', True) else '🟢 Включить уведомления о решениях'
+    solution_clbk = 'off_notif_solution' if user_data_notif.get(
+        'is_notif_solution', True) else 'on_notif_solution'
+    
+    uninformative_text = '🔴 Отключить неинформативные уведомления' if user_data_notif.get(
+        'is_notif_uninformative',
+        True) else '🟢 Включить неинформативные уведомления'
+    uninformative_cb = 'off_notif_uninformative' if user_data_notif.get(
+        'is_notif_uninformative', True) else 'on_notif_uninformative'
+    
+    kb_notifications = create_static_kb(
+        **{solution_clbk: solution_text},
+        **{uninformative_cb: uninformative_text},
+        back=True,
+        cancel_butt=False,
+        exit_=True)
+    
+    return kb_notifications
