@@ -48,7 +48,8 @@ git clone https://github.com/nihosprop/bot_stepik_guard.git
 ```
 your_name_bot_dir
 ├── docker-compose.yml
-├── .env
+├── logs
+│   └── app.log
 └── redis
     └── redis.conf
 
