@@ -86,9 +86,9 @@ async def create_notification_settings_kb(user_data_notif: dict):
     solution_clbk = 'off_notif_solution' if user_data_notif.get(
         'is_notif_solution', True) else 'on_notif_solution'
     
-    uninformative_text = '🔴 Отключить неинформативные уведомления' if user_data_notif.get(
+    uninformative_text = '🔴 Отключить неинформативные' if user_data_notif.get(
         'is_notif_uninformative',
-        True) else '🟢 Включить неинформативные уведомления'
+        True) else '🟢 Включить неинформативные'
     uninformative_cb = 'off_notif_uninformative' if user_data_notif.get(
         'is_notif_uninformative', True) else 'on_notif_uninformative'
     
