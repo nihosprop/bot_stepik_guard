@@ -101,10 +101,11 @@ async def cmd_start(msg: Message,
     stepik_courses_ids = '\n'.join(_bat)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
-            f'<b>Статусы комментов обозначены кружками:</b>\n\n'
+            f'<b>Статусы комментов обозначены кружками:</b>\n'
             f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
             f'Желтый кружок 🟡  - Вероятно НЕ информативный.\n'
             f'Белый кружок ⚪ - Решение</pre>\n'
+            f'Отключить не нужные уведомления можно в настройках.\n'
             f'Важно❗\n'
             f'Пока вы взаимодействуете с ботом, уведомления о комментариях'
             f' не приходят. Это состояние будет обозначено значком: 📵\n'
@@ -137,26 +138,107 @@ async def cmd_start(msg: Message,
 @user_router.callback_query(
     F.data == 'all_settings', StateFilter(default_state))
 async def clbk_settings(clbk: CallbackQuery, state: FSMContext):
+    logger.debug('Entry')
+    
     await clbk.message.edit_text(
-        '📵 <b>Выберите действие:</b>', reply_markup=kb_all_settings)
+        '📵 <b>Выберите настройку:</b>', reply_markup=kb_all_settings)
     await state.set_state(AllSettingsStates.user_settings)
     await clbk.answer()
+    
+    logger.debug('Exit')
 
-
-@user_router.callback_query()
-async def clbk_other_handler(clbk: CallbackQuery):
+@user_router.callback_query(
+    F.data == 'notifications',
+    StateFilter(AllSettingsStates.user_settings))
+async def clbk_notif(clbk: CallbackQuery,
+                     state: FSMContext,
+                     redis_service: RedisService):
     logger.debug('Entry')
-    logger.debug(f'{clbk.data=}')
     
-    await clbk.answer('Кнопка в разработке', show_alert=True)
+    user_id = clbk.from_user.id
     
+    if not await redis_service.check_user(user_id):
+        await redis_service.add_user(user_id)
+        
+    user_notif = await redis_service.get_user_notif(user_id)
+    logger.debug(f'{user_notif=}')
+    kb_notif = await create_notification_settings_kb(user_notif)
+    
+    await clbk.message.edit_text(
+        f'<b>📵🔔 Настройки уведомлений:\n</b>'
+        f'<pre>\nРешения: {('OFF', 'ON')[user_notif.get('is_notif_solution')]}\n'
+        f'Не информативные : {('OFF', 'ON')[user_notif.get(
+            'is_notif_uninformative')]}</pre>',
+        reply_markup=kb_notif)
+    await state.set_state(AllSettingsStates.choice_notif)
+    await clbk.answer()
+
+    logger.debug('Exit')
+
+@user_router.callback_query(F.data == 'back',
+                            StateFilter(AllSettingsStates.choice_notif))
+async def clbk_notif_back(clbk: CallbackQuery, state: FSMContext):
+    logger.debug('Entry')
+    
+    await clbk.message.edit_text(
+        '📵 <b>Выберите настройку:</b>', reply_markup=kb_all_settings)
+    await state.set_state(AllSettingsStates.user_settings)
+    await clbk.answer()
+    
+    logger.debug('Exit')
+
+@user_router.callback_query(
+    F.data.in_(
+        [
+            'on_notif_solution',
+            'off_notif_solution',
+            'on_notif_uninformative',
+            'off_notif_uninformative']),
+    StateFilter(AllSettingsStates.choice_notif))
+async def clbk_toggle_notification(clbk: CallbackQuery,
+    redis_service: RedisService):
+    """
+    Обработчик переключения настроек уведомлений.
+    """
+    logger.debug('Entry')
+
+    user_id = clbk.from_user.id
+    if clbk.data in ['on_notif_solution', 'off_notif_solution']:
+        setting = 'is_notif_solution'
+        new_value = clbk.data.startswith('on_')
+    else:
+        setting = 'is_notif_uninformative'
+        new_value = clbk.data.startswith('on_')
+    
+    await redis_service.update_notif_flag(
+        tg_user_id=user_id, **{setting: new_value})
+    logger.info(f'Notification for {await get_username(clbk)}:{setting} '
+                f'updated.')
+    user_notif = await redis_service.get_user_notif(user_id)
+    
+    kb_notif = await create_notification_settings_kb(user_notif)
+    await clbk.message.edit_text(
+        f'<b>📵🔔 Настройки уведомлений:\n</b>'
+        f'<pre>\nРешения: {('OFF', 'ON')[user_notif.get('is_notif_solution')]}\n'
+        f'Не информативные : {('OFF', 'ON')[user_notif.get(
+            'is_notif_uninformative')]}</pre>', reply_markup=kb_notif)
+    await clbk.answer()
+    
+    logger.debug('Exit')
+
+
+@user_router.callback_query(StateFilter(AllSettingsStates.user_settings))
+async def clbk_other_handler(clbk: CallbackQuery, state: FSMContext):
+    """
+    Обработчик для нераспознанных callback'ов в состоянии настроек.
+    """
+    logger.debug('Entry')
+    logger.debug(f'Unhandled callback in user_settings state: {clbk.data=}')
     logger.debug('Exit')
 
 
 @user_router.message()
 async def msg_other(msg: Message):
     logger.debug('Entry')
-    
     await msg.delete()
-    
     logger.debug('Exit')
