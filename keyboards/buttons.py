@@ -15,7 +15,3 @@ BUTTS_SETTINGS_USERS: dict[str, str] = {
 
 BUTTS_ALL_SETTINGS: dict[str, str] = {
     'notifications': 'Уведомления'}
-
-BUTTS_NOTIF: dict[str, str] = {
-    'off_notif_solution': 'Отключить о решениях',
-    'off_notif_uninformative': 'Отключить не информативные'}
