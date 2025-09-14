@@ -15,3 +15,4 @@ class CoursesSettingsStates(StatesGroup):
 
 class AllSettingsStates(StatesGroup):
     user_settings = State()
+    choice_notif = State()
