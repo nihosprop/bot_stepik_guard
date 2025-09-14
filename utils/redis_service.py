@@ -161,7 +161,7 @@ class RedisService:
         if not await self.check_user(tg_user_id):
             logger.warning(
                 f'User {tg_user_id} not found when updating notification flags')
-            return False
+            await self.add_user(tg_user_id)
         
         # Check that at least one flag has been transferred
         if all(f is None for f in [is_notif_solution, is_notif_uninformative]):
