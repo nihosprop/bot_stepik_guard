@@ -23,8 +23,8 @@ def create_static_kb(width: int = 1,
         back (bool): Добавить кнопку "Назад"
         exit_ (bool): Добавить кнопку "Выйти"
         reverse_size_text (bool): Инвертировать порядок больших/маленьких кнопок
-        url_buttons (): Кнопки с URL {текст: url}
-        **kwargs (): Кнопки в формате {callback_data: текст}
+        url_buttons (dict): Кнопки с URL {текст: url}
+        **kwargs : Кнопки в формате {callback_data: текст}
 
     Returns: InlineKeyboardMarkup
     """
