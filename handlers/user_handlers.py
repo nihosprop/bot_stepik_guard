@@ -8,7 +8,10 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, Message
 
 from filters.filters import AccessOwnersFilter, AccessUsersFilter
-from keyboards.keyboards import kb_all_settings, kb_own_start, kb_user_start
+from keyboards.kb_utils import create_notification_settings_kb
+from keyboards.keyboards import (kb_all_settings,
+                                 kb_own_start,
+                                 kb_user_start)
 from states.states import AllSettingsStates
 from utils.redis_service import RedisService
 from utils.utils import MessageProcessor, get_username
