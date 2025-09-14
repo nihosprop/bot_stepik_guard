@@ -238,7 +238,7 @@ class StepikTasks:
                 user_stepik_id)
             
             comment_statuses: list[str] = []
-            if flag_low_comment:
+            if 'Решение' in res_text:
                 comment_statuses.append('solution')
             if not flag_low_comment:
                 comment_statuses.append('informative')
@@ -286,16 +286,18 @@ class StepikTasks:
                 user_notifications: dict[str, bool] = await (
                     self.redis_service.get_user_notif(tg_user_id=user))
                 
+                # Skip toxic comments
                 if 'toxic' in comment_statuses:
-                    pass
-                else:
-                    if (
-                        'solution' in comment_statuses and not user_notifications.get(
-                        'is_notif_solution', True)):
+                    continue
+                    
+                # Check notification settings for solutions
+                if 'solution' in comment_statuses:
+                    if not user_notifications.get('is_notif_solution', True):
                         continue
-                    if (
-                        'uninformative' in comment_statuses and not user_notifications.get(
-                        'is_notif_uninformative', True)):
+                else:
+                    # For non-solution comments, check uninformative flag
+                    if 'informative' not in comment_statuses and not user_notifications.get(
+                        'is_notif_uninformative', True):
                         continue
                 
                 try:
