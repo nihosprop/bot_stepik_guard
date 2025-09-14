@@ -59,7 +59,7 @@ async def clbk_cancel(clbk: CallbackQuery,
     
     value = await clbk.message.edit_text(text=text, reply_markup=keyboard)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
-
+    
     await state.set_state(state=None)
     await clbk.answer()
     
@@ -98,13 +98,10 @@ async def cmd_start(msg: Message,
     stepik_courses_ids = '\n'.join(_bat)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
-            f'<b>Статусы комментов обозначены кружками.</b>'
-            f'<pre>Комменты в разделе задач:\n'
-            f'Зеленый кружок 🟢 - Вероятно информативный.\n'
-            f'Желтый кружок 🟡  - Вероятно НЕ информативный.\n\n'
-            f'Комменты в разделе решений:\n'
-            f'Зеленый вероятно информативный - Решение 🟢\n'
-            f'Желтый вероятно НЕ информативный - Решение 🟡</pre>\n'
+            f'<b>Статусы комментов обозначены кружками:</b>\n\n'
+            f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
+            f'Желтый кружок 🟡  - Вероятно НЕ информативный.\n'
+            f'Белый кружок ⚪ - Решение</pre>\n'
             f'Важно❗\n'
             f'Пока вы взаимодействуете с ботом, уведомления о комментариях'
             f' не приходят. Это состояние будет обозначено значком: 📵\n'
@@ -115,7 +112,7 @@ async def cmd_start(msg: Message,
     
     user_tg_id = msg.from_user.id
     tg_nickname: str = await get_username(msg)
-
+    
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
     value = await msg.answer(text=text, reply_markup=keyboard)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
@@ -129,7 +126,7 @@ async def cmd_start(msg: Message,
             tg_user_id=user_tg_id, tg_nickname=tg_nickname)
         logger.info(f'User {tg_nickname} updated.')
     await state.set_state(None)
-
+    
     logger.debug(f'State clear:{tg_nickname}:{user_tg_id}')
     logger.debug('Exit')
 
@@ -142,6 +139,7 @@ async def clbk_settings(clbk: CallbackQuery, state: FSMContext):
     await state.set_state(AllSettingsStates.user_settings)
     await clbk.answer()
 
+
 @user_router.callback_query()
 async def clbk_other_handler(clbk: CallbackQuery):
     logger.debug('Entry')
@@ -150,6 +148,7 @@ async def clbk_other_handler(clbk: CallbackQuery):
     await clbk.answer('Кнопка в разработке', show_alert=True)
     
     logger.debug('Exit')
+
 
 @user_router.message()
 async def msg_other(msg: Message):
