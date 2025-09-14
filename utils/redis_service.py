@@ -202,7 +202,10 @@ class RedisService:
         if not await self.check_user(tg_user_id):
             logger.warning(
                 f'User {tg_user_id} was not found when receiving notifications settings')
-            return {}
+            # Возвращаем значения по умолчанию: оба уведомления включены
+            return {
+                'is_notif_solution': True,
+                'is_notif_uninformative': True}
         
         user_key = f'{self.USER_TAG}:{tg_user_id}'
         
