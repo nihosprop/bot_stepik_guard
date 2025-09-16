@@ -17,4 +17,5 @@ kb_settings_courses = create_static_kb(
     **BUTTS_SETTINGS_COURSES, cancel_butt=True)
 kb_add_del_course = create_static_kb(back=True, cancel_butt=True)
 
-kb_all_settings = create_static_kb(**BUTTS_ALL_SETTINGS)
+kb_all_settings = create_static_kb(**BUTTS_ALL_SETTINGS,
+                                   cancel_butt=False, exit_=True)
