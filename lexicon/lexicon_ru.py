@@ -7,3 +7,4 @@ logger_lexicon = logging.getLogger(__name__)
 class LexiconRu:
     start: str = 'Запуск'
     users_info: str = 'Инфо о юзерах'
+    settings: str = 'Настройки'
