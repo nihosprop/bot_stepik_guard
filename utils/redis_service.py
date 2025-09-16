@@ -432,4 +432,7 @@ class RedisService:
             msgs_settings = await self.redis.hget(self.MSGS_SETTINGS_TAG,
                                          'remove_toxic')
         return {'remove_toxic': True if msgs_settings == '1' else False}
-        
+
+    async def get_remove_toxic_flag(self) -> bool:
+        data = await self.get_msgs_settings()
+        return data.get('remove_toxic', False)
