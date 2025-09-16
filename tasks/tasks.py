@@ -221,7 +221,9 @@ class StepikTasks:
             text_solution = 'Решение ⚪\n'
             text_comment_low = 'Комментарий 🟡\n'
             text_comment_high = 'Комментарий 🟢\n'
-            text_remove = f"🚨 Удалить! 🚨\n"
+            text_remove = f'🚨 Удалено! 🚨\n' if \
+                (await self.redis_service.get_msgs_settings())['remove_toxic'] \
+                else f'🚨 Удалить! 🚨\n'
             
             flag_low_comment: bool = (len(set(comment_text)) <= 2) or (len(
                 comment_text) <= 3)
@@ -268,6 +270,10 @@ class StepikTasks:
             else:
                 full_user_info = res_text + middle_user_info
             
+            flag_remove_comment = await self.redis_service.get_remove_toxic_flag()
+            if 'toxic' in comment_statuses and flag_remove_comment:
+                await self.stepik_client.delete_comment(comment_id)
+            
             for user in all_users:
                 # Если у пользователя активно любое FSM-состояние — пропускаем отправку
                 try:
@@ -288,7 +294,7 @@ class StepikTasks:
                 
                 # Skip toxic comments
                 if 'toxic' in comment_statuses:
-                    continue
+                    pass
                     
                 # Check notification settings for solutions
                 if 'solution' in comment_statuses:

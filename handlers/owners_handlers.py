@@ -8,13 +8,17 @@ from aiogram.fsm.state import default_state
 from aiogram.types import CallbackQuery, LinkPreviewOptions, Message
 
 from filters.filters import AccessOwnersFilter, StepikIDFilter, TgUserIDFilter
+from keyboards.kb_utils import create_message_settings_kb
 from keyboards.keyboards import (kb_add_del_course,
                                  kb_add_del_user,
                                  kb_exit,
                                  kb_own_start,
                                  kb_settings_courses,
-                                 kb_settings_users)
-from states.states import CoursesSettingsStates, UsersSettingsStates
+                                 kb_settings_users,
+                                 kb_own_all_settings)
+from states.states import (CoursesSettingsStates,
+                           UsersSettingsStates,
+                           AllSettingsStates)
 from utils.redis_service import RedisService
 from utils.utils import MessageProcessor, get_username
 
@@ -296,9 +300,10 @@ async def fill_course_stepik_id(msg: Message,
 
 
 @owners_router.callback_query(
-    F.data == 'back', or_f(StateFilter(
-        CoursesSettingsStates.fill_course_id_add,
-        CoursesSettingsStates.fill_course_id_delete)))
+    F.data == 'back', or_f(
+        StateFilter(
+            CoursesSettingsStates.fill_course_id_add,
+            CoursesSettingsStates.fill_course_id_delete)))
 async def back_from_add_del_course(clbk: CallbackQuery, state: FSMContext):
     logger_owners.debug('Entry')
     
@@ -364,8 +369,51 @@ async def clbk_confirm_remove_course(msg: Message,
     value = await msg.answer(
         f'📵\nКурс ID:{course_id} не найден в базе.\n'
         f'Попробуй еще разок 🤓:\n'
-        f'<code>\n{stepik_courses_ids}</code>',
-        reply_markup=kb_add_del_course)
+        f'<code>\n{stepik_courses_ids}</code>', reply_markup=kb_add_del_course)
     await msg_processor.save_msg_id(value=value, msgs_for_del=True)
     logger_owners.debug('Exit')
     return
+
+
+@owners_router.callback_query(F.data == 'messages')
+async def clbk_messages_settings(clbk: CallbackQuery,
+                                 state: FSMContext,
+                                 redis_service: RedisService):
+    logger_owners.debug('Entry')
+    
+    msgs_settings = await redis_service.get_msgs_settings()
+    kb = await create_message_settings_kb(message_settings=msgs_settings)
+    
+    await clbk.message.edit_text(
+        text=f'<b>📵 Настройки токсичных комментариев Stepik\n</b>'
+             f'<pre>\nУдалять токсичные:'
+             f' {('OFF', 'ON')[msgs_settings.get('remove_toxic')]}</pre>',
+        reply_markup=kb)
+    await state.set_state(AllSettingsStates.settings_toxic_msgs)
+    await clbk.answer()
+    logger_owners.debug('Exit')
+    
+@owners_router.callback_query(F.data.in_(['on_remove_toxic',
+                                          'off_remove_toxic']),
+                              StateFilter(AllSettingsStates.settings_toxic_msgs))
+async def clbk_toxic_setting_toggle(clbk: CallbackQuery,
+                                    redis_service: RedisService):
+    logger_owners.debug('Entry')
+    
+    msgs_settings: dict[str, bool] = await redis_service.get_msgs_settings()
+    new_settings_flag: bool = not msgs_settings.get('remove_toxic', False)
+    
+    await redis_service.update_msgs_settings(remove_toxic_flag=new_settings_flag)
+    
+    new_msgs_settings = await redis_service.get_msgs_settings()
+    kb = await create_message_settings_kb(message_settings=new_msgs_settings)
+    await clbk.message.edit_text(
+        text=f'<b>📵 Настройки токсичных комментариев Stepik\n</b>'
+             f'<pre>\nУдалять токсичные:'
+             f' {('OFF', 'ON')[new_msgs_settings.get('remove_toxic')]}</pre>',
+        reply_markup=kb)
+    await clbk.answer()
+    logger_owners.info(f'Настройки удаления токсичных комментариев изменены'
+                       f' {await get_username(clbk)} на {new_settings_flag}')
+    logger_owners.debug('Exit')
+

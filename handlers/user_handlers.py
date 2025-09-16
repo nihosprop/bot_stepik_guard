@@ -96,11 +96,13 @@ async def cmd_start(msg: Message,
     logger.debug('Entry')
     
     await msg_processor.deletes_messages(msgs_for_del=True)
-    
+    tg_nickname: str = await get_username(msg)
     data = await redis_service.get_courses_ids()
     _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
     
-    text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
+    await msg.delete()
+    
+    text = (f'<b>Приветствую, {tg_nickname}!</b>\n'
             f'<b>Статусы комментов обозначены кружками:</b>\n'
             f'<pre>Зеленый кружок 🟢 - Вероятно информативный.\n'
             f'Желтый кружок 🟡  - Вероятно НЕ информативный.\n'
@@ -118,9 +120,8 @@ async def cmd_start(msg: Message,
             f'<b>Приятного полета</b> 🫡')
     
     user_tg_id = msg.from_user.id
-    tg_nickname: str = await get_username(msg)
-    
     keyboard = kb_user_start if user_tg_id not in owners else kb_own_start
+    
     value = await msg.answer(text=text, reply_markup=keyboard)
     await msg_processor.save_msg_id(value, msgs_for_del=True)
     
@@ -135,6 +136,46 @@ async def cmd_start(msg: Message,
     await state.set_state(None)
     
     logger.debug(f'State clear:{tg_nickname}:{user_tg_id}')
+    logger.debug('Exit')
+
+
+@user_router.message(
+    F.text == '/settings_info', StateFilter(default_state))
+async def msg_settings(msg: Message,
+                       msg_processor: MessageProcessor,
+                       redis_service: RedisService):
+    logger.debug('Entry')
+    
+    data_courses = await redis_service.get_courses_ids()
+    user_notif = await redis_service.get_user_notif(tg_user_id=msg.from_user.id)
+    data_msgs_settings = await redis_service.get_msgs_settings()
+    
+    await msg_processor.deletes_messages(msgs_for_del=True)
+    await msg.delete()
+    
+    text = f'{data_courses=}:{user_notif=}:{data_msgs_settings=}'
+    logger.debug(text)
+    try:
+        _bat = tuple(' '.join(x) for x in batched(map(str, data_courses), 3))
+        stepik_courses_ids = '\n'.join(_bat)
+        text_courses = (f'<b>Мониторю курсы Stepik:</b>\n'
+                        f'<pre>'
+                        f'\n{stepik_courses_ids if stepik_courses_ids else
+                        f'<i>Пока нет курсов для отслеживания</i>'}</pre>\n')
+        text_user_notif = (f'<b>Настройки уведомлений:\n</b>'
+                           f'<pre>\nРешения: {('OFF', 'ON')[user_notif.get('is_notif_solution')]}\n'
+                           f'Не информативные : {('OFF', 'ON')[user_notif.get(
+                               'is_notif_uninformative')]}</pre>')
+        text_settings = (f'<b>Настройки токсичных комментариев Stepik:\n</b>'
+                         f'<pre>\nУдалять токсичные:'
+                         f' {('OFF', 'ON')[data_msgs_settings.get('remove_toxic')]}</pre>')
+        value = await msg.answer(
+            f'{text_courses}{text_user_notif}{text_settings}')
+        await msg_processor.save_msg_id(value, msgs_for_del=True)
+        
+    except Exception as e:
+        logger.debug(f'Exception: {e}')
+
     logger.debug('Exit')
 
 
@@ -182,7 +223,9 @@ async def clbk_notif(clbk: CallbackQuery,
 
 
 @user_router.callback_query(
-    F.data == 'back', StateFilter(AllSettingsStates.settings_notif))
+    F.data == 'back', or_f(
+        StateFilter(AllSettingsStates.settings_notif),
+        StateFilter(AllSettingsStates.settings_toxic_msgs)))
 async def clbk_notif_back(clbk: CallbackQuery,
                           state: FSMContext,
                           owners: list[int]):
