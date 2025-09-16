@@ -99,5 +99,4 @@ async def create_notification_settings_kb(user_data_notif: dict):
         cancel_butt=False,
         exit_=True)
     
-    return kb_notifications
     return kb
