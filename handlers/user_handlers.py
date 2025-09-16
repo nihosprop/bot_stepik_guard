@@ -9,8 +9,9 @@ from aiogram.types import CallbackQuery, Message
 
 from filters.filters import AccessOwnersFilter, AccessUsersFilter
 from keyboards.kb_utils import create_notification_settings_kb
-from keyboards.keyboards import (kb_all_settings,
+from keyboards.keyboards import (kb_own_all_settings,
                                  kb_own_start,
+                                 kb_user_all_settings,
                                  kb_user_start)
 from states.states import AllSettingsStates
 from utils.redis_service import RedisService
@@ -137,19 +138,22 @@ async def cmd_start(msg: Message,
 
 @user_router.callback_query(
     F.data == 'all_settings', StateFilter(default_state))
-async def clbk_settings(clbk: CallbackQuery, state: FSMContext):
+async def clbk_settings(clbk: CallbackQuery,
+                        state: FSMContext,
+                        owners: list[int]):
     logger.debug('Entry')
     
+    kb = (kb_user_all_settings, kb_own_all_settings)[clbk.from_user.id in owners]
     await clbk.message.edit_text(
-        '📵 <b>Выберите настройку:</b>', reply_markup=kb_all_settings)
+        '📵 <b>Выберите настройку:</b>', reply_markup=kb)
     await state.set_state(AllSettingsStates.user_settings)
     await clbk.answer()
     
     logger.debug('Exit')
 
+
 @user_router.callback_query(
-    F.data == 'notifications',
-    StateFilter(AllSettingsStates.user_settings))
+    F.data == 'notifications', StateFilter(AllSettingsStates.user_settings))
 async def clbk_notif(clbk: CallbackQuery,
                      state: FSMContext,
                      redis_service: RedisService):
@@ -159,7 +163,7 @@ async def clbk_notif(clbk: CallbackQuery,
     
     if not await redis_service.check_user(user_id):
         await redis_service.add_user(user_id)
-        
+    
     user_notif = await redis_service.get_user_notif(user_id)
     logger.debug(f'{user_notif=}')
     kb_notif = await create_notification_settings_kb(user_notif)
@@ -168,24 +172,28 @@ async def clbk_notif(clbk: CallbackQuery,
         f'<b>📵🔔 Настройки уведомлений:\n</b>'
         f'<pre>\nРешения: {('OFF', 'ON')[user_notif.get('is_notif_solution')]}\n'
         f'Не информативные : {('OFF', 'ON')[user_notif.get(
-            'is_notif_uninformative')]}</pre>',
-        reply_markup=kb_notif)
-    await state.set_state(AllSettingsStates.choice_notif)
+            'is_notif_uninformative')]}</pre>', reply_markup=kb_notif)
+    await state.set_state(AllSettingsStates.settings_notif)
     await clbk.answer()
-
+    
     logger.debug('Exit')
 
-@user_router.callback_query(F.data == 'back',
-                            StateFilter(AllSettingsStates.choice_notif))
-async def clbk_notif_back(clbk: CallbackQuery, state: FSMContext):
+
+@user_router.callback_query(
+    F.data == 'back', StateFilter(AllSettingsStates.settings_notif))
+async def clbk_notif_back(clbk: CallbackQuery,
+                          state: FSMContext,
+                          owners: list[int]):
     logger.debug('Entry')
     
+    kb = (kb_user_all_settings, kb_own_all_settings)[clbk.from_user.id in owners]
     await clbk.message.edit_text(
-        '📵 <b>Выберите настройку:</b>', reply_markup=kb_all_settings)
+        '📵 <b>Выберите настройку:</b>', reply_markup=kb)
     await state.set_state(AllSettingsStates.user_settings)
     await clbk.answer()
     
     logger.debug('Exit')
+
 
 @user_router.callback_query(
     F.data.in_(
@@ -194,14 +202,14 @@ async def clbk_notif_back(clbk: CallbackQuery, state: FSMContext):
             'off_notif_solution',
             'on_notif_uninformative',
             'off_notif_uninformative']),
-    StateFilter(AllSettingsStates.choice_notif))
+    StateFilter(AllSettingsStates.settings_notif))
 async def clbk_toggle_notification(clbk: CallbackQuery,
-    redis_service: RedisService):
+                                   redis_service: RedisService):
     """
     Обработчик переключения настроек уведомлений.
     """
     logger.debug('Entry')
-
+    
     user_id = clbk.from_user.id
     if clbk.data in ['on_notif_solution', 'off_notif_solution']:
         setting = 'is_notif_solution'
@@ -212,8 +220,9 @@ async def clbk_toggle_notification(clbk: CallbackQuery,
     
     await redis_service.update_notif_flag(
         tg_user_id=user_id, **{setting: new_value})
-    logger.info(f'Notification for {await get_username(clbk)}:{setting} '
-                f'updated.')
+    logger.info(
+        f'Notification for {await get_username(clbk)}:{setting} '
+        f'updated.')
     user_notif = await redis_service.get_user_notif(user_id)
     
     kb_notif = await create_notification_settings_kb(user_notif)
