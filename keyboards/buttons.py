@@ -13,5 +13,8 @@ BUTTS_SETTINGS_USERS: dict[str, str] = {
     'add_user': 'Добавить юзера',
     'delete_user': 'Удалить юзера'}
 
-BUTTS_ALL_SETTINGS: dict[str, str] = {
+BUTTS_USER_ALL_SETTINGS: dict[str, str] = {
     'notifications': 'Уведомления'}
+BUTTS_OWN_ALL_SETTINGS: dict[str, str] = {
+    'notifications': 'Уведомления',
+    'messages': 'Сообщения'}

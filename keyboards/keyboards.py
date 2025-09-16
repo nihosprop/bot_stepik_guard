@@ -1,9 +1,10 @@
 from keyboards.kb_utils import create_static_kb
-from keyboards.buttons import (BUTTS_ALL_SETTINGS,
+from keyboards.buttons import (BUTTS_USER_ALL_SETTINGS,
                                BUTTS_OWN_START,
                                BUTTS_SETTINGS_COURSES,
                                BUTTS_SETTINGS_USERS,
-                               BUTTS_USER_START)
+                               BUTTS_USER_START,
+                               BUTTS_OWN_ALL_SETTINGS)
 
 kb_exit = create_static_kb(exit_=True)
 
@@ -17,4 +18,5 @@ kb_settings_courses = create_static_kb(
     **BUTTS_SETTINGS_COURSES, cancel_butt=True)
 kb_add_del_course = create_static_kb(back=True, cancel_butt=True)
 
-kb_all_settings = create_static_kb(**BUTTS_ALL_SETTINGS, exit_=True)
+kb_user_all_settings = create_static_kb(**BUTTS_USER_ALL_SETTINGS, exit_=True)
+kb_own_all_settings = create_static_kb(**BUTTS_OWN_ALL_SETTINGS, exit_=True)
