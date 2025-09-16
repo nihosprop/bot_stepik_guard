@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 logger_kb_utils = logging.getLogger(__name__)
 
+
 def create_static_kb(width: int = 1,
                      *args,
                      cancel_butt=False,
@@ -87,12 +88,11 @@ async def create_notification_settings_kb(user_data_notif: dict):
         'is_notif_solution', True) else 'on_notif_solution'
     
     uninformative_text = '🔴 Отключить неинформативные' if user_data_notif.get(
-        'is_notif_uninformative',
-        True) else '🟢 Включить неинформативные'
+        'is_notif_uninformative', True) else '🟢 Включить неинформативные'
     uninformative_cb = 'off_notif_uninformative' if user_data_notif.get(
         'is_notif_uninformative', True) else 'on_notif_uninformative'
     
-    kb_notifications = create_static_kb(
+    kb = create_static_kb(
         **{solution_clbk: solution_text},
         **{uninformative_cb: uninformative_text},
         back=True,
@@ -100,3 +100,4 @@ async def create_notification_settings_kb(user_data_notif: dict):
         exit_=True)
     
     return kb_notifications
+    return kb
