@@ -237,7 +237,7 @@ async def clbk_toggle_notification(clbk: CallbackQuery,
 
 
 @user_router.callback_query(StateFilter(AllSettingsStates.user_settings))
-async def clbk_other_handler(clbk: CallbackQuery, state: FSMContext):
+async def clbk_other_handler(clbk: CallbackQuery):
     """
     Обработчик для нераспознанных callback'ов в состоянии настроек.
     """
