@@ -99,7 +99,6 @@ async def cmd_start(msg: Message,
     
     data = await redis_service.get_courses_ids()
     _bat = tuple(' '.join(x) for x in batched(map(str, data), 3))
-    stepik_courses_ids = '\n'.join(_bat)
     
     text = (f'<b>Приветствую, {await get_username(msg)}!</b>\n'
             f'<b>Статусы комментов обозначены кружками:</b>\n'
