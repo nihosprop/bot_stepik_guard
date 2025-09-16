@@ -80,7 +80,7 @@ def create_static_kb(width: int = 1,
     return kb_builder.as_markup()
 
 
-async def create_notification_settings_kb(user_data_notif: dict):
+async def create_notification_settings_kb(user_data_notif: dict) -> InlineKeyboardMarkup:
     # Формируем текст и callback_data для кнопок
     solution_text = '🔴 Отключить уведомления о решениях' if user_data_notif.get(
         'is_notif_solution', True) else '🟢 Включить уведомления о решениях'
