@@ -103,8 +103,8 @@ async def create_notification_settings_kb(user_data_notif: dict) -> InlineKeyboa
 
 async def create_message_settings_kb(message_settings: dict[
     str, bool]) -> InlineKeyboardMarkup:
-    text = '🔴 Отключить удаление' if message_settings.get(
-        'remove_toxic', True) else '🟢 Включить удаление'
+    text = 'Отключить удаление' if message_settings.get(
+        'remove_toxic', True) else 'Включить удаление'
     clbk = 'off_remove_toxic' if message_settings.get(
         'remove_toxic', True) else 'on_remove_toxic'
     
