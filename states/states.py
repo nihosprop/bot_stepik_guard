@@ -15,4 +15,6 @@ class CoursesSettingsStates(StatesGroup):
 
 class AllSettingsStates(StatesGroup):
     user_settings = State()
-    choice_notif = State()
+    settings_notif = State()
+    settings_toxic_msgs = State()
+    
