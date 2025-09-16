@@ -62,6 +62,8 @@ class RedisService:
     STEPIK_COURSE_ID: str = 'stepik_course_id'
     STEPIK_IDS_SET: str = 'bot:stepik_course_ids'
     
+    MSGS_SETTINGS_TAG: str = 'bot:msgs_settings'
+    
     async def add_user(self, tg_user_id: int):
         """
         Adds a user to the Redis database.
@@ -202,9 +204,7 @@ class RedisService:
         if not await self.check_user(tg_user_id):
             logger.warning(
                 f'User {tg_user_id} was not found when receiving notifications settings')
-            return {
-                'is_notif_solution': True,
-                'is_notif_uninformative': True}
+            return {'is_notif_solution': True, 'is_notif_uninformative': True}
         
         user_key = f'{self.USER_TAG}:{tg_user_id}'
         
@@ -212,10 +212,10 @@ class RedisService:
             name=user_key, keys=[
                 self.IS_NOTIF_SOLUTION, self.IS_NOTIF_UNINFORMATIVE])
         return {
-            'is_notif_solution':
-                flags[0] == '1' if flags[0] is not None else True,
-            'is_notif_uninformative':
-                flags[1] == '1' if flags[1] is not None else True}
+            'is_notif_solution': flags[0] == '1' if flags[
+                                                        0] is not None else True,
+            'is_notif_uninformative': flags[1] == '1' if flags[
+                                                             1] is not None else True}
     
     async def get_users_info(self) -> str:
         """
@@ -416,3 +416,19 @@ class RedisService:
                 rows.append(f'👑 <a href="{link}">{text}</a>')
         
         return '\n'.join(rows)
+    
+    async def update_msgs_settings(self,
+                                   remove_toxic_flag: bool) -> None:
+        settings = {'remove_toxic': ('0', '1')[remove_toxic_flag]}
+        
+        await self.redis.hset(
+            name=self.MSGS_SETTINGS_TAG, mapping=settings)
+    
+    async def get_msgs_settings(self) -> dict[str, str]:
+        msgs_settings = await self.redis.hgetall(self.MSGS_SETTINGS_TAG)
+        if not msgs_settings:
+            await self.update_msgs_settings(remove_toxic_flag=False)
+            return await self.redis.hgetall(self.MSGS_SETTINGS_TAG)
+        return msgs_settings
+
+
