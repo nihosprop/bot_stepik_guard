@@ -8,7 +8,7 @@ logger_kb_utils = logging.getLogger(__name__)
 
 def create_static_kb(width: int = 1,
                      *args,
-                     cancel_butt=True,
+                     cancel_butt=False,
                      back=False,
                      exit_=False,
                      reverse_size_text=False,
