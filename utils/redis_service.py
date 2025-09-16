@@ -424,11 +424,12 @@ class RedisService:
         await self.redis.hset(
             name=self.MSGS_SETTINGS_TAG, mapping=settings)
     
-    async def get_msgs_settings(self) -> dict[str, str]:
-        msgs_settings = await self.redis.hgetall(self.MSGS_SETTINGS_TAG)
+    async def get_msgs_settings(self) -> dict[str, bool]:
+        msgs_settings = await self.redis.hget(self.MSGS_SETTINGS_TAG,
+                                              'remove_toxic')
         if not msgs_settings:
             await self.update_msgs_settings(remove_toxic_flag=False)
-            return await self.redis.hgetall(self.MSGS_SETTINGS_TAG)
-        return msgs_settings
-
-
+            msgs_settings = await self.redis.hget(self.MSGS_SETTINGS_TAG,
+                                         'remove_toxic')
+        return {'remove_toxic': True if msgs_settings == '1' else False}
+        
