@@ -28,26 +28,68 @@ async def get_username(_type_update: Message | CallbackQuery | ChatFullInfo) -> 
 
 
 async def clean_html_tags(raw_html: str) -> str:
-    """Удаляет HTML-теги из строки, оставляя только текст.
-    
+    """Удаляет HTML-теги из строки, сохраняя блоки кода.
+
     Args:
-        raw_html (str): Строка с HTML-тегами.
-        
+        raw_html (str): Строка с HTML-тегами, возможно содержащая блоки кода.
+
     Returns:
-        str: Текст без HTML-тегов.
+        str: Текст с сохраненными блоками кода (в тегах <pre><code>) и без остальных HTML-тегов.
     """
+    if not raw_html:
+        return ""
     
-    clean_text = re.sub(r'<[^>]+>', '', raw_html)
+    # Словарь для временного хранения блоков кода
+    code_blocks = {}
+    
+    # Шаг 1: Находим и сохраняем все блоки кода
+    def save_code(match):
+        block_id = f"__CODE_BLOCK_{len(code_blocks)}__"
+        code_blocks[block_id] = match.group(0)  # Сохраняем с тегами <pre><code>
+        return block_id
+    
+    # Заменяем блоки кода на временные метки
+    pattern = re.compile(r'<pre><code>(.*?)</code></pre>', re.DOTALL)
+    temp_text = pattern.sub(save_code, raw_html)
+    
+    # Шаг 2: Удаляем все оставшиеся HTML-теги
+    clean_text = re.sub(r'<[^>]+>', '', temp_text)
+    
+    # Шаг 3: Восстанавливаем блоки кода с оригинальными тегами
+    for block_id, code_block in code_blocks.items():
+        clean_text = clean_text.replace(block_id, code_block)
+    
+    # Шаг 4: Обрабатываем HTML-сущности
     clean_text = html.unescape(clean_text)
-    safe_text = (clean_text.replace(
-        '&', '&amp;').replace(
-        '<', '&lt;').replace(
-        '>', '&gt;').replace('"', '&quot;'))
     
-    # Нормализация пробелов
-    safe_text = re.sub(r'\s+', ' ', safe_text).strip()
+    # Шаг 5: Экранируем специальные символы в не-кодовых частях
+    parts = re.split(
+        r'(<pre><code>.*?</code></pre>)',
+        clean_text,
+        flags=re.DOTALL)
+    for i in range(len(parts)):
+        # Пропускаем блоки кода
+        if not parts[i].startswith('<pre><code>'):
+            parts[i] = (
+                parts[i].replace('&', '&amp;').replace('<', '&lt;').replace(
+                    '>',
+                    '&gt;').replace('"', '&quot;'))
     
-    return safe_text
+    clean_text = ''.join(parts)
+    
+    # Шаг 6: Нормализуем пробелы в не-кодовых частях
+    parts = re.split(
+        r'(<pre><code>.*?</code></pre>)',
+        clean_text,
+        flags=re.DOTALL)
+    for i in range(
+        0,
+        len(parts),
+        2):  # Обрабатываем только нечетные части (не блоки кода)
+        if i < len(parts):
+            parts[i] = re.sub(r'\s+', ' ', parts[i]).strip()
+    
+    return ''.join(parts)
 
 
 @dataclass
