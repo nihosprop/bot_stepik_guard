@@ -275,6 +275,12 @@ class StepikTasks:
                 await self.stepik_client.delete_comment(comment_id)
             
             for user in all_users:
+                # Пропускаем отправку, если пользователь не зарегистрирован в Redis
+                if not await self.redis_service.check_user(user):
+                    logger_tasks.warning(
+                        f"Skip notify tg_id={user} - user not found in Redis")
+                    continue
+                    
                 # Если у пользователя активно любое FSM-состояние — пропускаем отправку
                 try:
                     if self.storage is not None:

@@ -133,6 +133,9 @@ async def cmd_start(msg: Message,
         await redis_service.update_user_username(
             tg_user_id=user_tg_id, tg_nickname=tg_nickname)
         logger.info(f'User {tg_nickname} updated.')
+    else:
+        await redis_service.add_user(tg_user_id=user_tg_id)
+        logger.info(f'New user {tg_nickname} added.')
     await state.set_state(None)
     
     logger.debug(f'State clear:{tg_nickname}:{user_tg_id}')
