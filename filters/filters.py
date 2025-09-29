@@ -8,6 +8,7 @@ from Levenshtein import distance
 from better_profanity import profanity
 from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
+from pymorphy3 import MorphAnalyzer
 
 from filters.patterns import DataProfanity
 from utils.redis_service import RedisService
@@ -23,6 +24,7 @@ class AccessOwnersFilter(BaseFilter):
         owner_tg_id = msg.from_user.id
         return owner_tg_id in owners
 
+
 class AccessUsersFilter(BaseFilter):
     
     async def __call__(self,
@@ -31,6 +33,7 @@ class AccessUsersFilter(BaseFilter):
         user_tg_id = msg.from_user.id
         users = await redis_service.get_tg_users_ids()
         return user_tg_id in users
+
 
 class StepikIDFilter(BaseFilter):
     """
@@ -56,8 +59,9 @@ class StepikIDFilter(BaseFilter):
             return False
         if val <= 0:
             return False
-
+        
         return True
+
 
 class TgUserIDFilter(BaseFilter):
     """
@@ -171,12 +175,10 @@ class ProfanityFilter:
             logger_filters.debug(f'Пропущено (цифры):{text}')
             return False
         
-        simple_text = text.lower().split()
-        for word in simple_text:
-            if word in self.bad_words:
-                logger_filters.warning(
-                    f'🟢Заблокировано simple_text bad_words:'
-                    f' {word}')
+        words = text.split()
+        for word in words:
+            if await self._is_bad_word(word):
+                logger_filters.warning(f'🟢Заблокировано bad word: {word}')
                 return True
         
         text = text.replace(" ", "")
@@ -225,6 +227,88 @@ class ProfanityFilter:
             logger_filters.warning('🟢Заблокировано: Фильтр 5 "Levenshtein"')
             return True
         logger_filters.debug('Текст прошел все фильтры')
+        return False
+    
+    async def _is_bad_word(self, word: str) -> bool:
+        """
+        Проверяет, является ли слово плохим с учетом нормализации.
+        Обрабатывает притяжательные формы, уменьшительно-ласкательные и другие словоформы.
+        """
+        if not word or not word.strip():
+            return False
+        
+        # Приводим к нижнему регистру и убираем пробелы
+        word = word.lower().strip()
+        
+        # Проверяем прямое вхождение
+        if word in self.bad_words:
+            return True
+        
+        # Нормализуем слово (удаляем повторяющиеся символы, заменяем похожие символы)
+        normalized = await self._normalize_text(word)
+        
+        # Проверяем по регулярным выражениям из patterns.py
+        if self.base_pattern.search(normalized) or any(
+            pattern.search(normalized) for pattern in self.additional_patterns):
+            return True
+        
+        # Проверяем все возможные основы слова
+        word_bases = [
+            normalized, normalized[:-1] if len(normalized) > 3 else "",
+            # без последней буквы
+            normalized[:-2] if len(normalized) > 4 else ""
+            # без двух последних букв
+            ]
+        
+        # Проверяем все основы слова
+        if any(base in self.bad_words for base in word_bases if base):
+            return True
+        
+        # Проверяем уменьшительно-ласкательные суффиксы
+        diminutive_suffixes = [
+            'ушк',
+            'юшк',
+            'оньк',
+            'еньк',
+            'очк',
+            'ечк',
+            'ышк',
+            'ишк',
+            'к',
+            'ц',
+            'чк',
+            'еньк',
+            'оньк']
+        
+        for suffix in diminutive_suffixes:
+            if normalized.endswith(suffix):
+                base = normalized[:-len(suffix)]
+                if base and base in self.bad_words:
+                    return True
+        
+        # Проверяем притяжательные суффиксы
+        if normalized.endswith(('ин', 'ов', 'ев')):
+            base = normalized[:-2]
+            if base in self.bad_words:
+                return True
+        
+        # Проверяем все словоформы через pymorphy3
+        try:
+            parsed_words = self.morph.parse(normalized)
+            for parsed in parsed_words:
+                # Проверяем нормальную форму
+                normal_form = parsed.normal_form
+                if normal_form in self.bad_words:
+                    return True
+                
+                # Проверяем все словоформы
+                for form in parsed.lexeme:
+                    if form.word in self.bad_words:
+                        return True
+        except Exception as e:
+            logger_filters.error(
+                f"Ошибка при морфологическом разборе {word}: {e}")
+        
         return False
     
     async def _is_technical_text(self, text: str) -> bool:
@@ -284,8 +368,8 @@ class ProfanityFilter:
                     continue
                 
                 # Точное совпадение после нормализации
-                if candidate == bad_word:
-                    logger_filters.warning(f'🟢Точное совпадение: {bad_word}')
+                if await self._is_bad_word(candidate):
+                    logger_filters.warning(f'🟢Точное совпадение: {candidate}')
                     return True
                 
                 # Проверка расстояния Левенштейна (ужесточённая)

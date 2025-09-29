@@ -216,7 +216,7 @@ class StepikTasks:
             
             result_profanity_filter: bool = await profanity_filter.is_profanity(
                 text=comment_text)
-            logger_tasks.debug(f'{result_profanity_filter=}')
+            logger_tasks.info(f'{result_profanity_filter=}')
             
             text_solution = 'Решение ⚪\n'
             text_comment_low = 'Комментарий 🟡\n'
@@ -254,7 +254,7 @@ class StepikTasks:
             if result_profanity_filter and len(comment_text) >= 12:
                 result_toxicity_classifier = await toxicity_filter.predict(
                     comment_text.lower(), threshold=0.82)
-                logger_tasks.debug(f'{result_toxicity_classifier=}')
+                logger_tasks.info(f'{result_toxicity_classifier=}')
                 
                 if result_toxicity_classifier.get('is_toxic'):
                     full_user_info = text_remove + full_user_info
