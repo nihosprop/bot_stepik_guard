@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
@@ -79,9 +80,25 @@ class StepikAPIClient:
                                method: str,
                                endpoint: str,
                                params: Optional[Dict[str, Any]] = None,
-                               json_data: Optional[Dict[str, Any]] = None) -> \
-        Dict[str, Any]:
-        """Базовый метод для выполнения API-запросов"""
+                               json_data: Optional[Dict[str, Any]] = None,
+                               expected_status_codes: List[int] = None) -> \
+        Optional[Dict[str, Any]]:
+        """
+        Базовый метод для выполнения API-запросов
+        Args:
+            method: HTTP метод (GET, POST, и т.д.)
+            endpoint: Конечная точка API
+            params: Параметры запроса
+            json_data: Данные для отправки в формате JSON
+            expected_status_codes: Список ожидаемых HTTP статусов (по умолчанию [200])
+        Returns:
+            Распарсенный JSON ответ или None, если ответ пустой
+        Raises:
+            Exception: Если произошла ошибка при выполнении запроса
+        """
+        
+        if expected_status_codes is None:
+            expected_status_codes = [200]
         
         url = f"https://stepik.org/api/{endpoint.lstrip('/')}"
         headers = {"Authorization": f"Bearer {await self._get_access_token()}"}
@@ -93,33 +110,66 @@ class StepikAPIClient:
                 headers=headers,
                 params=params,
                 json=json_data) as response:
-                if response.status == 200:
-                    return await response.json()
                 
-                # Попробуем прочитать тело для диагностики
                 try:
                     body_text = await response.text()
                 except Exception:
                     body_text = "<no-body>"
-                
-                # Точное различение статусов
+                    
+                # Логируем успешные запросы
+                if response.status in expected_status_codes:
+                    logger_stepik.debug(
+                            f"API request successful: {method} {url} - {response.status}")
+                else:
+                    logger_stepik.error(
+                        f"API request failed: {response.status}. Body: {body_text}")
+                    raise Exception(f"API request failed: {response.status}")
+                    
+                # Обработка успешных ответов
+                if response.status in (200, 201):  # 200 OK и 201 Created
+                    if body_text and body_text != "<no-body>":
+                        try:
+                            return await response.json()
+                        except Exception as e:
+                            logger_stepik.error(
+                                f"Failed to parse JSON response: {e}. Body: {body_text}")
+                            raise
+                    return None
+                    
+                # Обработка 204 No Content
+                if response.status == 204:
+                    return None
+                    
+                # Обработка 404 Not Found
                 if response.status == 404:
                     logger_stepik.info(
                         f"Stepik API 404 on {method} {url}. Body: {body_text}")
                     raise ValueError("not_found")
-                if response.status in (401, 403):
-                    logger_stepik.warning(
-                        f"Stepik API {response.status} on {method} {url}. Body: {body_text}")
-                    raise PermissionError(f"forbidden:{response.status}")
+                    
+                # Обработка 429 Too Many Requests
                 if response.status == 429:
+                    retry_after = int(response.headers.get('Retry-After', 5))
                     logger_stepik.warning(
-                        f"Stepik API 429 on {method} {url}. Body: {body_text}")
-                    raise Exception("too_many_requests")
+                        f"Rate limited. Waiting {retry_after} seconds")
+                    await asyncio.sleep(retry_after)
+                    return await self.make_api_request(
+                            method,
+                            endpoint,
+                            params,
+                            json_data,
+                            expected_status_codes)
+                    
+                # Обработка 500 Internal Server Error
+                if response.status >= 500:
+                    logger_stepik.error(
+                        f"Server error on {method} {url}. Status: {response.status}. Body: {body_text}")
+                    raise Exception(f"Server error: {response.status}")
+                    
+                # Для всех остальных кодов состояния
+                logger_stepik.warning(
+                    f"Unexpected status code {response.status} on {method} {url}")
+                return None
                 
-                logger_stepik.error(
-                    f"API request failed: {response.status}. Body: {body_text}")
-                raise Exception(f"API request failed: {response.status}")
-    
     async def get_user(self, user_id: int) -> Dict[str, Any] | None:
         """
         Get user data through a common client with retrays.
