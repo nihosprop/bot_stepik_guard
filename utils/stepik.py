@@ -342,6 +342,37 @@ class StepikAPIClient:
         
         return comments
     
+    async def reply_to_comment(self,
+                               step_id: int,
+                               parent_id: int,
+                               text: str) -> bool:
+        """
+        Ответить на комментарий в Stepik
+
+        :param step_id: ID шага, к которому относится комментарий
+        :param parent_id: ID комментария, на который отвечаем
+        :param text: текст ответа
+        :return: True если успешно, иначе False
+        """
+        endpoint = "comments"
+        payload = {
+            "comment": {
+                "text": text,
+                "target": step_id,  # Отправляем только числовой ID
+                "parent": int(parent_id)}}
+        
+        try:
+            await self.make_api_request(
+                'POST',
+                endpoint=endpoint,
+                json_data=payload,
+                expected_status_codes=[200, 201])
+            logger_stepik.info(f"Ответ добавлен к комментарию {parent_id}")
+            return True
+        except Exception as e:
+            logger_stepik.error(f'Ошибка при отправке ответа на комментарий {parent_id}: {str(e)}')
+            return False
+        
     @staticmethod
     async def analyze_comment_text(text: str, banned_words: list) -> bool:
         """Анализ текста комментария на наличие запрещенных слов"""
