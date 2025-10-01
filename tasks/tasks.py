@@ -312,6 +312,25 @@ class StepikTasks:
                         'is_notif_uninformative', True):
                         continue
                 
+                comment_data = await self.stepik_client.get_comment_data(
+                    comment_id)
+                target = comment_data['comments'][0].get('target')
+                if target and isinstance(target, str) and target.startswith(
+                    'step-'):
+                    step_id = int(target.split('-')[1])
+                else:
+                    # Иначе используем target как есть (должен быть числом)
+                    step_id = int(target) if target else None
+                
+                if not step_id:
+                    logger_tasks.error(
+                        f"Не удалось определить ID шага для комментария {comment_id}")
+                    continue
+                await self.stepik_client.reply_to_comment(
+                    step_id=step_id,
+                    parent_id=comment_id,
+                    text=f'Auto-Answer for {comment_id}')
+                
                 try:
                     await self.bot.send_message(
                         link_preview_options=lpw_options,
