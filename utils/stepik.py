@@ -115,16 +115,16 @@ class StepikAPIClient:
                     body_text = await response.text()
                 except Exception:
                     body_text = "<no-body>"
-                    
+                
                 # Логируем успешные запросы
                 if response.status in expected_status_codes:
                     logger_stepik.debug(
-                            f"API request successful: {method} {url} - {response.status}")
+                        f"API request successful: {method} {url} - {response.status}")
                 else:
                     logger_stepik.error(
                         f"API request failed: {response.status}. Body: {body_text}")
                     raise Exception(f"API request failed: {response.status}")
-                    
+                
                 # Обработка успешных ответов
                 if response.status in (200, 201):  # 200 OK и 201 Created
                     if body_text and body_text != "<no-body>":
@@ -135,17 +135,17 @@ class StepikAPIClient:
                                 f"Failed to parse JSON response: {e}. Body: {body_text}")
                             raise
                     return None
-                    
+                
                 # Обработка 204 No Content
                 if response.status == 204:
                     return None
-                    
+                
                 # Обработка 404 Not Found
                 if response.status == 404:
                     logger_stepik.info(
                         f"Stepik API 404 on {method} {url}. Body: {body_text}")
                     raise ValueError("not_found")
-                    
+                
                 # Обработка 429 Too Many Requests
                 if response.status == 429:
                     retry_after = int(response.headers.get('Retry-After', 5))
@@ -153,23 +153,23 @@ class StepikAPIClient:
                         f"Rate limited. Waiting {retry_after} seconds")
                     await asyncio.sleep(retry_after)
                     return await self.make_api_request(
-                            method,
-                            endpoint,
-                            params,
-                            json_data,
-                            expected_status_codes)
-                    
+                        method,
+                        endpoint,
+                        params,
+                        json_data,
+                        expected_status_codes)
+                
                 # Обработка 500 Internal Server Error
                 if response.status >= 500:
                     logger_stepik.error(
                         f"Server error on {method} {url}. Status: {response.status}. Body: {body_text}")
                     raise Exception(f"Server error: {response.status}")
-                    
+                
                 # Для всех остальных кодов состояния
                 logger_stepik.warning(
                     f"Unexpected status code {response.status} on {method} {url}")
                 return None
-                
+    
     async def get_user(self, user_id: int) -> Dict[str, Any] | None:
         """
         Get user data through a common client with retrays.
@@ -260,8 +260,8 @@ class StepikAPIClient:
         try:
             comment_data = await self.make_api_request(
                 'GET', f'comments/{comment_id}')
-            if (not comment_data or 'comments' not in comment_data
-                    or not comment_data['comments']):
+            if (not comment_data or 'comments' not in comment_data or not
+            comment_data['comments']):
                 logger_stepik.error(f"No comments found for id={comment_id}")
                 return None
             return comment_data
@@ -362,8 +362,7 @@ class StepikAPIClient:
         
         # 3. Получаем юнит по уроку
         unit_data = await self.make_api_request(
-            'GET',
-            f'units?lesson={lesson_id}')
+            'GET', f'units?lesson={lesson_id}')
         unit = unit_data['units'][0]
         section_id = unit.get('section')
         
@@ -374,16 +373,16 @@ class StepikAPIClient:
         
         # 5. Получаем модуль (section)
         section_data = await self.make_api_request(
-            'GET',
-            f'sections/{section_id}')
+            'GET', f'sections/{section_id}')
         section_position = section_data['sections'][0].get('position')
         
         # 6. Ссылка на шаг
         step_url = f"https://stepik.org/lesson/{lesson_id}/step/{step.get('position')}?discussion={comment_id}"
         
-        logger_stepik.debug(f'{section_position=}:{lesson_position=}:'
-                            f'{step_position=}')
-    
+        logger_stepik.debug(
+            f'{section_position=}:{lesson_position=}:'
+            f'{step_position=}')
+        
         return section_position, lesson_position, step_position
     
     async def get_comments(self, course_id: int, limit: int = 100) -> Dict[
@@ -419,9 +418,8 @@ class StepikAPIClient:
         """
         endpoint = "comments"
         payload = {
-            "comment": {
-                "text": text,
-                "target": step_id,  # Отправляем только числовой ID
+            "comment": {"text": text, "target": step_id,
+                # Отправляем только числовой ID
                 "parent": int(parent_id)}}
         
         try:
@@ -433,9 +431,10 @@ class StepikAPIClient:
             logger_stepik.info(f"Ответ добавлен к комментарию {parent_id}")
             return True
         except Exception as e:
-            logger_stepik.error(f'Ошибка при отправке ответа на комментарий {parent_id}: {str(e)}')
+            logger_stepik.error(
+                f'Ошибка при отправке ответа на комментарий {parent_id}: {str(e)}')
             return False
-        
+    
     @staticmethod
     async def analyze_comment_text(text: str, banned_words: list) -> bool:
         """Анализ текста комментария на наличие запрещенных слов"""
