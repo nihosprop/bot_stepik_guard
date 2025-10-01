@@ -256,10 +256,17 @@ class StepikAPIClient:
         step_data = await self.get_step_data(target_id=target_id)
         return step_data.get('steps')[0]
     
-    async def get_comment_data(self, comment_id: int) -> Dict[str, Any]:
-        comment = await self.make_api_request(
-            'GET', f'comments/{comment_id}')
-        return comment
+    async def get_comment_data(self, comment_id: int) -> Dict[str, Any] | None:
+        try:
+            comment_data = await self.make_api_request(
+                'GET', f'comments/{comment_id}')
+            if (not comment_data or 'comments' not in comment_data
+                    or not comment_data['comments']):
+                logger_stepik.error(f"No comments found for id={comment_id}")
+                return None
+            return comment_data
+        except Exception as e:
+            logger_stepik.error(f"Failed to fetch comment id={comment_id}: {e}")
     
     async def get_target_id(self, comment_id: int) -> int | None:
         comment = await self.get_comment_data(comment_id=comment_id)
