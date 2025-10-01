@@ -223,8 +223,8 @@ class StepikTasks:
             text_comment_low = 'Комментарий 🟡\n'
             text_comment_high = 'Комментарий 🟢\n'
             text_remove = f'🚨 Удалено! 🚨\n' if \
-                (await self.redis_service.get_msgs_settings())['remove_toxic'] \
-                else f'🚨 Удалить! 🚨\n'
+                (await self.redis_service.get_msgs_settings())[
+                    'remove_toxic'] else f'🚨 Удалить! 🚨\n'
             
             flag_low_comment: bool = (len(set(comment_text)) <= 2) or (len(
                 comment_text) <= 3)
@@ -281,7 +281,7 @@ class StepikTasks:
                     logger_tasks.warning(
                         f"Skip notify tg_id={user} - user not found in Redis")
                     continue
-                    
+
                 # Если у пользователя активно любое FSM-состояние — пропускаем отправку
                 try:
                     if self.storage is not None:
@@ -302,7 +302,7 @@ class StepikTasks:
                 # Skip toxic comments
                 if 'toxic' in comment_statuses:
                     pass
-                    
+                
                 # Check notification settings for solutions
                 if 'solution' in comment_statuses:
                     if not user_notifications.get('is_notif_solution', True):
@@ -316,6 +316,7 @@ class StepikTasks:
                 comment_data = await self.stepik_client.get_comment_data(
                     comment_id)
                 target = comment_data['comments'][0].get('target')
+                
                 if target and isinstance(target, str) and target.startswith(
                     'step-'):
                     step_id = int(target.split('-')[1])
@@ -327,10 +328,13 @@ class StepikTasks:
                     logger_tasks.error(
                         f"Не удалось определить ID шага для комментария {comment_id}")
                     continue
-                await self.stepik_client.reply_to_comment(
-                    step_id=step_id,
-                    parent_id=comment_id,
-                    text=f'Auto-Answer for {comment_id}')
+                
+                # if user == 632745189:
+                #     await self.stepik_client.reply_to_comment(
+                #         step_id=step_id,
+                #         parent_id=comment_id,
+                #         text=f'{comment_id}\n'
+                #              f'Auto-Answer AI 🤖')
                 
                 try:
                     await self.bot.send_message(
