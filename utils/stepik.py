@@ -243,6 +243,12 @@ class StepikAPIClient:
     async def get_step_data(self, target_id: int) -> Dict[str, Any]:
         return await self.make_api_request('GET', f'steps/{target_id}')
     
+    async def get_step_description(self, step_id: int) -> str | None:
+        step_data = await self.get_step_data(step_id)
+        if step_data and step_data.get('steps'):
+            return step_data['steps'][0]['block'].get('text')
+        return None
+    
     async def get_step(self, comment_id) -> int:
         comment_data = await self.get_comment_data(comment_id)
         comment = comment_data.get('comments')[0]
