@@ -8,7 +8,6 @@ from Levenshtein import distance
 from better_profanity import profanity
 from aiogram.filters import BaseFilter
 from aiogram.types import CallbackQuery, Message
-from pymorphy3 import MorphAnalyzer
 
 from filters.patterns import DataProfanity
 from utils.redis_service import RedisService
