@@ -49,7 +49,7 @@ class StepikIDFilter(BaseFilter):
         Returns:
             bool: True if the message is a positive integer, False otherwise.
         """
-        text = (msg.text or "").strip()
+        text = msg.text.strip() or ""
         if not text.isdigit():
             return False
         try:
