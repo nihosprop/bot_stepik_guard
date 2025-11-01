@@ -176,8 +176,8 @@ class TestProfanityFilter:
                     break
             normalized.append(replacement)
         normalized_text = ''.join(normalized)
-        
-        # Удаляем повторяющиеся символы (например "прривет" -> "привет")
+
+        # Удаляем повторяющиеся символы (например "привет" -> "привет")
         normalized_text = re.sub(r'(.)\1+', r'\1', normalized_text)
         return normalized_text
     
