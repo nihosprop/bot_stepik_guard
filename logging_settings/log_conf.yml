@@ -22,7 +22,6 @@ handlers:
     mode: 'a'
 
 loggers:
-
   tests.tests:
     level: ${LOG_LEVEL}
     handlers: [ stdout, file ]
