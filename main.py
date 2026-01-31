@@ -27,7 +27,6 @@ logger_main = logging.getLogger(__name__)
 async def setup_logging(config: Config):
     with open('logging_settings/log_conf.yml', 'rt') as file:
         config_str = file.read()
-    # вставляем(заменяем шаблоны на) переменные окружения
     config_str = config_str.replace('${LOG_LEVEL}', config.level_log)
     log_config = yaml.safe_load(config_str)
     dictConfig(log_config)
