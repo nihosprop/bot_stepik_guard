@@ -411,7 +411,7 @@ class StepikAPIClient:
         """
         Ответить на комментарий в Stepik
 
-        :param step_id: ID шага, к которому относится комментарий
+        :param step_id: ID шага
         :param parent_id: ID комментария, на который отвечаем
         :param text: текст ответа
         :return: True если успешно, иначе False
