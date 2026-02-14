@@ -144,7 +144,7 @@ class StepikTasks:
                     name=f'{course_id}:time_last_comment',
                     value=max_comments_time.strftime('%Y-%m-%dT%H:%M:%SZ'))
         
-        logger_tasks.info(f"🔵Найдено {len(all_comments)} новых комментов")
+        logger_tasks.info(f"Найдено {len(all_comments)} новых комментов")
         
         users_url = 'https://stepik.org/users/'
         
