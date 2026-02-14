@@ -30,7 +30,7 @@ class StepikTasks:
     async def check_comments(self,
                              profanity_filter: ProfanityFilter,
                              toxicity_filter: RussianToxicityClassifier):
-        logger_tasks.debug("🟢Начало проверки комментариев")
+        logger_tasks.debug("Начало проверки комментариев")
         
         all_comments = []
         stepik_courses_ids: list[
