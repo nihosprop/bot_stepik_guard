@@ -21,7 +21,7 @@ async def start_scheduler(stepik_tasks: StepikTasks,
         stepik_tasks.check_comments,
         args=[profanity_filter, toxicity_filter],
         trigger='interval',
-        minutes=1,
+        minutes=2,
         max_instances=1,
         coalesce=True,
         misfire_grace_time=60)
